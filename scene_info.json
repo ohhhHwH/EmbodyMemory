@@ -1,0 +1,135 @@
+{
+    "entity_graph": {
+        "entities": {
+            "/": {
+                "name": "/",
+                "parent": "",
+                "children": [
+                    "/entity",
+                    "/temp"
+                ]
+            },
+            "/temp": {
+                "name": "temp",
+                "parent": "/",
+                "children": []
+            },
+            "/entity": {
+                "name": "entity",
+                "parent": "/",
+                "children": [
+                    "/entity/camera"
+                ]
+            },
+            "/entity/camera": {
+                "name": "camera",
+                "parent": "/entity",
+                "children": []
+            }
+        },
+        "skills": {
+            "/": [],
+            "/entity": [
+                "move:0:discretemovement",
+                "move:1:discretemovement",
+                "jumpmove:2:discretemovement",
+                "jumpmove:3:discretemovement",
+                "turn:4:discretemovement",
+                "turn:5:discretemovement",
+                "jump:6:discretemovement",
+                "look:7:discretemovement",
+                "look:8:discretemovement"
+            ]
+        },
+        "graph_structure": {
+            "name": "/",
+            "path": "/",
+            "skills": [],
+            "children": {
+                "robot": {
+                    "name": "robot",
+                    "path": "/robot",
+                    "skills": [
+                        "move:0:discretemovement",
+                        "move:1:discretemovement",
+                        "jumpmove:2:discretemovement",
+                        "jumpmove:3:discretemovement",
+                        "turn:4:discretemovement",
+                        "turn:5:discretemovement",
+                        "jump:6:discretemovement",
+                        "look:7:discretemovement",
+                        "look:8:discretemovement"
+                    ],
+                    "children": {}
+                }
+            }
+        }
+    },
+    "skill_specs": {
+        "skill_specs": {
+            "move:0:discretemovement": {
+                "description": "action 'move 1' and DiscreteMovement",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "move:1:discretemovement": {
+                "description": "action 'move -1' and DiscreteMovement",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "jumpmove:2:discretemovement": {
+                "description": "action 'jumpmove 1' and DiscreteMovement",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "jumpmove:3:discretemovement": {
+                "description": "action 'jumpmove -1' and DiscreteMovement",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "turn:4:discretemovement": {
+                "description": "action 'turn 1' and DiscreteMovement",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "turn:5:discretemovement": {
+                "description": "action 'turn -1' and DiscreteMovement",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "jump:6:discretemovement": {
+                "description": "action 'jump 1' and DiscreteMovement",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "look:7:discretemovement": {
+                "description": "action 'look 1' and DiscreteMovement",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "look:8:discretemovement": {
+                "description": "action 'look -1' and DiscreteMovement",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            }
+        }
+    }
+}

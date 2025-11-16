@@ -1,0 +1,15 @@
+{
+  "nodes": [
+    {"id": "e1", "event": "打开冰箱"},
+    {"id": "e2", "event": "取出牛奶"},
+    {"id": "e3", "event": "倒入杯子"},
+    {"id": "e4", "event": "加热牛奶"},
+    {"id": "e5", "event": "喝牛奶"}
+  ],
+  "edges": [
+    {"source": "e1", "target": "e2", "relation": "next"},
+    {"source": "e2", "target": "e3", "relation": "next"},
+    {"source": "e3", "target": "e4", "relation": "next"},
+    {"source": "e4", "target": "e5", "relation": "next"}
+  ]
+}

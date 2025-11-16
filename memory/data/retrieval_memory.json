@@ -1,0 +1,478 @@
+{
+    "nodes": [
+        {
+            "id": 0,
+            "event": "Root of the memory graph"
+        },
+        {
+            "id": 1,
+            "event": "Space node for / at /"
+        },
+        {
+            "id": 2,
+            "event": "Space node for robot at /robot"
+        },
+        {
+            "id": 3,
+            "event": "Skill: move:0:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 4,
+            "event": "Skill: move:1:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 5,
+            "event": "Skill: jumpmove:2:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 6,
+            "event": "Skill: jumpmove:3:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 7,
+            "event": "Skill: strafe:4:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 8,
+            "event": "Skill: strafe:5:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 9,
+            "event": "Skill: jumpstrafe:6:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 10,
+            "event": "Skill: jumpstrafe:7:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 11,
+            "event": "Skill: turn:8:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 12,
+            "event": "Skill: turn:9:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 13,
+            "event": "Skill: movenorth:10:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 14,
+            "event": "Skill: moveeast:11:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 15,
+            "event": "Skill: movesouth:12:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 16,
+            "event": "Skill: movewest:13:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 17,
+            "event": "Skill: jumpnorth:14:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 18,
+            "event": "Skill: jumpeast:15:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 19,
+            "event": "Skill: jumpsouth:16:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 20,
+            "event": "Skill: jumpwest:17:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 21,
+            "event": "Skill: jump:18:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 22,
+            "event": "Skill: look:19:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 23,
+            "event": "Skill: look:20:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 24,
+            "event": "Skill: attack:21:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 25,
+            "event": "Skill: use:22:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 26,
+            "event": "Skill: jumpuse:23:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 27,
+            "event": "Space node for / at /"
+        },
+        {
+            "id": 28,
+            "event": "Space node for robot at /robot"
+        },
+        {
+            "id": 29,
+            "event": "Skill: move:0:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 30,
+            "event": "Skill: move:1:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 31,
+            "event": "Skill: jumpmove:2:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 32,
+            "event": "Skill: jumpmove:3:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 33,
+            "event": "Skill: strafe:4:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 34,
+            "event": "Skill: strafe:5:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 35,
+            "event": "Skill: jumpstrafe:6:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 36,
+            "event": "Skill: jumpstrafe:7:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 37,
+            "event": "Skill: turn:8:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 38,
+            "event": "Skill: turn:9:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 39,
+            "event": "Skill: movenorth:10:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 40,
+            "event": "Skill: moveeast:11:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 41,
+            "event": "Skill: movesouth:12:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 42,
+            "event": "Skill: movewest:13:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 43,
+            "event": "Skill: jumpnorth:14:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 44,
+            "event": "Skill: jumpeast:15:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 45,
+            "event": "Skill: jumpsouth:16:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 46,
+            "event": "Skill: jumpwest:17:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 47,
+            "event": "Skill: jump:18:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 48,
+            "event": "Skill: look:19:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 49,
+            "event": "Skill: look:20:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 50,
+            "event": "Skill: attack:21:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 51,
+            "event": "Skill: use:22:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        },
+        {
+            "id": 52,
+            "event": "Skill: jumpuse:23:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+        }
+    ],
+    "edges": [
+        {
+            "source": 0,
+            "target": 1,
+            "relation": "next"
+        },
+        {
+            "source": 0,
+            "target": 27,
+            "relation": "next"
+        },
+        {
+            "source": 1,
+            "target": 2,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 3,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 4,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 5,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 6,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 7,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 8,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 9,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 10,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 11,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 12,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 13,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 14,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 15,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 16,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 17,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 18,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 19,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 20,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 21,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 22,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 23,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 24,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 25,
+            "relation": "next"
+        },
+        {
+            "source": 2,
+            "target": 26,
+            "relation": "next"
+        },
+        {
+            "source": 27,
+            "target": 28,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 29,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 30,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 31,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 32,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 33,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 34,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 35,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 36,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 37,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 38,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 39,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 40,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 41,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 42,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 43,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 44,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 45,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 46,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 47,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 48,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 49,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 50,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 51,
+            "relation": "next"
+        },
+        {
+            "source": 28,
+            "target": 52,
+            "relation": "next"
+        }
+    ]
+}

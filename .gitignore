@@ -1,0 +1,7 @@
+log
+.env
+
+*.pyc
+
+__pycache__/
+gte-Qwen2-7B-instruct/

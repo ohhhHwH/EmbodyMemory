@@ -1,0 +1,265 @@
+{
+  "scene_info": {
+    "entity_graph": {
+      "entities": {
+        "/": {
+          "name": "/",
+          "parent": "",
+          "children": [
+            "/robot",
+            "/chair",
+            "/courtyard"
+          ]
+        },
+        "/robot": {
+          "name": "robot",
+          "parent": "/",
+          "children": [
+            "/robot/move_base",
+            "/robot/camera"
+          ]
+        },
+        "/robot/move_base": {
+          "name": "move_base",
+          "parent": "/robot",
+          "children": []
+        },
+        "/robot/camera": {
+          "name": "camera",
+          "parent": "/robot",
+          "children": []
+        },
+        "/chair": {
+          "name": "chair",
+          "parent": "/",
+          "children": []
+        },
+        "/courtyard": {
+          "name": "courtyard",
+          "parent": "/",
+          "children": []
+        }
+      },
+      "skills": {
+        "/": [],
+        "/robot": [
+          "cap_space_move",
+          "cap_space_getpos",
+          "cap_save_rgb_image",
+          "cap_save_depth_image"
+        ],
+        "/robot/move_base": [],
+        "/robot/camera": [
+          "cap_camera_dep_rgb",
+          "cap_camera_info",
+          "cap_get_robot_pose",
+          "skl_detect_objs"
+        ],
+        "/chair": [
+          "cap_space_getpos"
+        ],
+        "/courtyard": [
+          "cap_space_getpos"
+        ]
+      },
+      "graph_structure": {
+        "name": "/",
+        "path": "/",
+        "skills": [],
+        "children": {
+          "robot": {
+            "name": "robot",
+            "path": "/robot",
+            "skills": [
+              "cap_space_move",
+              "cap_space_getpos",
+              "cap_save_rgb_image",
+              "cap_save_depth_image"
+            ],
+            "children": {
+              "move_base": {
+                "name": "move_base",
+                "path": "/robot/move_base",
+                "skills": [],
+                "children": {}
+              },
+              "camera": {
+                "name": "camera",
+                "path": "/robot/camera",
+                "skills": [
+                  "cap_camera_dep_rgb",
+                  "cap_camera_info",
+                  "cap_get_robot_pose",
+                  "skl_detect_objs"
+                ],
+                "children": {}
+              }
+            }
+          },
+          "chair": {
+            "name": "chair",
+            "path": "/chair",
+            "skills": [
+              "cap_space_getpos"
+            ],
+            "children": {}
+          },
+          "courtyard": {
+            "name": "courtyard",
+            "path": "/courtyard",
+            "skills": [
+              "cap_space_getpos"
+            ],
+            "children": {}
+          }
+        }
+      },
+      "exported_at": "2025-09-01T15:40:02.383844"
+    },
+    "skill_specs": {
+      "skill_specs": {
+        "cap_space_getpos": {
+          "description": "Get the position of the entity",
+          "type": "capability",
+          "input": null,
+          "output": "{'x': <class 'float'>, 'y': <class 'float'>, 'z': <class 'float'>}",
+          "dependencies": []
+        },
+        "cap_space_move": {
+          "description": "Move the entity to the given position",
+          "type": "capability",
+          "input": "{'x': <class 'float'>, 'y': <class 'float'>, 'z': <class 'float'>}",
+          "output": "{'success': <class 'bool'>}",
+          "dependencies": []
+        },
+        "cap_camera_rgb": {
+          "description": "Get the RGB image from the specified camera",
+          "type": "capability",
+          "input": "{'camera_name': <class 'str'>, 'timeout_sec': <class 'float'>}",
+          "output": "typing.Any",
+          "dependencies": []
+        },
+        "cap_camera_dep_rgb": {
+          "description": "Get the RGB and depth images from the specified camera",
+          "type": "capability",
+          "input": "{'camera_name': <class 'str'>, 'timeout_sec': <class 'float'>}",
+          "output": "typing.Tuple[typing.Any, typing.Any]",
+          "dependencies": []
+        },
+        "cap_camera_info": {
+          "description": "Get the camera info of the specified camera",
+          "type": "capability",
+          "input": "{'camera_name': <class 'str'>, 'timeout_sec': <class 'float'>}",
+          "output": "typing.Dict[str, typing.Any]",
+          "dependencies": []
+        },
+        "cap_save_rgb_image": {
+          "description": "Capture and save RGB image to file",
+          "type": "capability",
+          "input": "{'filename': <class 'str'>, 'camera_name': <class 'str'>, 'width': <class 'int'>, 'height': <class 'int'>}",
+          "output": "{'success': <class 'bool'>}",
+          "dependencies": []
+        },
+        "cap_save_depth_image": {
+          "description": "Capture and save depth image to file",
+          "type": "capability",
+          "input": "{'filename': <class 'str'>, 'camera_name': <class 'str'>, 'width': <class 'int'>, 'height': <class 'int'>}",
+          "output": "{'success': <class 'bool'>}",
+          "dependencies": []
+        },
+        "cap_get_robot_pose": {
+          "description": "Get the current pose of the robot",
+          "type": "capability",
+          "input": "{'timeout_sec': <class 'float'>}",
+          "output": "{'x': <class 'float'>, 'y': <class 'float'>, 'z': <class 'float'>, 'yaw': <class 'float'>}",
+          "dependencies": []
+        },
+        "cap_set_goal": {
+          "description": "Set the goal of the robot",
+          "type": "capability",
+          "input": "{'x': <class 'float'>, 'y': <class 'float'>, 'yaw': <class 'float'>}",
+          "output": "<class 'str'>",
+          "dependencies": []
+        },
+        "cap_stop_goal": {
+          "description": "Stop the goal of the robot",
+          "type": "capability",
+          "input": null,
+          "output": "<class 'str'>",
+          "dependencies": []
+        },
+        "cap_get_object_global_pos": {
+          "description": "Calculate the global position of an object based on robot pose, pixel coordinates, depth and camera parameters",
+          "type": "capability",
+          "input": "{'pixel_x': <class 'float'>, 'pixel_y': <class 'float'>, 'depth': <class 'float'>, 'camera_info': typing.Dict[str, typing.Any], 'robot_pose': {'x': <class 'float'>, 'y': <class 'float'>, 'z': <class 'float'>, 'yaw': <class 'float'>}}",
+          "output": "typing.Tuple[float, float, float]",
+          "dependencies": []
+        },
+        "cap_get_pose": {
+          "description": "Get the current pose of the robot",
+          "type": "capability",
+          "input": "[None, {'timeout_sec': <class 'float'>}]",
+          "output": "typing.Tuple[float, float, float]",
+          "dependencies": []
+        },
+        "cap_tf_transform": {
+          "description": "Transform the coordinates from the source frame to the target frame",
+          "type": "capability",
+          "input": "{'source_frame': <class 'str'>, 'target_frame': <class 'str'>, 'x': <class 'float'>, 'y': <class 'float'>, 'z': <class 'float'>}",
+          "output": "typing.Tuple[float, float, float]",
+          "dependencies": []
+        },
+        "skl_debug_test_skill": {
+          "description": "Test skill",
+          "type": "skill",
+          "input": "{'input_val': <class 'int'>}",
+          "output": "<class 'float'>",
+          "dependencies": []
+        },
+        "skl_detect_objs": {
+          "description": "Detect objects in the current view of the specified camera",
+          "type": "skill",
+          "input": "{'camera_name': <class 'str'>}",
+          "output": "typing.Dict[str, typing.Tuple[float, float, float]]",
+          "dependencies": []
+        },
+        "skl_move_to_goal": {
+          "description": "Move the robot to the goal",
+          "type": "skill",
+          "input": "{'goal_name': <class 'str'>}",
+          "output": "<class 'str'>",
+          "dependencies": []
+        },
+        "skl_move_to_ab_pos": {
+          "description": "Move the robot to the absolute position",
+          "type": "skill",
+          "input": "{'x': <class 'float'>, 'y': <class 'float'>, 'yaw': <class 'float'>}",
+          "output": "<class 'str'>",
+          "dependencies": []
+        },
+        "skl_move_to_rel_pos": {
+          "description": "Move the robot to the relative position",
+          "type": "skill",
+          "input": "{'dx': <class 'float'>, 'dy': <class 'float'>, 'dyaw': <class 'float'>}",
+          "output": "<class 'str'>",
+          "dependencies": []
+        },
+        "skl_update_map": {
+          "description": "Update the semantic map",
+          "type": "skill",
+          "input": "{'camera_name': <class 'str'>}",
+          "output": "<class 'bool'>",
+          "dependencies": []
+        }
+      },
+      "exported_at": "2025-09-01T15:40:02.383912"
+    },
+    "exported_at": "2025-09-01T15:40:02.383914"
+  },
+  "action_example": "from DeepEmbody.uapi.specs.types import EntityPath\nfrom DeepEmbody.uapi.runtime.action import action, EOS_TYPE_ActionResult, get_runtime, action_print\n\n\n@action\ndef debug_test_action(a: EntityPath) -> EOS_TYPE_ActionResult:\n    runtime = get_runtime()\n    A = runtime.get_graph().get_entity_by_path(a)\n    result = A.skl_debug_test_skill(input_val=1)\n    action_print(f\"debug test action result: {result}\")\n    return EOS_TYPE_ActionResult.SUCCESS\n\n@action\ndef move_and_capture_action(a: EntityPath, b: EntityPath) -> EOS_TYPE_ActionResult:\n    runtime = get_runtime()\n    A = runtime.get_graph().get_entity_by_path(a)\n    B = runtime.get_graph().get_entity_by_path(b)\n\n    if A is None:\n        action_print(f\"entity A not found at path: {a}\")\n        return EOS_TYPE_ActionResult.FAILURE\n    if B is None:\n        action_print(f\"entity B not found at path: {b}\")\n        return EOS_TYPE_ActionResult.FAILURE\n\n    # Get robot pose before movement\n    # action_print(\"getting initial robot pose...\")\n    # initial_pose = A.cap_space_getpos()\n    # if initial_pose is None:\n    #     action_print(\"failed to get initial robot pose\")\n    #     return EOS_TYPE_ActionResult.FAILURE\n    # action_print(f\"initial pose: {initial_pose}\")\n\n    # Capture initial images\n    action_print(\"capturing initial images...\")\n    A.cap_save_rgb_image(\n        filename=\"./examples/demo1/initial_rgb.jpg\",\n        camera_name=\"robot_camera\",\n        width=640,\n        height=480,\n    )\n    A.cap_save_depth_image(\n        filename=\"./examples/demo1/initial_depth.npy\",\n        camera_name=\"robot_camera\",\n        width=640,\n        height=480,\n    )\n\n    # Move to target\n    b_pos = B.cap_space_getpos()\n    action_print(f\"moving to position: {b_pos}\")\n    result = A.cap_space_move(x=b_pos[\"x\"], y=b_pos[\"y\"], z=b_pos[\"z\"])\n    if not result[\"success\"]:\n        action_print(f\"move failed: {result}\")\n        return EOS_TYPE_ActionResult.FAILURE\n\n    # Get robot pose after movement\n    # action_print(\"getting final robot pose...\")\n    # final_pose = A.cap_space_getpos()\n    # if final_pose is None:\n    #     action_print(\"failed to get final robot pose\")\n    #     return EOS_TYPE_ActionResult.FAILURE\n    # action_print(f\"final pose: {final_pose}\")\n\n    # Capture final images\n    action_print(\"capturing final images...\")\n    A.cap_save_rgb_image(\n        filename=\"./examples/demo1/final_rgb.jpg\",\n        camera_name=\"robot_camera\",\n        width=640,\n        height=480,\n    )\n    A.cap_save_depth_image(\n        filename=\"./examples/demo1/final_depth.npy\",\n        camera_name=\"robot_camera\",\n        width=640,\n        height=480,\n    )\n\n    action_print(\"move and capture action completed successfully!\")\n    return EOS_TYPE_ActionResult.SUCCESS",
+  "user_request": "do nothing",
+  "llm_response": "```json\n{\n    \"action_code\": \"from DeepEmbody.uapi.specs.types import EntityPath\\nfrom DeepEmbody.uapi.runtime.action import action, EOS_TYPE_ActionResult, get_runtime, action_print\\n\\n\\n@action\\ndef do_nothing_action() -> EOS_TYPE_ActionResult:\\n    \\\"\\\"\\\"\\n    An action that does nothing - simply returns success without performing any operations.\\n    This is useful for testing or when no action is required but a valid action function is needed.\\n    \\\"\\\"\\\"\\n    runtime = get_runtime()\\n    action_print(\\\"Executing do_nothing action - no operations performed\\\")\\n    action_print(\\\"Action completed successfully without doing anything\\\")\\n    return EOS_TYPE_ActionResult.SUCCESS\",\n    \"action_args\": {},\n    \"task_description\": \"This action performs no operations and simply returns success. It is designed to fulfill the user requirement of 'do nothing' by:\\n1. Getting the runtime instance\\n2. Printing a message indicating that no operations are being performed\\n3. Returning SUCCESS status without executing any movement, capture, or detection skills\\n4. This serves as a placeholder or test action when no actual task execution is required\"\n}\n```",
+  "generated_action_code": "from DeepEmbody.uapi.specs.types import EntityPath\nfrom DeepEmbody.uapi.runtime.action import action, EOS_TYPE_ActionResult, get_runtime, action_print\n\n\n@action\ndef do_nothing_action() -> EOS_TYPE_ActionResult:\n    \"\"\"\n    An action that does nothing - simply returns success without performing any operations.\n    This is useful for testing or when no action is required but a valid action function is needed.\n    \"\"\"\n    runtime = get_runtime()\n    action_print(\"Executing do_nothing action - no operations performed\")\n    action_print(\"Action completed successfully without doing anything\")\n    return EOS_TYPE_ActionResult.SUCCESS",
+  "action_args": {},
+  "timestamp": "2025-09-01 15:40:23"
+}
