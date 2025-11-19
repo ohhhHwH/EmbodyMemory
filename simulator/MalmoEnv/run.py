@@ -258,7 +258,7 @@ if __name__ == '__main__':
     env = malmoenv.make()
     
     # 添加 动作过滤器 所有动作都在这个范围内
-    action_filter = {"move", "turn", "jump", "look", "jumpmove", "attack"}
+    action_filter = {"move", "turn", "jump", "look", "jumpmove", "attack", "chat"}
     # action_filter = {"move", "jumpmove", "strafe", "jumpstrafe", "turn", "movenorth", "moveeast",
     #                 "movesouth", "movewest", "jumpnorth", "jumpeast", "jumpsouth", "jumpwest",
     #                 "jump", "look", "attack", "use", "jumpuse"}

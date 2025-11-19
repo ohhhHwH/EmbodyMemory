@@ -32,8 +32,12 @@
             </AgentStart>
             <AgentHandlers>
                 <DiscreteMovementCommands/>
+                
                 <!-- <ContinuousMovementCommands turnSpeedDegs="30"/> -->
                 <MissionQuitCommands/>
+
+                <ChatCommands/>
+
                 <ObservationFromNearbyEntities>
                     <Range name="entities" xrange="8" yrange="2" zrange="6" />
                 </ObservationFromNearbyEntities>

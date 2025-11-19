@@ -346,8 +346,13 @@ class Env:
             comms.send_message(self.client_socket, step_message.encode())
             if withturnkey:
                 comms.send_message(self.client_socket, self.turn_key.encode())
-                
-            time.sleep(0.05)  # give server a bit of time to process
+
+            self.render()
+            # # 发送 chat 指令使其更新 obs info 等
+            step_message = "<Step0>chat</Step0 >"
+            comms.send_message(self.client_socket, step_message.encode())
+            if withturnkey:
+                comms.send_message(self.client_socket, self.turn_key.encode())
             
             obs = comms.recv_message(self.client_socket)
 
