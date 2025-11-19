@@ -321,9 +321,12 @@ class Env:
         step_message = "<Step" + str(self.step_options) + ">" + \
                        action_str + \
                        "</Step" + str(self.step_options) + " >"
-
-    def step(self, action):
-        """gym api step"""
+                       
+    def chat_update(self):
+        # # 发送 chat 指令使其更新 obs info 等
+        time.sleep(1)
+        self.render()
+        
         obs = None
         reward = None
         info = None
@@ -334,26 +337,15 @@ class Env:
         while not self.done and \
                 ((obs is None or len(obs) == 0) or
                  (withinfo and info is None) or turn):
-            action_str = self.action_space[action]
-            if action_str == 'look 1' and self.view_angle < 2:
-                self.view_angle += 1
-            elif action_str == 'look -1' and self.view_angle > -2:
-                self.view_angle -= 1
+
             step_message = "<Step" + str(self.step_options) + ">" + \
-                           action_str + \
+                           "chat" + \
                            "</Step" + str(self.step_options) + " >"
-            print("step message: " + step_message)
+
             comms.send_message(self.client_socket, step_message.encode())
             if withturnkey:
                 comms.send_message(self.client_socket, self.turn_key.encode())
 
-            self.render()
-            # # 发送 chat 指令使其更新 obs info 等
-            step_message = "<Step0>chat</Step0 >"
-            comms.send_message(self.client_socket, step_message.encode())
-            if withturnkey:
-                comms.send_message(self.client_socket, self.turn_key.encode())
-            
             obs = comms.recv_message(self.client_socket)
 
             reply = comms.recv_message(self.client_socket)
@@ -385,6 +377,61 @@ class Env:
 
         return obs, reward, self.done, info
 
+    def step(self, action):
+        """gym api step"""
+        obs = None
+        reward = None
+        info = None
+        turn = True
+        withturnkey = self.step_options < 2
+        withinfo = self.step_options == 0 or self.step_options == 2
+
+        while not self.done and \
+                ((obs is None or len(obs) == 0) or
+                 (withinfo and info is None) or turn):
+            action_str = self.action_space[action]
+            if action_str == 'look 1' and self.view_angle < 2:
+                self.view_angle += 1
+            elif action_str == 'look -1' and self.view_angle > -2:
+                self.view_angle -= 1
+            step_message = "<Step" + str(self.step_options) + ">" + \
+                           action_str + \
+                           "</Step" + str(self.step_options) + " >"
+            print("step message: " + step_message)
+            comms.send_message(self.client_socket, step_message.encode())
+            if withturnkey:
+                comms.send_message(self.client_socket, self.turn_key.encode())
+
+            obs = comms.recv_message(self.client_socket)
+
+            reply = comms.recv_message(self.client_socket)
+            reward, done, sent = struct.unpack('!dbb', reply)
+            self.done = done == 1
+            if withinfo:
+                info = comms.recv_message(self.client_socket).decode('utf-8')
+
+            turn_key = comms.recv_message(self.client_socket).decode('utf-8') if withturnkey else ""
+            # print("[" + str(self.role) + "] TK " + turn_key + " self.TK " + str(self.turn_key))
+            if turn_key != "":
+                if sent != 0:
+                    turn = False
+                # Done turns if: turn = self.turn_key == turn_key
+                self.turn_key = turn_key
+            else:
+                turn = sent == 0
+
+            if (obs is None or len(obs) == 0) or turn:
+                time.sleep(0.1)
+            obs = np.frombuffer(obs, dtype=np.uint8)
+
+        if self.reshape:
+            if obs.size == 0:
+                obs = np.zeros((self.height, self.width, self.depth), dtype=np.uint8)
+            else:
+                obs = obs.reshape((self.height, self.width, self.depth)).astype(np.uint8)
+        self.last_obs = obs
+        return self.chat_update()
+        
     def close(self):
         """gym api close"""
         try:
