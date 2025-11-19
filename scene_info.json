@@ -36,9 +36,7 @@
                 "jumpmove:3:discretemovement",
                 "turn:4:discretemovement",
                 "turn:5:discretemovement",
-                "jump:6:discretemovement",
-                "look:7:discretemovement",
-                "look:8:discretemovement"
+                "jump:6:discretemovement"
             ]
         },
         "graph_structure": {
@@ -56,9 +54,7 @@
                         "jumpmove:3:discretemovement",
                         "turn:4:discretemovement",
                         "turn:5:discretemovement",
-                        "jump:6:discretemovement",
-                        "look:7:discretemovement",
-                        "look:8:discretemovement"
+                        "jump:6:discretemovement"
                     ],
                     "children": {}
                 }
@@ -111,20 +107,6 @@
             },
             "jump:6:discretemovement": {
                 "description": "action 'jump 1' and DiscreteMovement",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "look:7:discretemovement": {
-                "description": "action 'look 1' and DiscreteMovement",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "look:8:discretemovement": {
-                "description": "action 'look -1' and DiscreteMovement",
                 "type": "capability",
                 "input": null,
                 "output": null,

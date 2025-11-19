@@ -33,16 +33,17 @@ import json
 import ast
 
 from dotenv import load_dotenv
-
+import xml.etree.ElementTree as ET
 
 # 找到 brain 包
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from brain.brain_deepseek import *
+from memory.memory import *
 
-import xml.etree.ElementTree as ET
+
     
-
+# 加入 LLM
 system_prompt_en_mc = '''
     as a player in minecraft, you will answer user queries and use tools to get information.
     you will use the tools provided by the server to get information.
@@ -64,12 +65,19 @@ system_prompt_en_mc = '''
     never make up tools or parameters that are not in.
 '''
 
+obj_prompt_en_mc = '''
+在MC中的一个玩家，你将回答当前场景中的物体位置与其坐标信息，
+根据环境的信息判断除分类器以外的物体的坐标及其属性，并将其打包成一个 json 格式返回
 
-# 加入 memory
+    as a player in minecraft, you will answer questions about the positions and coordinates of objects in the current scene.
+    you will determine the coordinates and attributes of objects other than the classifier based on the information in the environment,
+    and return them packaged in a json format.
+    
 
+'''
 
-# 新增：从 mission xml 中解析 ObservationFromGrid 的 min/max
-def parse_observation_grid(xml_text, grid_name=None):
+# 从 mission xml 中解析 ObservationFromGrid 的 min/max
+def get_observation_grid_range(xml_text, grid_name=None):
     """
     返回第一个匹配的 grid 的信息：{'name': str, 'min': (x,y,z), 'max': (x,y,z)}
     如果未找到返回 None。
@@ -104,7 +112,117 @@ def parse_observation_grid(xml_text, grid_name=None):
         return {'name': name, 'min': (xmin, ymin, zmin), 'max': (xmax, ymax, zmax)}
     return None
 
+# 加入 memory
+# 根据info来更新 memory
+# 将所有可用技能转换成 json 格式 == scene_info
+def mc_cap2scene_info(actions, actions_type, grid_info):
+    skills = []
+    skill_specs = {}
 
+    # 遍历动作，生成 capability 名称
+    for i, (act, act_type) in enumerate(zip(actions, actions_type, )):
+        if act is None:
+            act = f"action_{i}"
+        act_clean = str(act).strip()
+        base = act_clean.split()[0] if len(act_clean.split()) > 0 else f"action{i}"
+        # 规范化名称："`Action index`:`action`:`Action Type`"
+        
+        # cap_name = f"{base}:{i}:{act_type}".replace(" ", "_").replace("-", "neg").replace(".", "_").lower()
+        cap_name = f"{base}:{i}:{act_type}".lower()
+        
+        # 保证唯一
+        if cap_name in skills:
+            suffix = 1
+            while f"{cap_name}_{suffix}" in skills:
+                suffix += 1
+            cap_name = f"{cap_name}_{suffix}"
+        skills.append(cap_name)
+
+        # 生成简单的 skill_spec
+        skill_specs[cap_name] = {
+            "description": f"action '{act_clean}' and {act_type}",
+            "type": "capability",
+            "input": None,
+            "output": None,
+            "dependencies": []
+        }
+
+    # 构造 entity_graph（简化版，与 scene_data.json 风格一致）
+    entity_graph = {
+        "entities": {
+            "/": {
+                "name": "/",
+                "parent": "",
+                "children": ["/entity"]
+            },
+            "/entity": {
+                "name": "entity",
+                "parent": "/",
+                "children": ["/entity/camera"]
+            },
+            "/entity/camera": {
+                "name": "camera",
+                "parent": "/entity",
+                "children": []
+            }
+        },
+        "skills": {
+            "/": [],
+            "/entity": skills
+        },
+        "graph_structure": {
+            "name": "/",
+            "path": "/",
+            "skills": [],
+            "children": {
+                "robot": {
+                    "name": "robot",
+                    "path": "/robot",
+                    "skills": skills,
+                    "children": {}
+                }
+            }
+        }
+    }
+
+    scene_info = {
+        "entity_graph": entity_graph,
+        "skill_specs": {"skill_specs": skill_specs}
+    }
+    
+    print(scene_info)
+    # 写入 scene_info.json
+    with open("scene_info.json", "w") as f:
+        json.dump(scene_info, f, indent=4)
+    
+
+    return scene_info
+
+def info2json(info):
+    # TODO
+    update_info = {}
+    
+    # 将 info 字符串 转成 info 字典
+    parsed_info = {}
+    if info:
+        if isinstance(info, dict):
+            parsed_info = info
+        else:
+            try:
+                parsed_info = json.loads(info)
+            except Exception:
+                try:
+                    parsed_info = ast.literal_eval(info)
+                except Exception:
+                    parsed_info = {}
+    info = parsed_info
+    
+    
+    
+    # 打印出 info 字典的 around 信息 - 需要跟 xml 中 ObservationFromGrid 的 name 一致
+    info_board = info.get('around', 'N/A')
+    
+    return update_info
 
 if __name__ == '__main__':
         
@@ -141,8 +259,7 @@ if __name__ == '__main__':
              action_filter=action_filter,
              resync=args.resync)
     
-    # 解析 observation grid
-    grid_info = parse_observation_grid(xml, grid_name="around")
+    
     
     
     # 在当前目录下创建log文件夹，并获取当前时间作为log文件名
@@ -172,17 +289,20 @@ if __name__ == '__main__':
         f.write('env.actions ' + str(env.actions) + '\n')
         # 写入多行回车
         f.write('\n\n\n\n')
-    
-    # # 删除 log 文件
-    # if log_file.exists():
-    #     log_file.unlink()
-    #     print(f"Deleted existing log file: {log_file}")
-    # # 调试退出
-    # exit(0)
-    
+
     load_dotenv()
     api_key = os.getenv("API_KEY")
     client = MCPClient(api_key=api_key)
+    
+    # ADD:获取当前环境信息并更新 - 聚类，将环境中能聚在一起的物体整合成一个 box 迁出一个索引 - 不对exfilter中的东西进行建图or只对filter中的东西建图
+    # 解析 observation grid
+    grid_info = get_observation_grid_range(xml, grid_name="around")
+    # 排除的物体
+    exfilter = {"air", "water", "leaves2", "stone", "grass", "dirt", "sand"}
+    
+    cs = CurrentState()
+    skills_memory = mc_cap2scene_info(env.actions, env.actions_type, grid_info)
+    cs.init_Scene(skills_memory)
 
     for i in range(args.episodes):
         print("reset " + str(i))
@@ -212,11 +332,18 @@ if __name__ == '__main__':
             if (i + 1) % 5 == 0:
                 print()
                 
+        # 获取所有可用actions, 生成 ["0:move 1", "1:move -1"]
+        # all_actions = [act for act in env.action_space]
+        # 'the available actions:\n0:move 1 [DiscreteMovement]\n1:move -1 [DiscreteMovement]\n2:turn 1 [DiscreteMovement]\n3:turn -1 [DiscreteMovement]\n4:jump 1 [DiscreteMovement]\n5:look 1 [DiscreteMovement]\n6:look -1 [DiscreteMovement]\n7:attack 1 [DiscreteMovement]\n8:use 1 [DiscreteMovement]\n9:jump 1 [ContinuousMovement]\n10:jump 0 [ContinuousMovement]\n11:move 1 [ContinuousMovement]\n12:move -1 [ContinuousMovement]\n13:turn 1 [ContinuousMovement]\n14:turn -1 [ContinuousMovement]\n15:attack 1 [ContinuousMovement]\n16:attack 0 [ContinuousMovement]\n17:use 1 [ContinuousMovement]\n18:use 0 [ContinuousMovement]'
         actions_prompt = "the available actions:\n" + ", ".join(f"{i}:{act} [{act_type}]" for i, (act, act_type) in enumerate(zip(env.actions, env.actions_type)))
         
         prompt = system_prompt_en_mc + actions_prompt
         
         prompt += f'\n the observation grid info around player is: {grid_info}\n'
+        
+        # 通过 memory 进行检索
+        retrieval_Request = f"Based on the current scene, {user_request}"
+        retrieval_Results = cs.retrieve(retrieval_Request, topk=5)
         
         # 通过 llm 生成一系列动作
         action_sequence, messages = client.query_request(query=user_request,
@@ -232,8 +359,13 @@ if __name__ == '__main__':
             action = 0
             print("debug Generated action sequence:", action_sequence)
             
+            
+            
             if action_sequence is None or len(action_sequence) == 0:
                 print("No action sequence generated, exiting the episode.")
+                
+                # TODO : 检测 任务 是否完成 如果完成，总结并作为一个 长期情景节点 保存
+                
                 break
             
             # 遍历 action_sequence
@@ -259,8 +391,6 @@ if __name__ == '__main__':
                     cur_act_msg += f"Skipped invalid action {act}\n"
                     continue
                 
-                
-                
                 env.render()
                 action = env.action_space.sample()
                 obs, reward, done, info = env.step(action)
@@ -281,28 +411,22 @@ if __name__ == '__main__':
                 print("obs: " + str(obs))
                 print("info" + info)
                 
+
                 
+                                
+                # 将info 转换成统一的json格式
+                info = info2json(info, exfilter)
                 
-                # 将 info 字符串 转成 info 字典
-                parsed_info = {}
-                if info:
-                    if isinstance(info, dict):
-                       parsed_info = info
-                    else:
-                        try:
-                            parsed_info = json.loads(info)
-                        except Exception:
-                            try:
-                                parsed_info = ast.literal_eval(info)
-                            except Exception:
-                                parsed_info = {}
-                info = parsed_info
+                # 根据 info 更新 memory - update_Scene
+                cs.update_Scene(info, exfilter)
                 
-                # 打印出 info 字典的 around 信息 - 需要跟 xml 中 ObservationFromGrid 的 name 一致
-                info_board = info.get('around', 'N/A')
+                # retrieve from memory
+                retrieval_Request = f"Based on the current scene, {user_request}"
+                retrieval_Results = cs.retrieve(retrieval_Request, topk=5)
+                print("Retrieval Results:", retrieval_Results)
                 
-                
-                cur_act_msg += f"action {act_str}, info {info}\n"
+                # 生成 下次动作的提示词
+                cur_act_msg += f"action {act_str}, info {retrieval_Results}\n"
                 
                 if args.saveimagesteps > 0 and steps % args.saveimagesteps == 0:
                     h, w, d = env.observation_space.shape

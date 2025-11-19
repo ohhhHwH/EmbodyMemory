@@ -28,7 +28,7 @@
         <AgentSection mode="Survival">
             <Name>Agent0</Name>
             <AgentStart>
-                  <Placement x="-203.5" y="81.0" z="217.5"/>
+                  <Placement x="-174.5" y="63.0" z="250.5"/>
             </AgentStart>
             <AgentHandlers>
                 <DiscreteMovementCommands/>
@@ -39,8 +39,8 @@
                 </ObservationFromNearbyEntities>
                 <ObservationFromGrid>
                     <Grid name="around">
-                        <min x="-1" y="-1" z="-1" />
-                        <max x="1" y="-1" z="1" />
+                        <min x="-2" y="-2" z="-2" />
+                        <max x="2" y="2" z="2" />
                     </Grid>
                 </ObservationFromGrid>
                 <VideoProducer want_depth="true">

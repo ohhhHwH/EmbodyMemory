@@ -129,6 +129,53 @@ def info_observation_grid_range(around, grid_range):
         layer_2d = []
         for x in range(x_size):
             row = layer[x * z_size:(x + 1) * z_size]
+            # 将 row 翻转
+            row = row[::-1]
+            layer_2d.append(row)
+        # 打印 layer_2d
+        # print("layer_2d:", layer_2d)
+        
+        # 在前面插入
+        around_layers.append(layer_2d)
+        
+    return around_layers
+
+def info_observation_grid_range_reserve(around, grid_range):
+        # 根据 grid_range 对 around 进行处理，将 y 轴上下翻转
+    
+    if around is None or grid_range is None:
+        return None
+    
+    x_min, y_min, z_min = grid_range['min']
+    x_max, y_max, z_max = grid_range['max']
+    
+    # 将 around 划分成 y 轴的多个层
+    y_layers = y_max - y_min + 1
+    x_size = x_max - x_min + 1
+    z_size = z_max - z_min + 1
+    layer_size = x_size * z_size
+    
+    around_layers = []
+    for y in range(y_layers):
+        start_idx = y * layer_size
+        end_idx = start_idx + layer_size
+        layer = around[start_idx:end_idx]
+        
+        
+        # 将 layer 转换 floor3x3: ['lava', 'obsidian', 'obsidian', 'lava', 'obsidian', 'obsidian', 'lava', 'obsidian', 'obsidian']
+        '''
+        increasing z
+        |       0 1 2
+        |       3 4 5
+        |       6 7 8 
+        |-----> increasing x
+        '''
+        # 切分 x z 层 为二维列表
+        layer_2d = []
+        for x in range(x_size):
+            row = layer[x * z_size:(x + 1) * z_size]
+            # 将 row 翻转
+            row = row[::-1]
             layer_2d.insert(0, row)
         # 打印 layer_2d
         # print("layer_2d:", layer_2d)
@@ -233,7 +280,9 @@ if __name__ == '__main__':
     # 在当前目录下创建log文件夹，并获取当前时间作为log文件名
     log_dir = Path('log')
     log_dir.mkdir(exist_ok=True)
-    log_file = log_dir / f'action_{time.strftime("%Y%m%d_%H%M%S")}.log'
+    # log_file = log_dir / f'action_{time.strftime("%Y%m%d_%H%M%S")}.log'
+    log_file = log_dir / f'action.log'
+
 
     # 清空action.log写入实验信息
     with open(log_file, 'a') as f:
@@ -343,7 +392,7 @@ if __name__ == '__main__':
             info = eval(info)
             # 打印出 info 字典的 around 信息
             around = info.get('around', None)
-            around = info_observation_grid_range(around, around_range)
+            around = info_observation_grid_range_reserve(around, around_range)
             print("info around: " )
             for layer in around:
                 print(layer, "len:", len(layer))

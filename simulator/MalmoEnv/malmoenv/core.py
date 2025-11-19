@@ -346,6 +346,9 @@ class Env:
             comms.send_message(self.client_socket, step_message.encode())
             if withturnkey:
                 comms.send_message(self.client_socket, self.turn_key.encode())
+                
+            time.sleep(0.05)  # give server a bit of time to process
+            
             obs = comms.recv_message(self.client_socket)
 
             reply = comms.recv_message(self.client_socket)
