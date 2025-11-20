@@ -400,8 +400,8 @@ def entity_pos2obj_pos(entity, obj):
     e_yaw = entity.get('yaw', 0)
     
     # 获取 obj 的深度
-    o_x_mid = obj.get('x_mid', 0)
-    o_y_mid = obj.get('y_mid', 0)
+    o_x = obj.get('x', 0)
+    o_y = obj.get('y', 0)
     o_depth = obj.get('depth', 0)
     
     
@@ -414,8 +414,8 @@ def entity_pos2obj_pos(entity, obj):
     fov_horizontal = 180
     fov_vertical = 90
     
-    angle_offset_x = (o_x_mid - img_width / 2) / (img_width / 2) * (fov_horizontal / 2)
-    angle_offset_y = (o_y_mid - img_height / 2) / (img_height / 2) * (fov_vertical / 2)
+    angle_offset_x = (o_x - img_width / 2) / (img_width / 2) * (fov_horizontal / 2)
+    angle_offset_y = (o_y - img_height / 2) / (img_height / 2) * (fov_vertical / 2)
     # 计算物体的实际距离（格数）
     distance_blocks = depth_to_blocks(o_depth)
     # 计算物体的绝对位置
@@ -658,7 +658,7 @@ def main():
 
 def test_entity_pos2obj_pos():
     entity = {'x': -211, 'y': 63, 'z': 226, 'yaw': 90}
-    obj = {'x_mid': 720, 'y_mid': 480, 'depth': 24}
+    obj = {'x': 720, 'y': 480, 'depth': 24}
     o_x, o_y, o_z = entity_pos2obj_pos(entity, obj)
     print(f"Calculated object position: x={o_x}, y={o_y}, z={o_z}")
 

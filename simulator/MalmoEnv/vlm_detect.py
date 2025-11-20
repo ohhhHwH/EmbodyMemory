@@ -16,6 +16,9 @@ import base64
 import time
 from openai import OpenAI
 
+# 引入cv2
+import cv2
+
 prompt_qwen3_object_detection_en = """
 you. Given an image, identify all objects present in the image and provide their details in a structured JSON format.
 Please analyze the image and return a JSON array where each element contains the following fields for each detected.
@@ -34,24 +37,48 @@ Provide only the JSON array as the output without any additional text or explana
 """
 
 prompt_qwen3_object_detection_cn = """
-你是《我的世界》这个像素游戏中图像物体检测的专家。给定一张图片，识别图像中存在的物体（最多10个），并以结构化的JSON格式提供它们的详细信息。
-请分析图片并返回一个JSON数组，其中每个元素包含以下字段，表示每个检测到的物体：
-- "id"：检测到的物体的唯一标识符。
-- "label"：检测到的物体的名称（例如：“树干”、“树叶”）。
-- "bounding_box"：包含检测到的物体周围边界框坐标的对象，具有以下字段：
-  - "x_min"：边界框左上角的x坐标。
-  - "y_min"：边界框左上角的y坐标。
-  - "x_max"：边界框右下角的x坐标。
-  - "y_max"：边界框右下角的y坐标。
+你是《我的世界》这个像素游戏中图像物体检测的专家。给定一张图片,识别图像中存在的物体,识别物体不超过10个且区域不能重叠,并以结构化的JSON格式提供它们的详细信息。
+请分析图片并返回一个JSON数组,其中每个元素包含以下字段,表示每个检测到的物体:
+- "id":检测到的物体的唯一标识符。
+- "label":检测到的物体的名称（例如:“树干”、“树叶”）。
+- "bounding_box":包含检测到的物体周围边界框坐标的对象,具有以下字段:
+  - "x_min":边界框左上角的x坐标。
+  - "y_min":边界框左上角的y坐标。
+  - "x_max":边界框右下角的x坐标。
+  - "y_max":边界框右下角的y坐标。
 - "nearby:": 一个包含与检测到的物体接近的物体标签的列表。
-仅提供JSON数组作为输出，不要添加任何额外的文本或解释。
-《我的世界》中的常见物体标签包括但不限于：树干、树叶、水、沙子、草地、泥土、石头、天空、云、花、矿石、冰、雪、装饰物、植物等。
+仅提供JSON数组作为输出,不要添加任何额外的文本或解释。
+《我的世界》中的常见物体标签包括但不限于:树干、树叶、水、沙子、草地、泥土、石头、天空、云、花、矿石、冰、雪、装饰物、植物等。
+"""
+
+prompt_object_detection_cn = """
+你是《我的世界》这个像素游戏中图像物体检测的专家。给定一张图片,识别图像中存在的物体,并以结构化的JSON格式提供它们的详细信息。
+请分析图片并返回一个JSON数组,其中每个元素包含以下字段,表示每个检测到的物体:
+- "id":检测到的物体的唯一标识符。
+- "label":检测到的物体的名称（例如:“树干”、“树叶”,并用英文表示）。
+- "x":检测到的物体中心点在图像的占比(0-1之间的浮点数)
+- "y":检测到的物体中心点在图像的占比(0-1之间的浮点数)
+- "nearby:": 一个包含与检测到的物体接近的物体标签的列表。
+仅提供JSON数组作为输出,不要添加任何额外的文本或解释。
+《我的世界》中的常见物体标签包括但不限于:树干、树叶、水、沙子、草地、泥土、石头、花、矿石、冰、雪、装饰物、植物等。
+"""
+
+prompt_object_detection_en = """
+you are an expert in object detection within images from the pixelated game "Minecraft". Given an image, identify all objects present in the image, ensuring that no more than 10 objects are detected and that their regions do not overlap. Provide their details in a structured JSON format.
+Please analyze the image and return a JSON array where each element contains the following fields for each detected object:
+- "id": A unique identifier for the detected object.
+- "label": The name of the detected object (e.g. "tree", "leaves").
+- "x": The x-coordinate of the center of the detected object as a proportion of the image width (a float between 0 and 1).
+- "y": The y-coordinate of the center of the detected object as a proportion of the image height (a float between 0 and 1).
+- "nearby:": A list of labels of objects that are in close proximity to the detected object.
+Provide only the JSON array as the output without any additional text or explanation.
+Minecraft commonly features objects such as tree trunks, leaves, water, sand, grass, dirt, stone, sky, clouds, flowers, ores, ice, snow, decorations, and plants.
 """
     
 def test1():
-    # 1. 首先将本地图片上传到临时存储或OSS，获取URL
+    # 1. 首先将本地图片上传到临时存储或OSS,获取URL
     # 这里假设已经获取到图片URL
-    image_url = "https://gitee.com/hou-yunlong817/imagehosting/blob/master/malmo_obs.png"
+    image_url = "https://gitee.com/hou-yunlong817/imagehosting/blob/master/malmo_rgb.png"
 
     client = OpenAI(
         api_key=os.getenv("QWEN_API_KEY"),
@@ -73,9 +100,9 @@ def test1():
     # 测试你的URL
     image_url = "https://gitee.com/hou-yunlong817/imagehosting/raw/master/malmo_depth.png"
     if check_image_url(image_url):
-        print("✅ URL有效，可以继续调用API")
+        print("✅ URL有效,可以继续调用API")
     else:
-        print("❌ URL无效，请检查")
+        print("❌ URL无效,请检查")
 
     response = client.chat.completions.create(
         model="qwen3-vl-plus",  # 使用Qwen3-VL-Plus模型
@@ -99,11 +126,11 @@ def test2():
             return base64.b64encode(image_file.read()).decode('utf-8')
 
     # 假设你的图片在当前目录下的obs.png
-    image_path = "malmo_obs.png"
+    image_path = "malmo_rgb.png"
     base64_image = image_to_base64(image_path)
 
     # 2. 构建Data URL格式
-    # 根据图片类型选择正确的mime类型，PNG图片使用image/png
+    # 根据图片类型选择正确的mime类型,PNG图片使用image/png
     data_url = f"data:image/png;base64,{base64_image}"  # [[8]]
 
     client = OpenAI(
@@ -146,7 +173,7 @@ color_dir = {
 def draw_boxes_from_json():
     # 读取detection_output.json并绘制边框
     input_img = "malmo_rgb.png"       # 替换为你的图片路径
-    output_img = "malmo_obs_annotated.png"
+    output_img = "malmo_rgb_annotated.png"
     json_path = "detection_output.json"   # 替换为你的JSON路径
     
     # 根据 img 实际尺寸设置参考尺寸（图片右下角坐标）
@@ -201,7 +228,7 @@ def draw_boxes_from_json():
 def draw_boxes_from_json_KIMI():
     # 读取detection_output_kimi.json并绘制边框
     input_img = "malmo_rgb.png"       # 替换为你的图片路径
-    output_img = "malmo_obs_annotated.png"
+    output_img = "malmo_rgb_annotated.png"
     json_path = "detection_output_kimi.json"   # 替换为你的JSON路径
     
     # 根据 img 实际尺寸设置参考尺寸（图片右下角坐标）
@@ -268,16 +295,138 @@ def draw_boxes_from_json_KIMI():
         # 保存带有边框的图片
         img.save(output_img)
         print(f"已保存带有边框的图片到 {output_img}")
+   
+def draw_boxes_from_json_KIMIV2(input_img="malmo_rgb.png", output_img="malmo_rgb_annotated.png", json_path="detection_output_kimi.json"):
+    with Image.open(input_img) as img:
+        ref_width, ref_height = img.size
+   # 使用cv2绘制中心点
+    image = cv2.imread(input_img)
+    # 读取 json 文件
+    with open(json_path, 'r', encoding='utf-8') as f:
+        detections = json.load(f)
+    for det in detections:
+
+        label = det["label"]
+        
+        center_x = int(float(det["x"]) * ref_width)
+        center_y = int(float(det["y"]) * ref_height)
+        # 画中心点
+        cv2.circle(image, (center_x, center_y), radius=5, color=(0, 0, 255), thickness=-1)
+        # 写标签 id+name 中文字体
+        cv2.putText(image, f"{det['id']} {label}", (center_x + 10, center_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+    # 保存带有中心点的图片
+    cv2.imwrite(output_img, image)
+    print(f"已保存带有中心点的图片到 {output_img}")
+
+def draw_boxes_from_json_GEMINI():
+    # 读取detection_output_kimi.json并绘制边框
+    input_img = "malmo_rgb.png"       # 替换为你的图片路径
+    output_img = "malmo_rgb_annotated.png"
+    json_path = "detection_output_gemini.json"   # 替换为你的JSON路径
     
+    # 根据 img 实际尺寸设置参考尺寸（图片右下角坐标）
+    with Image.open(input_img) as img:
+        ref_width, ref_height = img.size
+    
+    # 绘制边框和加上文字
+    
+    font_size=36       # 字体大小（可调整）
+    line_width=4       # 边框线宽
+    # bbox_color="#FF0000"   # 边框颜色
+    text_color="#FFFFFF"   # 文字颜色
+    text_stroke_color="#000000"  # 文字描边颜色
+    text_stroke_width=2      # 描边宽度
+    
+    # 读取 json 文件
+    with open(json_path, 'r', encoding='utf-8') as f:
+        detections = json.load(f)
+    # 打开图片
+    with Image.open(input_img) as img:
+        draw = ImageDraw.Draw(img)
+        try:
+            font = ImageFont.truetype("arial.ttf", font_size)
+        except:
+            font = ImageFont.load_default()
+        
+        for det in detections:
+            print(f"Processing detection: {det}")
+            box = det["bounding_box"]
+            label = det["label"]
+            if float(box[0]) < 1 and float(box[2]) < 1:
+                x_min = float(box[0]) * ref_width
+                y_min = float(box[1]) * ref_height
+                x_max = float(box[2]) * ref_width
+                y_max = float(box[3]) * ref_height
+                # 将数据转换为整数
+                det["bounding_box"][0] = x_min
+                det["bounding_box"][1] = y_min
+                det["bounding_box"][2] = x_max
+                det["bounding_box"][3] = y_max
+            else:
+                x_min = int(box[0])
+                y_min = int(box[1]) 
+                x_max = int(box[2])
+                y_max = int(box[3])
+                
+            # 绘制边框 - 随机边框颜色
+            bbox_color = color_dir.get(label, "#FF0000")
+            
+            if x_min > x_max :
+                x_min, x_max = x_max, x_min
+            if y_min > y_max :
+                y_min, y_max = y_max, y_min
+
+            draw.rectangle([x_min, y_min, x_max, y_max], outline=bbox_color, width=line_width)
+            
+            # 绘制标签
+            # label = f"{det['label']} ({det['confidence']:.2f})"
+            # text_size = draw.textsize(label, font=font)
+            # text_bg = [x_min, y_min - text_size[1], x_min + text_size[0], y_min]
+            # draw.rectangle(text_bg, fill=bbox_color)
+            # draw.text((x_min, y_min - text_size[1]), label, fill=text_color, font=font, stroke_width=text_stroke_width, stroke_fill=text_stroke_color)
+        
+        # 保存带有边框的图片
+        img.save(output_img)
+        print(f"已保存带有边框的图片到 {output_img}")
+
+def draw_boxes_from_json_GEMINI_v2():
+    # 画中心点坐标
+    input_img = "malmo_rgb.png"       # 替换为你的图片路径
+    output_img = "malmo_rgb_annotated.png"
+    json_path = "detection_output_gemini.json"   # 替换为
+    # 根据 img 实际尺寸设置参考尺寸（图片右下角坐标）
+    with Image.open(input_img) as img:
+        ref_width, ref_height = img.size
+    
+    # 使用cv2绘制中心点
+    image = cv2.imread(input_img)
+    # 读取 json 文件
+    with open(json_path, 'r', encoding='utf-8') as f:
+        detections = json.load(f)
+    for det in detections:
+
+        label = det["label"]
+        
+        center_x = int(float(det["x"]) * ref_width)
+        center_y = int(float(det["y"]) * ref_height)
+        # 画中心点
+        cv2.circle(image, (center_x, center_y), radius=5, color=(0, 0, 255), thickness=-1)
+        # 写标签 id+name 中文字体
+        cv2.putText(image, f"{det['id']} {label}", (center_x + 10, center_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+    # 保存带有中心点的图片
+    cv2.imwrite(output_img, image)
+    print(f"已保存带有中心点的图片到 {output_img}")
+
 def test3_kimi():
     # kimi-latest-128k
+    api_key = os.getenv("KIMI_API_KEY")
     client = OpenAI(
-        api_key = os.getenv("KIMI_API_KEY"), 
+        api_key = api_key, 
         base_url = "https://api.moonshot.cn/v1",
     )
     
     # 对图片进行base64编码
-    image_path = "malmo_obs.png"
+    image_path = "malmo_rgb.png"
     with open(image_path, 'rb') as f:
         img_base = base64.b64encode(f.read()).decode('utf-8')
     
@@ -332,6 +481,148 @@ def test3_kimi():
     draw_boxes_from_json_KIMI()
     cal_pos()
 
+def test4_gemini(user_input=""):
+    print(os.getenv("OPENROUTER_API_KEY"))
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+    )
+    # 对图片进行base64编码
+    image_path = "malmo_rgb.png"
+    with open(image_path, 'rb') as f:
+        img_base = base64.b64encode(f.read()).decode('utf-8')
+    
+    messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{img_base}"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "text": prompt_object_detection_en
+                    }
+                ]
+            }
+        ]
+    
+    if user_input != "":
+        messages.append(
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": f"current user question is {user_input}, find the related objects if its in the image. if not, just answer the object in the image."
+                    }
+                ]
+            }
+        )
+    
+    start_time = time.time()
+    response = client.chat.completions.create(
+        # model="google/gemini-2.5-flash",
+        model = "google/gemini-2.5-pro",
+        messages=messages,
+    )
+    end_time = time.time()
+    print(f"Time taken: {end_time - start_time} seconds")
+    
+    # 删除回复前面多余的 ```json 和后面的 ```
+    content = response.choices[0].message.content
+    if content.startswith("```json"):
+        content = content[len("```json"):].strip()
+    if content.endswith("```"):
+        content = content[:-len("```")].strip()
+    
+    # 将 content 保存为 JSON 文件
+    json_output_path = "detection_output_gemini.json"
+    with open(json_output_path, 'w', encoding='utf-8') as json_file:
+        json_file.write(content)
+
+    draw_boxes_from_json_GEMINI_v2()
+    cal_posV2()
+
+def test5_kimiV2(user_input=""):
+    # kimi-latest-128k
+    client = OpenAI(
+        api_key = os.getenv("KIMI_API_KEY"), 
+        base_url = "https://api.moonshot.cn/v1",
+    )
+    
+    # 对图片进行base64编码
+    image_path = "malmo_rgb.png"
+    with open(image_path, 'rb') as f:
+        img_base = base64.b64encode(f.read()).decode('utf-8')
+    messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{img_base}"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "text": prompt_object_detection_cn
+                    }
+                ]
+            }
+        ]
+    
+    if user_input != "":
+        messages.append(
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": f"当前用户问题是 {user_input}, 如果图像中有相关物体,请找出它们。如果没有,只需回答图像中的物体。"
+                    }
+                ]
+            }
+        )
+    start_time = time.time()
+    response = client.chat.completions.create(
+        model="moonshot-v1-8k-vision-preview", 
+        messages=messages
+    )
+    # print(response.choices[0].message.content)
+    end_time = time.time()
+    print(f"Time taken: {end_time - start_time} seconds")
+    
+    # 检测 json 格式是否完整
+    json_content = response.choices[0].message.content
+    try:
+        detections = json.loads(json_content)
+        # print("JSON 格式正确")
+    except json.JSONDecodeError as e:
+        
+        # 尝试修正 JSON 格式错误（根据具体错误进行调整）
+        print("json_content:", json_content)
+        
+        print("JSON 格式错误:", e)
+        
+        # 删除 json 最后一个表项
+        last_comma_index = json_content.rfind(',')
+        if last_comma_index != -1:
+            json_content = json_content[:last_comma_index] + json_content[last_comma_index + 1:]
+        
+    
+    # 将 content 保存为 JSON 文件
+    json_output_path = "detection_output_kimi.json"
+    with open(json_output_path, 'w', encoding='utf-8') as json_file:
+        json_file.write(response.choices[0].message.content)
+    
+    cal_posV2()
+    draw_boxes_from_json_KIMIV2()
+
 # 根据框和深度图像计算物体位置
 def cal_pos():
     # 深度图像路径
@@ -345,6 +636,8 @@ def cal_pos():
     with open(json_path, 'r', encoding='utf-8') as f:
         detections = json.load(f)
     for det in detections:
+        # 如果没有 bounding_box 跳过
+            
         box = det["bounding_box"]
         label = det["label"]
         if float(box["x_min"]) < 1 and float(box["x_max"]) < 1:
@@ -375,8 +668,42 @@ def cal_pos():
         
         # json 中添加深度信息
         det["depth"] = depth_value
-        det["x_mid"] = center_x
-        det["y_mid"] = center_y
+        det["x"] = center_x
+        det["y"] = center_y
+    
+    # 将更新后的检测结果保存回 JSON 文件
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(detections, f, ensure_ascii=False, indent=4)
+
+def cal_posV2(depth_image_path="malmo_depth.png", json_path="detection_output_gemini.json"):
+    # 深度图像路径
+
+    # 读取深度图像
+    depth_image = Image.open(depth_image_path)
+    depth_pixels = depth_image.load()
+    
+    # 遍历检测结果
+
+    with open(json_path, 'r', encoding='utf-8') as f:
+        detections = json.load(f)
+    for det in detections:
+        # 如果没有 bounding_box 跳过
+
+        label = det["label"]
+
+        # 计算边界框中心点
+        center_x = int(float(det["x"]) * depth_image.width)
+        center_y = int(float(det["y"]) * depth_image.height)
+        
+        # 获取深度值
+        depth_value = depth_pixels[center_x, center_y]
+        
+        print(f"Object: {label}, Depth: {depth_value}")
+        
+        # json 中添加深度信息
+        det["depth"] = depth_value
+        # det["x"] = center_x
+        # det["y"] = center_y
     
     # 将更新后的检测结果保存回 JSON 文件
     with open(json_path, 'w', encoding='utf-8') as f:
@@ -408,7 +735,7 @@ def obj_detect_init():
     print(f"Time taken: {end_time - start_time} seconds, response: {response}")
     return client, messages
 
-def obj_detect_and_draw(client, messages, image_path="malmo_obs.png", model="moonshot-v1-8k-vision-preview"):
+def obj_detect_and_draw(client, messages, image_path="malmo_rgb.png", model="moonshot-v1-8k-vision-preview"):
 
     start_time = time.time()
     
@@ -445,6 +772,8 @@ def obj_detect_and_draw(client, messages, image_path="malmo_obs.png", model="moo
     
     return messages
 
+    
 
 if __name__ == "__main__":
-    cal_pos()
+    cal_posV2()
+    draw_boxes_from_json_KIMIV2()

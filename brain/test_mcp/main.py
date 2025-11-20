@@ -281,7 +281,7 @@ class BrainNodeController(Node):
 async def run_mcp_client():
     # Load environment variables from .env file
     load_dotenv()
-    client = MCPClient(api_key=os.getenv("API_KEY"))
+    client = MCPClient(api_key=os.getenv("DS_API_KEY"))
     # start the server process and get PID
     process = subprocess.Popen(
         ["python3", "capability/example_hello/api/cap_server.py"],
@@ -302,7 +302,7 @@ async def run_mcp_client():
 def run_ros2_node():
     # Load environment variables from .env file
     load_dotenv()
-    client = MCPClient(api_key=os.getenv("API_KEY"))
+    client = MCPClient(api_key=os.getenv("DS_API_KEY"))
 
     process = subprocess.Popen(
         ["python3", "capability/example_hello/api/cap_server.py"],

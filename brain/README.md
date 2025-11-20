@@ -22,7 +22,7 @@ requirements.txt contains dependencies for the brain module.(as a example)
 add .env file in /brain directory with the following content:
 
 ```plaintext
-API_KEY=sk-xxx
+DS_API_KEY=sk-xxx
 ```
 
 Test CMD as follow :

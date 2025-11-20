@@ -41,11 +41,8 @@ import sys
 from pathlib import Path
 # 加入 LLM
 
-# 加入 memory
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-sys.path.insert(0, str("/home/hyl/EmbodyMemory"))
-from vlm_detect import test3_kimi
-from memory.memory_module import CurrentState
+
+
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import malmoenv
@@ -68,11 +65,14 @@ from dotenv import load_dotenv
 
 # 找到 brain 包
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str("/home/hyl/EmbodyMemory"))
 from brain.brain_deepseek import *
-
 import xml.etree.ElementTree as ET
-    
+
+# 加入 memory
+from vlm_detect import test3_kimi, test5_kimiV2
+from memory.memory_module import CurrentState
 
 system_prompt_en_mc = '''
     as a player in minecraft, you will answer user queries and use tools to get information.
@@ -506,8 +506,8 @@ def entity_pos2obj_pos(entity, obj):
     e_yaw = entity.get('yaw', 0)
     
     # 获取 obj 的深度
-    o_x_mid = obj.get('x_mid', 0)
-    o_y_mid = obj.get('y_mid', 0)
+    o_x = obj.get('x', 0)
+    o_y = obj.get('y', 0)
     o_depth = obj.get('depth', 0)
     
     
@@ -520,8 +520,8 @@ def entity_pos2obj_pos(entity, obj):
     fov_horizontal = 180
     fov_vertical = 90
     
-    angle_offset_x = (o_x_mid - img_width / 2) / (img_width / 2) * (fov_horizontal / 2)
-    angle_offset_y = (o_y_mid - img_height / 2) / (img_height / 2) * (fov_vertical / 2)
+    angle_offset_x = (o_x - img_width / 2) / (img_width / 2) * (fov_horizontal / 2)
+    angle_offset_y = (o_y - img_height / 2) / (img_height / 2) * (fov_vertical / 2)
     # 计算物体的实际距离（格数）
     distance_blocks = depth_to_blocks(o_depth)
     # 计算物体的绝对位置
@@ -609,7 +609,7 @@ if __name__ == '__main__':
         f.write('\n\n\n\n')
     
     load_dotenv()
-    api_key = os.getenv("API_KEY")
+    api_key = os.getenv("DS_API_KEY")
     client = MCPClient(api_key=api_key)
 
     for i in range(args.episodes):
@@ -737,7 +737,7 @@ if __name__ == '__main__':
                 
                 print("-------------------")
                 
-                test3_kimi()
+                test5_kimiV2()
                 # 读取json文件打印识别到的物体和深度信息
                 json_output_path = "detection_output_kimi.json"
                 obj_list = []
@@ -769,7 +769,9 @@ if __name__ == '__main__':
             
             messages.append({"role": "user", "content": cur_act_msg})
             action_sequence, messages = client.query_request(query=user_request, messages=messages)
-            
+        
+        if user_input.lower() == 'q':
+            break
         # 打印messages最后一个 content 
         print(messages[-1]['content'] if messages else "No messages.")
 

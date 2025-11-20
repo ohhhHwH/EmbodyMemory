@@ -1,30 +1,51 @@
 [
     {
         "id": 1,
-        "label": "树叶",
-        "bounding_box": {
-            "x_min": 0,
-            "y_min": 0,
-            "x_max": 1024,
-            "y_max": 384
-        },
-        "nearby": [],
-        "depth": 102,
-        "x_mid": 512,
-        "y_mid": 192
+        "label": "tree",
+        "x": 0.35,
+        "y": 0.45,
+        "nearby": ["grass", "dirt"]
     },
     {
         "id": 2,
-        "label": "树干",
-        "bounding_box": {
-            "x_min": 0,
-            "y_min": 384,
-            "x_max": 256,
-            "y_max": 768
-        },
-        "nearby": [],
-        "depth": 176,
-        "x_mid": 128,
-        "y_mid": 576
+        "label": "grass",
+        "x": 0.5,
+        "y": 0.8,
+        "nearby": ["flower", "dirt"]
+    },
+    {
+        "id": 3,
+        "label": "flower",
+        "x": 0.6,
+        "y": 0.6,
+        "nearby": ["grass"]
+    },
+    {
+        "id": 4,
+        "label": "flower",
+        "x": 0.95,
+        "y": 0.6,
+        "nearby": ["grass"]
+    },
+    {
+        "id": 5,
+        "label": "dirt",
+        "x": 0.4,
+        "y": 0.55,
+        "nearby": ["tree", "grass"]
+    },
+    {
+        "id": 6,
+        "label": "water",
+        "x": 0.9,
+        "y": 0.45,
+        "nearby": ["sand"]
+    },
+    {
+        "id": 7,
+        "label": "sand",
+        "x": 0.8,
+        "y": 0.5,
+        "nearby": ["water"]
     }
 ]

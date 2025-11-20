@@ -291,7 +291,7 @@ if __name__ == '__main__':
         f.write('\n\n\n\n')
 
     load_dotenv()
-    api_key = os.getenv("API_KEY")
+    api_key = os.getenv("DS_API_KEY")
     client = MCPClient(api_key=api_key)
     
     # ADD:获取当前环境信息并更新 - 聚类，将环境中能聚在一起的物体整合成一个 box 迁出一个索引 - 不对exfilter中的东西进行建图or只对filter中的东西建图

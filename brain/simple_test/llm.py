@@ -4,7 +4,7 @@ import urllib.request
 import urllib.parse
 import json
 
-API_KEY = "0e987a80-e2fa-4539-83fd-3d6d2d863138"
+DS_API_KEY = "0e987a80-e2fa-4539-83fd-3d6d2d863138"
 
 BOT_MODEL_URL = "https://ark.cn-beijing.volces.com/api/v3/bots"
 BOT_MODEL_ID = "bot-20250506223735-hv64s"
@@ -61,7 +61,7 @@ def get_llm(prompt: str, message: str) -> str:
     base_url = THINK_MODEL_URL
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {API_KEY}"
+        "Authorization": f"Bearer {DS_API_KEY}"
     }
     data = {
         "model": THINK_MODEL_ID,

@@ -1,0 +1,110 @@
+[
+    {
+        "id": 1,
+        "label": "flower",
+        "x": 0.133,
+        "y": 0.686,
+        "nearby": [
+            "tall grass",
+            "grass block",
+            "tree trunk",
+            "water"
+        ],
+        "depth": 233
+    },
+    {
+        "id": 2,
+        "label": "tree trunk",
+        "x": 0.342,
+        "y": 0.655,
+        "nearby": [
+            "leaves",
+            "grass block",
+            "tall grass",
+            "flower",
+            "water"
+        ],
+        "depth": 199
+    },
+    {
+        "id": 3,
+        "label": "tall grass",
+        "x": 0.573,
+        "y": 0.785,
+        "nearby": [
+            "grass block",
+            "flower",
+            "tree trunk"
+        ],
+        "depth": 221
+    },
+    {
+        "id": 4,
+        "label": "grass block",
+        "x": 0.511,
+        "y": 0.865,
+        "nearby": [
+            "tall grass",
+            "flower"
+        ],
+        "depth": 212
+    },
+    {
+        "id": 5,
+        "label": "leaves",
+        "x": 0.449,
+        "y": 0.222,
+        "nearby": [
+            "tree trunk",
+            "sky",
+            "cloud"
+        ],
+        "depth": 113
+    },
+    {
+        "id": 6,
+        "label": "water",
+        "x": 0.093,
+        "y": 0.547,
+        "nearby": [
+            "grass block",
+            "tall grass",
+            "tree trunk"
+        ],
+        "depth": 199
+    },
+    {
+        "id": 7,
+        "label": "sheep",
+        "x": 0.722,
+        "y": 0.528,
+        "nearby": [
+            "tree trunk",
+            "leaves",
+            "grass block"
+        ],
+        "depth": 247
+    },
+    {
+        "id": 8,
+        "label": "sky",
+        "x": 0.598,
+        "y": 0.185,
+        "nearby": [
+            "leaves",
+            "cloud"
+        ],
+        "depth": 94
+    },
+    {
+        "id": 9,
+        "label": "cloud",
+        "x": 0.499,
+        "y": 0.11,
+        "nearby": [
+            "sky",
+            "leaves"
+        ],
+        "depth": 56
+    }
+]
