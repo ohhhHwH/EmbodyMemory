@@ -36,7 +36,22 @@
                 "jumpmove:3:discretemovement",
                 "turn:4:discretemovement",
                 "turn:5:discretemovement",
-                "jump:6:discretemovement"
+                "attack:6:discretemovement",
+                "use:7:discretemovement",
+                "swapinventoryitems:8:inventory",
+                "combineinventoryitems:9:inventory",
+                "discardcurrentitem:10:inventory",
+                "hotbar.1:11:inventory",
+                "hotbar.2:12:inventory",
+                "hotbar.3:13:inventory",
+                "hotbar.4:14:inventory",
+                "hotbar.5:15:inventory",
+                "hotbar.6:16:inventory",
+                "hotbar.7:17:inventory",
+                "hotbar.8:18:inventory",
+                "hotbar.9:19:inventory",
+                "craft:20:simplecraft",
+                "nearbycraft:21:nearbycraft"
             ]
         },
         "graph_structure": {
@@ -54,7 +69,22 @@
                         "jumpmove:3:discretemovement",
                         "turn:4:discretemovement",
                         "turn:5:discretemovement",
-                        "jump:6:discretemovement"
+                        "attack:6:discretemovement",
+                        "use:7:discretemovement",
+                        "swapinventoryitems:8:inventory",
+                        "combineinventoryitems:9:inventory",
+                        "discardcurrentitem:10:inventory",
+                        "hotbar.1:11:inventory",
+                        "hotbar.2:12:inventory",
+                        "hotbar.3:13:inventory",
+                        "hotbar.4:14:inventory",
+                        "hotbar.5:15:inventory",
+                        "hotbar.6:16:inventory",
+                        "hotbar.7:17:inventory",
+                        "hotbar.8:18:inventory",
+                        "hotbar.9:19:inventory",
+                        "craft:20:simplecraft",
+                        "nearbycraft:21:nearbycraft"
                     ],
                     "children": {}
                 }
@@ -105,8 +135,113 @@
                 "output": null,
                 "dependencies": []
             },
-            "jump:6:discretemovement": {
-                "description": "action 'jump 1' and DiscreteMovement",
+            "attack:6:discretemovement": {
+                "description": "action 'attack 1' and DiscreteMovement",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "use:7:discretemovement": {
+                "description": "action 'use 1' and DiscreteMovement",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "swapinventoryitems:8:inventory": {
+                "description": "action 'swapInventoryItems' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "combineinventoryitems:9:inventory": {
+                "description": "action 'combineInventoryItems' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "discardcurrentitem:10:inventory": {
+                "description": "action 'discardCurrentItem' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "hotbar.1:11:inventory": {
+                "description": "action 'hotbar.1' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "hotbar.2:12:inventory": {
+                "description": "action 'hotbar.2' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "hotbar.3:13:inventory": {
+                "description": "action 'hotbar.3' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "hotbar.4:14:inventory": {
+                "description": "action 'hotbar.4' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "hotbar.5:15:inventory": {
+                "description": "action 'hotbar.5' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "hotbar.6:16:inventory": {
+                "description": "action 'hotbar.6' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "hotbar.7:17:inventory": {
+                "description": "action 'hotbar.7' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "hotbar.8:18:inventory": {
+                "description": "action 'hotbar.8' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "hotbar.9:19:inventory": {
+                "description": "action 'hotbar.9' and Inventory",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "craft:20:simplecraft": {
+                "description": "action 'craft' and SimpleCraft",
+                "type": "capability",
+                "input": null,
+                "output": null,
+                "dependencies": []
+            },
+            "nearbycraft:21:nearbycraft": {
+                "description": "action 'nearbyCraft' and NearbyCraft",
                 "type": "capability",
                 "input": null,
                 "output": null,

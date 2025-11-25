@@ -234,6 +234,8 @@ def save_img(obs, env):
         center_depth = depth[h // 2, w // 2]
         print(f"depth in view: {center_depth}")
 
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='malmovnv test')
@@ -258,10 +260,14 @@ if __name__ == '__main__':
     env = malmoenv.make()
     
     # 添加 动作过滤器 所有动作都在这个范围内
-    action_filter = {"move", "turn", "jump", "look", "jumpmove", "attack", "chat"}
-    # action_filter = {"move", "jumpmove", "strafe", "jumpstrafe", "turn", "movenorth", "moveeast",
-    #                 "movesouth", "movewest", "jumpnorth", "jumpeast", "jumpsouth", "jumpwest",
-    #                 "jump", "look", "attack", "use", "jumpuse"}
+    action_filter = {"move", "turn", "use", "attack", "jump","look",
+                    "jumpmove", 
+                    
+                     "craft", "nearbyCraft", "inventory",
+                     "swapInventoryItems", "combineInventoryItems", "discardCurrentItem",
+                     "hotbar.1", "hotbar.2", "hotbar.3", "hotbar.4", "hotbar.5", "hotbar.6",
+                     "hotbar.7", "hotbar.8", "hotbar.9"}
+
     
     # 获取 xml 中ObservationFromGrid的 around 范围
     around_range = get_observation_grid_range(args.mission, grid_name='around')
@@ -281,7 +287,7 @@ if __name__ == '__main__':
     log_dir = Path('log')
     log_dir.mkdir(exist_ok=True)
     # log_file = log_dir / f'action_{time.strftime("%Y%m%d_%H%M%S")}.log'
-    log_file = log_dir / f'action.log'
+    log_file = log_dir / f'action_{time.strftime("%Y%m%d")}.log'
 
 
     # 清空action.log写入实验信息
@@ -360,12 +366,13 @@ if __name__ == '__main__':
                 print(f"{i}: {act}", end='\t')
                 if (i + 1) % 5 == 0:
                     print()
-
-            user_input = input("q")
+            user_input = input("q:")
             if user_input.lower() == 'q':
                 break
             if not user_input.isdigit() or int(user_input) < 0 or int(user_input) >= len(env.actions):
-                action = env.action_space.sample()
+                # action = env.action_space.sample()
+                # 接受 自定义指令 如 craft wood_planks
+                action = str(user_input)
             else:
                 action = int(user_input)
                 
@@ -377,19 +384,38 @@ if __name__ == '__main__':
             
                 
             # 打开action.log将当前指令写入文件
-            with open(log_file, 'a') as f:
-                f.write("action: " + str(action) + ',' + env.action_space[action] + '\n')
-                
-            print(action , str(type(action)))
             
-            obs, reward, done, info = env.step(action)
-            steps += 1
                 
-            print("action: " + str(action) + ',' + env.action_space[action])
+            # print(action , str(type(action)))
+            if isinstance(action, int):
+                with open(log_file, 'a') as f:
+                    f.write("action: " + str(action) + ',' + env.action_space[action] + '\n')
+                print("action: " + str(action) + ',' + env.action_space[action])
+                obs, reward, done, info = env.step(action)
+            else:
+                with open(log_file, 'a') as f:
+                    f.write("diy action: " + action + '\n')
+                print("diy action: " + action)
+                obs, reward, done, info = env.step_diy(action)
+            steps += 1
+        
+            
             print("reward: " + str(reward))
             print("done: " + str(done))
             # 将 info 字符串 转成 info 字典
             info = eval(info)
+            #  打印 info 字典的键值对
+            print("info details:")
+            inventory = {}
+            for key, value in info.items():
+                # if key != 'around' and key != 'entities' :
+                #     # 如果 key 中包含 InventorySlot 则进行下一步判定
+                #     print(f"  {key}: {value}")
+                if 'InventorySlot' in key:
+                    print(f"  {key}: {value}")
+                    
+                    
+            print("-------------------")
             # 打印出 info 字典的 around 信息
             around = info.get('around', None)
             around = info_observation_grid_range_reserve(around, around_range)

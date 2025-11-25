@@ -114,6 +114,49 @@ system_prompt_cn_mc = '''
     当你获得工具调用结果时，你将继续根据工具调用结果回答用户查询。
     永远不要编造不在其中的工具或参数。
 '''
+system_prompt_en_mc_v2 = '''
+    as a player in minecraft, you will answer user queries and use tools to get information.
+    you will use the tools provided by the server to get information.
+    if you need to call tools, you should return the function call in the format without any explanation or other words:
+    {
+        `Action index`:`action`
+        `Action index`:`action`
+    }
+    for a example, if you want to move forward once, then turn degree add 90, and you have 5 actions
+    [0:move 1 , 1:move -1 , 2:turn 1 , 3:turn -1, 4:craft [item]]
+    you should return:
+    {
+        0:move 1
+        2:turn 1
+        4:craft planks
+    }
+    the action index should be correspond to the action.
+    you will not call the tools directly, but return the function call in the format above.
+    when you get the tool call results, you will continue to answer the user query based on the tool call results.
+    never make up tools or parameters that are not in.
+'''
+
+system_prompt_cn_mc_v2 = '''
+    作为 minecraft 中的玩家，你将回答用户的查询并使用工具获取信息。
+    你将使用服务器提供的工具来获取信息。
+    如果你需要调用工具，你应该以不带任何解释或其他词语的格式返回函数调用：
+    {
+        `Action index`:`action`
+        `Action index`:`action`
+    }
+    例如，如果你想前进一次,然后转向,最后制造木板，并且你有5个动作
+    [0:move 1 , 1:move -1 , 2:turn 1 , 3:turn -1, 4:craft [item]]
+    你应该返回：
+    {
+        0:move 1
+        2:turn 1
+        4:craft planks
+    }
+    动作索引应与你的动作相对应。
+    你不会直接调用工具，而是以上述格式返回函数调用。
+    当你获得工具调用结果时，你将继续根据工具调用结果回答用户查询。
+    永远不要编造不在其中的工具或参数。
+'''
 
 # 加入 memory
 
@@ -481,9 +524,9 @@ def depth_to_blocks(depth_value):
 '''
         # 修改识别的物体的位置-这里是模糊绝对位置 # 根据视角和深度计算相对位置
         x y z 轴单位为 格
-        yaw 0 视角方向为 y 轴 正方向
+        yaw 0 视角方向为 z 轴 正方向
         yaw 270 视角方向为 x 轴 正方向
-        yaw 180 视角方向为 y 轴 负方向
+        yaw 180 视角方向为 z 轴 负方向
         yaw 90 视角方向为 x 轴 负方向
         
         depth 0-255 距离对应为 0 - 正无穷
@@ -532,9 +575,217 @@ def entity_pos2obj_pos(entity, obj):
     o_y = e_y  # 暂时不考虑高度变化
     return o_x, o_y, o_z
   
+def inventory_parse(info):
+    inventory = {}
+    for i in range(0,40):
+        key = 'InventorySlot_'+str(i)+'_item' # 物品名称
+        size_key = 'InventorySlot_'+str(i)+'_size' # 物品数量
+        var_key = 'InventorySlot_'+str(i)+'_variant' # 材质
+        col_key = 'InventorySlot_'+str(i)+'_colour' # 颜色
+        item = {}
+        
+        if key in info and info[key] != 'air':
+            item['id'] = i
+            item['item'] = info[key]
+            item['size'] = int(info[size_key])             
+            if var_key in info:
+                item['variant'] = int(info[var_key])
+            if col_key in info:
+                item['colour'] = int(info[col_key])
+            inventory[i] = item
+        
+            
+    return inventory
+
+
+# 对每个 动作 进行技能描述
+
+act_info_en = {
+    "move 1": "Move forward",
+    "move -1": "Move backward",
+    "turn 1": "yaw degrees add 90",
+    "turn -1": "yaw degrees minus 90",
+    "look 1": "Look down, look degree minus 1, max is -2",
+    "look -1": "Look up, look degree add 1, min is 2",
+    "jumpmove": "Jump while moving forward",
+    "attack": "Attack the target in front",
+    "use": "Use item",
+    "jumpuse": "Jump and use item",
+    "discardCurrentItem": "Discard the currently selected item",
+    
+    "hotbar.[int]": "Select hotbar slot [int]",
+    "swapInventoryItems [i j]": "Swap inventory slots i and j items",
+    "combineInventoryItems [i j]": "Combine inventory slots i and j items",
+    
+    "craft [item_name]": "Craft [item_name] when enough materials in inventory",
+    "nearbyCraft [item_name]": "Craft [item_name] using nearby crafting table when enough materials in inventory",
+    "nearbySmelt [item_name]": "Smelt [item_name] using nearby furnace when enough materials in inventory",
+
+}
+
+viewinfo_en = """yaw 0 is z axis positive direction,yaw 180 is z axis negative direction
+    yaw 270 is x axis positive direction.yaw 90 is x axis negative direction"""
+
+craftitem_en = """The name of an item to be crafted or smelted.
+
+    Supported 2*2 crafting recipes (usable with 'craft [item]'):
+        'log' -> 'planks' (4)
+        'planks' -> 'stick' (4)
+        'planks' -> 'crafting_table' (1)
+        'coal + stick' -> 'torch' (4)
+
+    Supported nearbyCraft 3*3 crafting recipes (require a nearby crafting table):
+        'planks + stick' -> 'wooden_pickaxe'
+        'planks + stick' -> 'wooden_sword'
+        'planks + stick' -> 'wooden_axe'
+        'planks + stick' -> 'wooden_shovel'
+        'cobblestone + stick' -> 'stone_pickaxe'
+        'cobblestone + stick' -> 'stone_sword'
+        'cobblestone + stick' -> 'stone_axe'
+        'cobblestone + stick' -> 'stone_shovel'
+        'iron_ingot + stick' -> 'iron_pickaxe'
+        'iron_ingot + stick' -> 'iron_sword'
+        'iron_ingot + stick' -> 'iron_axe'
+        'iron_ingot + stick' -> 'iron_shovel'
+        'diamond + stick' -> 'diamond_pickaxe'
+        'diamond + stick' -> 'diamond_sword'
+        'diamond + stick' -> 'diamond_axe'
+        'diamond + stick' -> 'diamond_shovel'
+        'planks + planks' -> 'chest'
+        'planks + cobblestone' -> 'furnace'
+        'iron_ingot' -> 'bucket'
+        'iron_ingot' -> 'iron_helmet / chestplate / leggings / boots'
+
+    Supported nearbySmelt smelting recipes (require a furnace):
+        'iron_ore' -> 'iron_ingot'
+        'gold_ore' -> 'gold_ingot'
+        'raw_porkchop' -> 'cooked_porkchop'
+        'raw_beef' -> 'cooked_beef'
+        'log' -> 'charcoal'
+        'sand' -> 'glass'
+
+    Notes:
+        - 'craft' works only for 2*2 recipes.
+        - 'nearbyCraft' works only if a crafting table is within reach.
+        - 'nearbySmelt' works only if a furnace is within reach.
+        - All recipes require enough materials in inventory.
+    """
+
+act_info_cn = {
+    "move 1": "前进一步",
+    "move -1": "后退一步",
+    "turn 1": "向右转90度",
+    "turn -1": "向左转90度",
+    "look 1": "向下看，视角角度减1，最大值为-2",
+    "look -1": "向上看，视角角度加1，最小值为2",
+    "jumpmove": "跳跃并前进",
+    "attack": "攻击前方目标",
+    "use": "使用物品",
+    "jumpuse": "跳跃并使用物品",
+    "hotbar.[int]": "选择快捷栏槽位[int]",
+    "swapInventoryItems [i j]": "交换库存槽位i和j的物品",
+    "combineInventoryItems [i j]": "将库存槽位i和j的物品合并",
+    "discardCurrentItem": "丢弃当前选中的物品",
+    "craft [item_name]": "当库存中有足够材料时，制作[item_name]",
+    "nearbyCraft [item_name]": "当库存中有足够材料时，使用附近的工作台制作[item_name]",
+    "nearbySmelt [item_name]": "当库存中有足够材料时，使用附近的熔炉熔炼[item_name]",
+}
+
+viewinfo_cn = """yaw 0 是 z 轴正方向，yaw 180 是 z 轴负方向，
+    yaw 270 是 x 轴正方向，yaw 90 是 x 轴负方向"""
+
+craftitem_cn = """要制作或熔炼的物品名称。
+
+    支持的2*2制作配方（可与'craft [item]'一起使用）：
+        'log' -> 'planks' (4)
+        'planks' -> 'stick' (4)
+        'planks' -> 'crafting_table' (1)
+        'coal + stick' -> 'torch' (4)
+    支持的nearbyCraft 3*3制作配方（需要附近有工作台）：
+        'planks + stick' -> 'wooden_pickaxe'
+        'planks + stick' -> 'wooden_sword'
+        'planks + stick' -> 'wooden_axe'
+        'planks + stick' -> 'wooden_shovel'
+        'cobblestone + stick' -> 'stone_pickaxe'
+        'cobblestone + stick' -> 'stone_sword'
+        'cobblestone + stick' -> 'stone_axe'
+        'cobblestone + stick' -> 'stone_shovel'
+        'iron_ingot + stick' -> 'iron_pickaxe'
+        'iron_ingot + stick' -> 'iron_sword'
+        'iron_ingot + stick' -> 'iron_axe'
+        'iron_ingot + stick' -> 'iron_shovel'
+        'diamond + stick' -> 'diamond_pickaxe'
+        'diamond + stick' -> 'diamond_sword'
+        'diamond + stick' -> 'diamond_axe'
+        'diamond + stick' -> 'diamond_shovel'
+        'planks + planks' -> 'chest'
+        'planks + cobblestone' -> 'furnace'
+        'iron_ingot' -> 'bucket'
+        'iron_ingot' -> 'iron_helmet / chestplate / leggings / boots'
+
+    支持的nearbySmelt熔炼配方（需要附近有熔炉）：
+        'iron_ore' -> 'iron_ingot'
+        'gold_ore' -> 'gold_ingot'
+        'raw_porkchop' -> 'cooked_porkchop'
+        'raw_beef' -> 'cooked_beef'
+        'log' -> 'charcoal'
+        'sand' -> 'glass'
+
+    注意：
+        - 'craft'仅适用于2*2配方。
+        - 'nearbyCraft'仅在工作台在可达范围内时有效。
+        - 'nearbySmelt'仅在熔炉在可达范围内时有效。
+        - 所有配方都需要库存中有足够的材料。
+    """
+
+
+def parse_action_string(action_str):    # 解析动作字符串，返回动作和动作类型
+    try:
+        parts = action_str.split(':')
+        if len(parts) != 2:
+            return None, None
+        action_id = parts[0]
+        action_str = parts[1]
+        # 通过 act_info_en 检查 id 与 str 是否匹配
+        if "hotbar." in action_str:
+            # 提取数字 id
+            hotbar_num = action_str.split('.')[-1]
+            action_str = f"hotbar.{hotbar_num}"
+        elif "craft" in action_str.lower():
+            # 提取制作的物品
+            item_name = action_str.split(' ', 1)[1] if ' ' in action_str else ''
+            # TODO 检查物品是否充足
+            pass
+        elif "InventoryItems" in action_str:
+            # 提取 i j 
+            i, j = action_str.split(' ')[1:3]
+        elif "Smelt" in action_str:
+            # 提取制作的物品
+            item_name = action_str.split(' ', 1)[1] if ' ' in action_str else ''
+            # TODO 检查物品是否充足
+            pass
+        elif action_str not in act_info_en:
+            return None, None
+        return action_id, action_str
+    except Exception:
+        return None, None
+
+def action_prompt_generate(actions, actions_type, action_filter, action_diy):
+    # action_diy 是 需要作为字符串输入 的动作集合 并使用 step_diy 来执行
+
+    # actions 描述
+    
+    prompt = "You can use the following actions:\n"
+    i = 0
+    for act in act_info_en :
+        prompt += f"{i}: {act}: {act_info_en[act]}\n"
+        i += 1
+    
+    return prompt
 
 if __name__ == '__main__':
-        
+    
+    # 解析命令行参数
     parser = argparse.ArgumentParser(description='malmovnv test')
     parser.add_argument('--mission', type=str, default='simulator/MalmoEnv/missions/defaultworld.xml', help='the mission xml')
     parser.add_argument('--port', type=int, default=9000, help='the mission server port')
@@ -553,17 +804,28 @@ if __name__ == '__main__':
     if args.server2 is None:
         args.server2 = args.server
 
+    # 载入 mission xml
     xml = Path(args.mission).read_text()
     env = malmoenv.make()
     
-    # action_filter = {"move", "turn", "use", "attack", "look", "jump"}
-    action_filter = {"move", "turn", "jump", "jumpmove"}
+    # 定义 action_filter 和 action_diy
+    action_filter = {"move", "turn", "use", "attack","jumpmove",
+                     "craft", "nearbyCraft",
+                     "swapInventoryItems", "combineInventoryItems", "discardCurrentItem",
+                     "hotbar.1", "hotbar.2", "hotbar.3", "hotbar.4", "hotbar.5", "hotbar.6", "hotbar.7", "hotbar.8", "hotbar.9"}
+    action_diy = {
+        "hotbar": ["hotbar.1", "hotbar.2", "hotbar.3", "hotbar.4", "hotbar.5", "hotbar.6",
+                   "hotbar.7", "hotbar.8", "hotbar.9"],
+        "craft": ["craft", "nearbyCraft"],
+        "swapInventoryItems": ["swapInventoryItems", ],
+        "combineInventoryItems": ["combineInventoryItems"],
+        "discardCurrentItem": ["discardCurrentItem"],
+    }
+
     
     # 获取 xml 中ObservationFromGrid的 around 范围
     around_range = get_observation_grid_range(args.mission, grid_name='around')
     print(f"Around range from XML: {around_range}")
-    
-    
     
     # 将xml中内容传入 并 解析
     env.init(xml, args.port,
@@ -583,7 +845,7 @@ if __name__ == '__main__':
     # 在当前目录下创建log文件夹，并获取当前时间作为log文件名
     log_dir = Path('log')
     log_dir.mkdir(exist_ok=True)
-    log_file = log_dir / f'action.log'
+    log_file = log_dir / f'action_{time.strftime("%Y%m%d")}.log'
     
     
     # 清空action.log写入实验信息
@@ -608,10 +870,19 @@ if __name__ == '__main__':
         # 写入多行回车
         f.write('\n\n\n\n')
     
+    # 初始化 MCPClient
     load_dotenv()
     api_key = os.getenv("DS_API_KEY")
     client = MCPClient(api_key=api_key)
-
+    
+    # 构建 actions_prompt
+    system_prompt = system_prompt_en_mc_v2
+    actions_prompt = action_prompt_generate(env.actions, env.actions_type, action_filter, action_diy)
+    rule_prompt = viewinfo_en + craftitem_en
+    
+    # obs_prompt = f'\n 玩家周围的观测网格信息是 {around_range}, 观测为三维，第一维为y轴（第一层为y轴大的），第二维为z轴（第一层为z轴大的），第三层为x轴（第一层为x轴大的）\n'
+    obs_prompt = f'\n the observation grid info around player is: {around_range}, the observation is 3D, the first dimension is y axis (the first layer is the largest y axis), the second dimension is z axis (the first layer is the largest z axis), the third dimension is x axis (the first layer is the largest x axis).\n'
+    
     for i in range(args.episodes):
         print("reset " + str(i))
         obs = env.reset()
@@ -620,39 +891,31 @@ if __name__ == '__main__':
         with open(log_file, 'a') as f:
             f.write('\n\n\n\nepisode ' + str(i) + '\n')
             f.write('======================\n')
-            
-            
+
+        # 初始化 steps, done
+        steps = 0
+        done = False
+             
+        # prompt生成
+        prompt = system_prompt + actions_prompt + rule_prompt + obs_prompt
+        
         # 获取用户指令
-        user_request = 'find flower and move to it'
         # user_request = input("Press queey or type 'exit': ")
+        user_request = 'Make a wooden axe'
         if user_request.lower() == 'exit':
             print("Exiting the experiment.")
             break
         
-        # 初始化 steps, done
-        steps = 0
-        done = False
-        
-        # 调试 根据用户输入数字进行相应的操作 # 打印索引 + actions_type
-        print("debug Available actions:")
-        for i, (act, act_type) in enumerate(zip(env.actions, env.actions_type)):
-            print(f"{i}: {act} [{act_type}]", end='\t')
-            if (i + 1) % 5 == 0:
-                print()
-                
-        actions_prompt = "the available actions:\n" + ", ".join(f"{i}:{act} [{act_type}]" for i, (act, act_type) in enumerate(zip(env.actions, env.actions_type)))
-        
-        prompt = system_prompt_en_mc + actions_prompt
-        
-        # prompt += f'\n 玩家周围的观测网格信息是 {around_range}, 观测为三维，第一维为y轴（第一层为y轴大的），第二维为z轴（第一层为z轴大的），第三层为x轴（第一层为x轴大的）\n'
-        prompt += f'\n the observation grid info around player is: {around_range}, the observation is 3D, the first dimension is y axis (the first layer is the largest y axis), the second dimension is z axis (the first layer is the largest z axis), the third dimension is x axis (the first layer is the largest x axis).\n'
+        # TODO 根据 记忆 检索相关信息加入 prompt
+        # relative_info = cs.retrieval_Request(user_request)
+        # prompt += f"\nRelevant information from memory:\n{relative_info}\n"
         
         # 通过 llm 生成一系列动作
         action_sequence, messages = client.query_request(query=user_request,
                                                           info=None,
                                                           safe_rule=None,
                                                           prompt=prompt)
-
+        
         user_input = ""
         while not done and (args.episodemaxsteps <= 0 or steps < args.episodemaxsteps):
 
@@ -667,36 +930,32 @@ if __name__ == '__main__':
             
             # 遍历 action_sequence
             cur_act_msg = ""
-            # 由于
-            for act in action_sequence:
-                # "entity": "0:move 1:DiscreteMovement"
-                entity, action, act_str, act_type = act.replace('"', '').split(':')
 
-                action = int(action)
-                print(f"Entity: {entity}, Index: {action}, Action: {act_str}, Type: {act_type}")
-                print(action, str(type(action)))
-                
-                # 判断 action, act_str, act_type  与 env 中 actions是否匹配
-                if action < 0 or action >= len(env.actions):
-                    print(f"Action index {action} out of range, skipping this action.")
-                    cur_act_msg += f"Skipped invalid action {act}\n"
+            for act in action_sequence:
+                # 解析动作字符串
+                act_idx, act_str = parse_action_string(act)
+                if act_idx is None:
+                    print(f"Invalid action format: {act}, skipping.")
+                    with open(log_file, 'a') as f:
+                        f.write(f"Invalid action format: {act}, skipping.\n")
                     continue
-                expected_act_str = env.actions[action]
-                # expected_act_type = env.actions_type[action]
-                # if act_str != expected_act_str or act_type != expected_act_type:
-                if act_str != expected_act_str:
-                    print(f"Action string mismatch for index {action}: expected '{expected_act_str}', got '{act_str}'. Skipping this action.")
-                    cur_act_msg += f"Skipped invalid action {act}\n"
-                    continue
+                action = act_str
                 
-                # user_input = input("q")
-                # if user_input.lower() == 'q':
-                #     break
+                # 调试：用户决定是否执行
+                user_input = input("input 'q' to quit:")
+                if user_input.lower() == 'q':
+                    break
+                else:
+                    pass
                 print("\n" * 5)
                 
+                # 执行动作
+                with open(log_file, 'a') as f:
+                    f.write("diy action: " + action + '\n')
+                print("diy action: " + action)
                 env.render()
-                action = env.action_space.sample()
-                obs, reward, done, info = env.step(action)
+                
+                obs, reward, done, info = env.step_diy(action)
                 steps += 1
             
                 # 将以上信息写入action.log
@@ -717,6 +976,10 @@ if __name__ == '__main__':
 
                 # 将 info 字符串 转成 info 字典
                 info = eval(info)
+                
+                # 打印当前库存信息
+                inventories = inventory_parse(info)
+                
                 # 打印出 info 字典的 around 信息
                 around = info.get('around', None)
                 around = info_observation_grid_range_reserve(around, around_range)
@@ -724,20 +987,18 @@ if __name__ == '__main__':
                 for layer in around:
                     print(layer, "len:", len(layer))
                     
-                    
-                entities = info.get('entities', [])
-
                 # 取第一个 entity 作为参考
+                entities = info.get('entities', [])
                 entity = entities[0] if entities else {}
                 for key, value in entity.items():
                     print(f"  {key}: {value}")
                     
+                # 保存图像
                 save_img(obs, env)
                 
-                
-                print("-------------------")
-                
+                print("---------detect info---------")
                 test5_kimiV2()
+                
                 # 读取json文件打印识别到的物体和深度信息
                 json_output_path = "detection_output_kimi.json"
                 obj_list = []
@@ -760,13 +1021,20 @@ if __name__ == '__main__':
                             }
                     )
                 
-                cur_act_msg += f"action {act_str}, detect object is {obj_list}, around info is {around}\n"
+                # LLM 做法
+                cur_act_msg += f"action {act_str}, entity {entity}, detect object is {obj_list}, around info is {around}\n"
                 
-
+                # TODO LLM+MEM 做法
+                # 更新短期空间记忆 + 短期-》长期 + 更新当前场景记忆 + 检索相关信息
+                # scene_info = record_short_space_memory(scene_info, obj_list, entity)
+                # scene_info = short2long_space_memory(entity, around, scene_info)
+                # cs.update_Scene(scene_info)
+                # cur_act_msg += cs.retrieval_Request(user_request)
+                
                 time.sleep(1)
                 
                 
-            
+            # 更新 llm messages
             messages.append({"role": "user", "content": cur_act_msg})
             action_sequence, messages = client.query_request(query=user_request, messages=messages)
         

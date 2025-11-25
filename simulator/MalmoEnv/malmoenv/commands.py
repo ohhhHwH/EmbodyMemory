@@ -27,6 +27,7 @@ class CommandHandlerException(Exception):
         self.message = message
 
 
+
 class CommandParser:
     """Parse Agent Command Handlers to a list"""
     continuousMovementCommands = "ContinuousMovement"
@@ -49,7 +50,7 @@ class CommandParser:
                     "jump", "look", "attack", "use", "jumpuse"]
     all_inventory = ["swapInventoryItems", "combineInventoryItems", "discardCurrentItem",
                      "hotbar.1", "hotbar.2", "hotbar.3", "hotbar.4", "hotbar.5", "hotbar.6",
-                     "hotbar.7", "hotbar.8", "hotbar.9"]
+                     "hotbar.7", "hotbar.8", "hotbar.9", "inventory"]
     all_chat = ["chat"]
     all_simplecraft = ["craft"]
     all_nearbycraft = ["nearbyCraft"]
