@@ -30,28 +30,23 @@
         "skills": {
             "/": [],
             "/entity": [
-                "move:0:discretemovement",
-                "move:1:discretemovement",
-                "jumpmove:2:discretemovement",
-                "jumpmove:3:discretemovement",
-                "turn:4:discretemovement",
-                "turn:5:discretemovement",
-                "attack:6:discretemovement",
-                "use:7:discretemovement",
-                "swapinventoryitems:8:inventory",
-                "combineinventoryitems:9:inventory",
-                "discardcurrentitem:10:inventory",
-                "hotbar.1:11:inventory",
-                "hotbar.2:12:inventory",
-                "hotbar.3:13:inventory",
-                "hotbar.4:14:inventory",
-                "hotbar.5:15:inventory",
-                "hotbar.6:16:inventory",
-                "hotbar.7:17:inventory",
-                "hotbar.8:18:inventory",
-                "hotbar.9:19:inventory",
-                "craft:20:simplecraft",
-                "nearbycraft:21:nearbycraft"
+                "0:move 1",
+                "1:move -1",
+                "2:turn 1",
+                "3:turn -1",
+                "4:look 1",
+                "5:look -1",
+                "6:jumpmove",
+                "7:attack",
+                "8:use",
+                "9:jumpuse",
+                "10:discardcurrentitem",
+                "11:hotbar.[int]",
+                "12:swapinventoryitems [i j]",
+                "13:combineinventoryitems [i j]",
+                "14:craft [item_name]",
+                "15:nearbycraft [item_name]",
+                "16:nearbysmelt [item_name]"
             ]
         },
         "graph_structure": {
@@ -63,28 +58,23 @@
                     "name": "robot",
                     "path": "/robot",
                     "skills": [
-                        "move:0:discretemovement",
-                        "move:1:discretemovement",
-                        "jumpmove:2:discretemovement",
-                        "jumpmove:3:discretemovement",
-                        "turn:4:discretemovement",
-                        "turn:5:discretemovement",
-                        "attack:6:discretemovement",
-                        "use:7:discretemovement",
-                        "swapinventoryitems:8:inventory",
-                        "combineinventoryitems:9:inventory",
-                        "discardcurrentitem:10:inventory",
-                        "hotbar.1:11:inventory",
-                        "hotbar.2:12:inventory",
-                        "hotbar.3:13:inventory",
-                        "hotbar.4:14:inventory",
-                        "hotbar.5:15:inventory",
-                        "hotbar.6:16:inventory",
-                        "hotbar.7:17:inventory",
-                        "hotbar.8:18:inventory",
-                        "hotbar.9:19:inventory",
-                        "craft:20:simplecraft",
-                        "nearbycraft:21:nearbycraft"
+                        "0:move 1",
+                        "1:move -1",
+                        "2:turn 1",
+                        "3:turn -1",
+                        "4:look 1",
+                        "5:look -1",
+                        "6:jumpmove",
+                        "7:attack",
+                        "8:use",
+                        "9:jumpuse",
+                        "10:discardcurrentitem",
+                        "11:hotbar.[int]",
+                        "12:swapinventoryitems [i j]",
+                        "13:combineinventoryitems [i j]",
+                        "14:craft [item_name]",
+                        "15:nearbycraft [item_name]",
+                        "16:nearbysmelt [item_name]"
                     ],
                     "children": {}
                 }
@@ -93,155 +83,120 @@
     },
     "skill_specs": {
         "skill_specs": {
-            "move:0:discretemovement": {
-                "description": "action 'move 1' and DiscreteMovement",
+            "0:move 1": {
+                "description": "Move forward",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "move:1:discretemovement": {
-                "description": "action 'move -1' and DiscreteMovement",
+            "1:move -1": {
+                "description": "Move backward",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "jumpmove:2:discretemovement": {
-                "description": "action 'jumpmove 1' and DiscreteMovement",
+            "2:turn 1": {
+                "description": "yaw degrees add 90, when yaw degree is 360, next turn 1 will be 90",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "jumpmove:3:discretemovement": {
-                "description": "action 'jumpmove -1' and DiscreteMovement",
+            "3:turn -1": {
+                "description": "yaw degrees minus 90",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "turn:4:discretemovement": {
-                "description": "action 'turn 1' and DiscreteMovement",
+            "4:look 1": {
+                "description": "Look down, look degree minus 90, max is -180",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "turn:5:discretemovement": {
-                "description": "action 'turn -1' and DiscreteMovement",
+            "5:look -1": {
+                "description": "Look up, look degree add 90, min is 180, when look degree is 180, next look 1 will not change",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "attack:6:discretemovement": {
-                "description": "action 'attack 1' and DiscreteMovement",
+            "6:jumpmove": {
+                "description": "Jump while moving forward",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "use:7:discretemovement": {
-                "description": "action 'use 1' and DiscreteMovement",
+            "7:attack": {
+                "description": "Attack the target in front",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "swapinventoryitems:8:inventory": {
-                "description": "action 'swapInventoryItems' and Inventory",
+            "8:use": {
+                "description": "Use item",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "combineinventoryitems:9:inventory": {
-                "description": "action 'combineInventoryItems' and Inventory",
+            "9:jumpuse": {
+                "description": "Jump and use item",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "discardcurrentitem:10:inventory": {
-                "description": "action 'discardCurrentItem' and Inventory",
+            "10:discardcurrentitem": {
+                "description": "Discard the currently selected item",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "hotbar.1:11:inventory": {
-                "description": "action 'hotbar.1' and Inventory",
+            "11:hotbar.[int]": {
+                "description": "Select hotbar slot [int]",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "hotbar.2:12:inventory": {
-                "description": "action 'hotbar.2' and Inventory",
+            "12:swapinventoryitems [i j]": {
+                "description": "Swap inventory slots i and j items",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "hotbar.3:13:inventory": {
-                "description": "action 'hotbar.3' and Inventory",
+            "13:combineinventoryitems [i j]": {
+                "description": "Combine inventory slots i and j items",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "hotbar.4:14:inventory": {
-                "description": "action 'hotbar.4' and Inventory",
+            "14:craft [item_name]": {
+                "description": "Craft [item_name] when enough materials in inventory",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "hotbar.5:15:inventory": {
-                "description": "action 'hotbar.5' and Inventory",
+            "15:nearbycraft [item_name]": {
+                "description": "Craft [item_name] using nearby crafting table when enough materials in inventory",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
-            "hotbar.6:16:inventory": {
-                "description": "action 'hotbar.6' and Inventory",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "hotbar.7:17:inventory": {
-                "description": "action 'hotbar.7' and Inventory",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "hotbar.8:18:inventory": {
-                "description": "action 'hotbar.8' and Inventory",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "hotbar.9:19:inventory": {
-                "description": "action 'hotbar.9' and Inventory",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "craft:20:simplecraft": {
-                "description": "action 'craft' and SimpleCraft",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "nearbycraft:21:nearbycraft": {
-                "description": "action 'nearbyCraft' and NearbyCraft",
+            "16:nearbysmelt [item_name]": {
+                "description": "Smelt [item_name] using nearby furnace when enough materials in inventory",
                 "type": "capability",
                 "input": null,
                 "output": null,

@@ -2,36 +2,8 @@
     {
         "id": 1,
         "label": "tree",
-        "x": 0.25,
-        "y": 0.15,
-        "nearby": ["tree", "sand", "grass"]
-    },
-    {
-        "id": 2,
-        "label": "tree",
-        "x": 0.75,
-        "y": 0.15,
-        "nearby": ["tree", "sand", "grass"]
-    },
-    {
-        "id": 3,
-        "label": "sand",
         "x": 0.5,
-        "y": 0.6,
-        "nearby": ["water", "grass"]
-    },
-    {
-        "id": 4,
-        "label": "water",
-        "x": 0.9,
-        "y": 0.55,
-        "nearby": ["sand", "grass"]
-    },
-    {
-        "id": 5,
-        "label": "grass",
-        "x": 0.4,
-        "y": 0.45,
-        "nearby": ["tree", "sand", "water"]
+        "y": 0.5,
+        "nearby": []
     }
 ]

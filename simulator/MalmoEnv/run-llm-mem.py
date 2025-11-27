@@ -39,6 +39,7 @@ import time
 from openai import OpenAI
 import sys
 from pathlib import Path
+import re
 # 加入 LLM
 
 
@@ -336,38 +337,52 @@ def save_img(obs, env):
 # 加入 memory
 # 根据info来更新 memory
 # 将所有可用技能转换成 json 格式 == scene_info
-def mc_cap2scene_info(actions, actions_type, grid_info=None):
+def mc_cap2scene_info(actions, actions_type, act_info : dict, grid_info=None):
     skills = []
     skill_specs = {}
 
-    # 遍历动作，生成 capability 名称
-    for i, (act, act_type) in enumerate(zip(actions, actions_type, )):
-        if act is None:
-            act = f"action_{i}"
-        act_clean = str(act).strip()
-        base = act_clean.split()[0] if len(act_clean.split()) > 0 else f"action{i}"
-        # 规范化名称："`Action index`:`action`:`Action Type`"
+    # # 遍历动作，生成 capability 名称
+    # for i, (act, act_type) in enumerate(zip(actions, actions_type )):
+    #     if act is None:
+    #         act = f"action_{i}"
+    #     act_clean = str(act).strip()
+    #     base = act_clean.split()[0] if len(act_clean.split()) > 0 else f"action{i}"
+    #     # 规范化名称："`Action index`:`action`:`Action Type`"
+    #     # cap_name = f"{base}:{i}:{act_type}".replace(" ", "_").replace("-", "neg").replace(".", "_").lower()
+    #     cap_name = f"{base}:{i}:{act_type}".lower()
+    #     # 保证唯一
+    #     if cap_name in skills:
+    #         suffix = 1
+    #         while f"{cap_name}_{suffix}" in skills:
+    #             suffix += 1
+    #         cap_name = f"{cap_name}_{suffix}"
+    #     skills.append(cap_name)
+    #     # 生成简单的 skill_spec
+    #     skill_specs[cap_name] = {
+    #         "description": f"action '{act_clean}' and {act_type}",
+    #         "type": "capability",
+    #         "input": None,
+    #         "output": None,
+    #         "dependencies": []
+    #     }
+    
+    # 遍历act_info_en，生成 capability 名称
+    i = 0
+    for key, value in act_info.items():
+        act = key
+        desc = value
+        cap_name = f"{i}:{act}".lower()
         
-        # cap_name = f"{base}:{i}:{act_type}".replace(" ", "_").replace("-", "neg").replace(".", "_").lower()
-        cap_name = f"{base}:{i}:{act_type}".lower()
-        
-        # 保证唯一
-        if cap_name in skills:
-            suffix = 1
-            while f"{cap_name}_{suffix}" in skills:
-                suffix += 1
-            cap_name = f"{cap_name}_{suffix}"
         skills.append(cap_name)
-
-        # 生成简单的 skill_spec
         skill_specs[cap_name] = {
-            "description": f"action '{act_clean}' and {act_type}",
+            "description": desc,
             "type": "capability",
             "input": None,
             "output": None,
             "dependencies": []
         }
-
+        i += 1
+    
     # 构造 entity_graph（简化版，与 scene_data.json 风格一致）
     entity_graph = {
         "entities": {
@@ -492,7 +507,15 @@ def short2long_space_memory(entity, around, scene_info):
                 temp_entity['precise_position'] = (precise_x, precise_y, precise_z)
             except ValueError:
                 continue
-            
+
+# 将 动作序列转换为 固定记忆 格式 TODO
+def skill2FIXED_mem(task_describe, action_sequence, finish_or_not=True):
+    pass
+
+# TODO 子任务划分
+def subtask_divide(task_describe, action_sequence):
+    pass
+
 '''
 depth = 0 对应 距离对应 0格
 depth = 0 对应 距离对应 1格
@@ -589,9 +612,9 @@ def inventory_parse(info):
             item['item'] = info[key]
             item['size'] = int(info[size_key])             
             if var_key in info:
-                item['variant'] = int(info[var_key])
+                item['variant'] = str(info[var_key])
             if col_key in info:
-                item['colour'] = int(info[col_key])
+                item['colour'] = str(info[col_key])
             inventory[i] = item
         
             
@@ -603,10 +626,10 @@ def inventory_parse(info):
 act_info_en = {
     "move 1": "Move forward",
     "move -1": "Move backward",
-    "turn 1": "yaw degrees add 90",
+    "turn 1": "yaw degrees add 90, when yaw degree is 360, next turn 1 will be 90",
     "turn -1": "yaw degrees minus 90",
-    "look 1": "Look down, look degree minus 1, max is -2",
-    "look -1": "Look up, look degree add 1, min is 2",
+    "look 1": "Look down, look degree minus 90, max is -180",
+    "look -1": "Look up, look degree add 90, min is 180, when look degree is 180, next look 1 will not change",
     "jumpmove": "Jump while moving forward",
     "attack": "Attack the target in front",
     "use": "Use item",
@@ -630,11 +653,10 @@ craftitem_en = """The name of an item to be crafted or smelted.
 
     Supported 2*2 crafting recipes (usable with 'craft [item]'):
         'log' -> 'planks' (4)
-        'planks' -> 'stick' (4)
-        'planks' -> 'crafting_table' (1)
-        'coal + stick' -> 'torch' (4)
+        'planks' (2) -> 'stick' (4)
+        'planks' (4) -> 'crafting_table' (1)
 
-    Supported nearbyCraft 3*3 crafting recipes (require a nearby crafting table):
+    Supported nearbyCraft 3*3 crafting recipes (require a nearby crafting table in around area):
         'planks + stick' -> 'wooden_pickaxe'
         'planks + stick' -> 'wooden_sword'
         'planks + stick' -> 'wooden_axe'
@@ -738,6 +760,67 @@ craftitem_cn = """要制作或熔炼的物品名称。
         - 所有配方都需要库存中有足够的材料。
     """
 
+craft_requirements = {
+    # 基础材料加工
+    "planks": {"log": 1},                 # 1 木头 → 4 木板（RL 中通常简化为 1:1）
+    "stick": {"planks": 2},               # 2 木板 → 4 木棍（简化为 2:1）
+
+    # 基础工具
+    "wooden_pickaxe": {"planks": 3, "stick": 2},
+    "wooden_axe": {"planks": 3, "stick": 2},
+    "wooden_shovel": {"planks": 1, "stick": 2},
+    "wooden_sword": {"planks": 2, "stick": 1},
+
+    # 石制工具
+    "stone_pickaxe": {"cobblestone": 3, "stick": 2},
+    "stone_axe": {"cobblestone": 3, "stick": 2},
+    "stone_shovel": {"cobblestone": 1, "stick": 2},
+    "stone_sword": {"cobblestone": 2, "stick": 1},
+
+    # 熔炉与基本方块
+    "crafting_table": {"planks": 4},
+    "furnace": {"cobblestone": 8},
+
+    # 熔炼
+    "iron_ingot": {"iron_ore": 1, "coal": 1},  # 简化：需要1煤作燃料
+    "gold_ingot": {"gold_ore": 1, "coal": 1},
+    "glass": {"sand": 1, "coal": 1},
+
+    # 火把
+    "torch": {"stick": 1, "coal": 1},
+
+    # 铁制工具
+    "iron_pickaxe": {"iron_ingot": 3, "stick": 2},
+    "iron_axe": {"iron_ingot": 3, "stick": 2},
+    "iron_shovel": {"iron_ingot": 1, "stick": 2},
+    "iron_sword": {"iron_ingot": 2, "stick": 1},
+
+    # 铁制护甲
+    "iron_helmet": {"iron_ingot": 5},
+    "iron_chestplate": {"iron_ingot": 8},
+    "iron_leggings": {"iron_ingot": 7},
+    "iron_boots": {"iron_ingot": 4},
+
+    # 食物加工
+    "cooked_beef": {"raw_beef": 1, "coal": 1},
+    "cooked_salmon": {"raw_salmon": 1, "coal": 1},
+
+    # 建筑材料
+    "stone": {"cobblestone": 1, "coal": 1},     # 平滑石头（烧制）
+    "stone_bricks": {"stone": 4},
+}
+
+
+def parse_action_sequence(action_sequence):    # 解析动作序列字符串，返回动作列表和动作类型列表
+    # 提取 { }可能有多个 { }
+    ret = []
+    
+    action_lines = re.findall(r'\{([^}]*)\}', action_sequence, re.DOTALL)
+    
+    for action_line in action_lines:
+        ret.append(action_line)
+    return ret
+    
 
 def parse_action_string(action_str):    # 解析动作字符串，返回动作和动作类型
     try:
@@ -746,6 +829,9 @@ def parse_action_string(action_str):    # 解析动作字符串，返回动作�
             return None, None
         action_id = parts[0]
         action_str = parts[1]
+        # action_str 开头如果是空格则删去开头空格
+        action_str = action_str.strip()
+        
         # 通过 act_info_en 检查 id 与 str 是否匹配
         if "hotbar." in action_str:
             # 提取数字 id
@@ -839,7 +925,8 @@ if __name__ == '__main__':
     
     # 创建当前场景记忆
     cs = CurrentState()
-    scene_info = mc_cap2scene_info(env.actions, env.actions_type, around_range)
+    # TODO
+    scene_info = mc_cap2scene_info(env.actions, env.actions_type, act_info_en, around_range)
     cs.init_Scene(scene_info)
     
     # 在当前目录下创建log文件夹，并获取当前时间作为log文件名
@@ -924,6 +1011,9 @@ if __name__ == '__main__':
             action = 0
             print("debug Generated action sequence:", action_sequence)
             
+            # action_sequence = parse_action_sequence(action_sequence)
+            # 对 action_sequence 进行检查
+            
             if action_sequence is None or len(action_sequence) == 0:
                 print("No action sequence generated, exiting the episode.")
                 break
@@ -941,10 +1031,12 @@ if __name__ == '__main__':
                     continue
                 action = act_str
                 
-                # 调试：用户决定是否执行
-                user_input = input("input 'q' to quit:")
-                if user_input.lower() == 'q':
-                    break
+                # 调试：用户决定是否执行 每5步
+                if steps % 5 == 0:
+                    print("enter to continue, input 'q' to quit:")
+                    user_input = input(":")
+                    if user_input.lower() == 'q':
+                        break
                 else:
                     pass
                 print("\n" * 5)
@@ -955,30 +1047,24 @@ if __name__ == '__main__':
                 print("diy action: " + action)
                 env.render()
                 
+                # TODO hotbar.[int] 进行特殊处理，先 hotbar.1 1 再 hotbar.1 0 完成切换
+                # TODO craft 相关动作 进行特殊处理，检查材料是否充足 如果不足则跳过，加提示词 或者 是检测生成物是否增加
+                # TODO check inventory
                 obs, reward, done, info = env.step_diy(action)
                 steps += 1
-            
-                # 将以上信息写入action.log
-                with open(log_file, 'a') as f:
-                    f.write("action: " + str(action) + '\n')
-                    f.write('reward: ' + str(reward) + '\n')
-                    f.write('done: ' + str(done) + '\n')
-                    f.write('obs: ' + str(obs) + '\n')
-                    f.write('info: ' + info + '\n')
-                    f.write('-------------------------\n')
-                    
+
                 print("action: " + str(act_str))
-                print("reward: " + str(reward))
-                print("done: " + str(done))
-                print("obs: " + str(obs))
-                print("info" + info)
-                
+                # print("reward: " + str(reward))
+                # print("done: " + str(done))
 
                 # 将 info 字符串 转成 info 字典
                 info = eval(info)
                 
                 # 打印当前库存信息
                 inventories = inventory_parse(info)
+                print("Current Inventory:")
+                for slot, item in inventories.items():
+                    print(f" Slot {slot}: {item}")
                 
                 # 打印出 info 字典的 around 信息
                 around = info.get('around', None)
@@ -993,47 +1079,61 @@ if __name__ == '__main__':
                 for key, value in entity.items():
                     print(f"  {key}: {value}")
                     
-                # 保存图像
-                save_img(obs, env)
-                
-                print("---------detect info---------")
-                test5_kimiV2()
-                
-                # 读取json文件打印识别到的物体和深度信息
-                json_output_path = "detection_output_kimi.json"
-                obj_list = []
-                with open(json_output_path, 'r', encoding='utf-8') as json_file:
-                    detection_data = json.load(json_file) # detection_data 是一个列表
-                    print("Detected objects and their depth information:")
-                    # for obj in detection_data.get('objects', []): 
-                    for obj in detection_data:
-                        name = obj.get('label', 'unknown')
-                        depth = obj.get('depth', 'unknown')
-                        print(f"Object: {name}, Depth: {depth}")
-                        # 根据当前xy值和识别到的物体深度计算物体的绝对位置-粗略的-后续根据“雷达”信息精确定位
-                        obj_list.append(
-                            {
-                                'name': name,
-                                'depth': depth,
-                                'x': entity.get('x'),
-                                'y': entity.get('y'),
-                                'z': entity.get('z')
-                            }
-                    )
-                
-                # LLM 做法
-                cur_act_msg += f"action {act_str}, entity {entity}, detect object is {obj_list}, around info is {around}\n"
-                
-                # TODO LLM+MEM 做法
-                # 更新短期空间记忆 + 短期-》长期 + 更新当前场景记忆 + 检索相关信息
-                # scene_info = record_short_space_memory(scene_info, obj_list, entity)
-                # scene_info = short2long_space_memory(entity, around, scene_info)
-                # cs.update_Scene(scene_info)
-                # cur_act_msg += cs.retrieval_Request(user_request)
+                # 将以上信息写入action.log
+                with open(log_file, 'a') as f:
+                    f.write("action: " + str(action) + '\n')
+                    f.write('reward: ' + str(reward) + '\n')
+                    f.write('done: ' + str(done) + '\n')
+                    # f.write('obs: ' + str(obs) + '\n')
+                    f.write('Inventory: ' + str(inventories) + '\n')
+                    f.write('around: ' + str(around) + '\n')
+                    f.write('entity: ' + str(entity) + '\n')
+                    f.write('-------------------------\n')
+                    
+                    # 保存图像
+                if "inventory" not in act_str and "hotbar" not in act_str and "craft" not in act_str:
+                    save_img(obs, env)
+                    
+                    print("---------detect info---------")
+                    test5_kimiV2()
+                    
+                    # 读取json文件打印识别到的物体和深度信息
+                    json_output_path = "detection_output_kimi.json"
+                    obj_list = []
+                    with open(json_output_path, 'r', encoding='utf-8') as json_file:
+                        detection_data = json.load(json_file) # detection_data 是一个列表
+                        print("Detected objects and their depth information:")
+                        # for obj in detection_data.get('objects', []): 
+                        for obj in detection_data:
+                            name = obj.get('label', 'unknown')
+                            depth = obj.get('depth', 'unknown')
+                            print(f"Object: {name}, Depth: {depth}")
+                            # 根据当前xy值和识别到的物体深度计算物体的绝对位置-粗略的-后续根据“雷达”信息精确定位
+                            obj_list.append(
+                                {
+                                    'name': name,
+                                    'depth': depth,
+                                    'x': entity.get('x'),
+                                    'y': entity.get('y'),
+                                    'z': entity.get('z')
+                                }
+                        )
+                    
+                    # LLM 做法
+                    cur_act_msg += f"action {act_str}, entity {entity}, detect object is {obj_list}, around info is {around}\n"
+                    
+                    # TODO LLM+MEM 做法
+                    # 更新短期空间记忆 + 短期-》长期 + 更新当前场景记忆 + 检索相关信息
+                    # scene_info = record_short_space_memory(scene_info, obj_list, entity)
+                    # scene_info = short2long_space_memory(entity, around, scene_info)
+                    # cs.update_Scene(scene_info)
+                    # cur_act_msg += cs.retrieval_Request(user_request)
                 
                 time.sleep(1)
-                
-                
+
+            if user_input.lower() == 'q':
+                break
+            
             # 更新 llm messages
             messages.append({"role": "user", "content": cur_act_msg})
             action_sequence, messages = client.query_request(query=user_request, messages=messages)
