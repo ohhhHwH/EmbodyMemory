@@ -317,6 +317,13 @@ class Env:
     def seed(self):
         pass
     
+    def hotbar_switch(self, action_str):
+        action_str1 = action_str + " 1"
+        obs, reward, done, info = self.chat_update(action_str1)
+        action_str0 = action_str + " 0"
+        obs, reward, done, info = self.chat_update(action_str0)
+        return obs, reward, done, info
+    
     def step_diy(self, action_str="craft planks oak"):
         obs = None
         reward = None
@@ -330,7 +337,13 @@ class Env:
                  (withinfo and info is None) or turn):
                     
             action_str = action_str
-            
+            if action_str == 'look 1' and self.view_angle < 2:
+                self.view_angle += 1
+            elif action_str == 'look -1' and self.view_angle > -2:
+                self.view_angle -= 1
+            elif "hotbar." in action_str:
+                # hotbar.[int] 进行特殊处理，先 hotbar.1 1 再 hotbar.1 0 完成切换
+                return self.hotbar_switch(action_str)
             step_message = "<Step" + str(self.step_options) + ">" + \
                            action_str + \
                            "</Step" + str(self.step_options) + " >"
@@ -368,9 +381,11 @@ class Env:
                 obs = obs.reshape((self.height, self.width, self.depth)).astype(np.uint8)
         self.last_obs = obs
         # return obs, reward, self.done, info
+        # hotbar.[int] 进行特殊处理，先 hotbar.1 1 再 hotbar.1 0 完成切换
+        
         return self.chat_update()
                        
-    def chat_update(self):
+    def chat_update(self, action_str = "chat"):
         # # 发送 chat 指令使其更新 obs info 等
         time.sleep(1)
         self.render()
@@ -387,7 +402,7 @@ class Env:
                  (withinfo and info is None) or turn):
 
             step_message = "<Step" + str(self.step_options) + ">" + \
-                           "chat" + \
+                           action_str + \
                            "</Step" + str(self.step_options) + " >"
 
             comms.send_message(self.client_socket, step_message.encode())

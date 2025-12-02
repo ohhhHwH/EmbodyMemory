@@ -288,7 +288,7 @@ class MCPClient:
         await self.exit_stack.aclose()
 
     # 将 query 通过 llm 化为具体的plan - 仿照process_query中实现
-    def query_request(self, query : str, info : str = None, safe_rule : str = None, prompt : str = None , messages : list = None) -> Tuple[List[Any], List[Any]]:
+    def query_request(self, query : str = None, info : str = None, safe_rule : str = None, prompt : str = None , messages : list = None) -> Tuple[List[Any], List[Any]]:
         # 将info 添加到system_prompt_en中
         if prompt is None:
             prompt = system_prompt_en
@@ -298,7 +298,7 @@ class MCPClient:
             prompt += "\n the plan must follow the following safe_rule:\n" + safe_rule
 
         # 构建messages
-        if messages is None:
+        if messages is None and query is not None:
             messages = [
                 {
                     "role": "system",

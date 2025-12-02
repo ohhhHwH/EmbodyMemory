@@ -112,14 +112,14 @@
                 "dependencies": []
             },
             "4:look 1": {
-                "description": "Look down, look degree minus 90, max is -180",
+                "description": "Look down, view degree minus 90, max is -180",
                 "type": "capability",
                 "input": null,
                 "output": null,
                 "dependencies": []
             },
             "5:look -1": {
-                "description": "Look up, look degree add 90, min is 180, when look degree is 180, next look 1 will not change",
+                "description": "Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change",
                 "type": "capability",
                 "input": null,
                 "output": null,

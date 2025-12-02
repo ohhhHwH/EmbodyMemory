@@ -1,9 +1,37 @@
 [
     {
         "id": 1,
-        "label": "tree",
+        "label": "log",
         "x": 0.5,
         "y": 0.5,
-        "nearby": []
+        "nearby": ["log", "log"]
+    },
+    {
+        "id": 2,
+        "label": "log",
+        "x": 0.25,
+        "y": 0.5,
+        "nearby": ["log", "log"]
+    },
+    {
+        "id": 3,
+        "label": "log",
+        "x": 0.75,
+        "y": 0.5,
+        "nearby": ["log", "log"]
+    },
+    {
+        "id": 4,
+        "label": "leaves",
+        "x": 0.5,
+        "y": 0.05,
+        "nearby": ["log"]
+    },
+    {
+        "id": 5,
+        "label": "leaves",
+        "x": 0.5,
+        "y": 0.95,
+        "nearby": ["log"]
     }
 ]

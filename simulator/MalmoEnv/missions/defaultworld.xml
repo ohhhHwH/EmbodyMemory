@@ -32,7 +32,7 @@
                 
                 <Inventory>
                     <InventoryItem slot="0" type="crafting_table" quantity="1"/>
-                    <InventoryItem slot="1" type="log" quantity="64"/>
+                    <!-- <InventoryItem slot="1" type="log" quantity="64"/> -->
                 </Inventory>
             </AgentStart>
             <AgentHandlers>
