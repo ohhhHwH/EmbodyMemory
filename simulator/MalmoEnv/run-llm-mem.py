@@ -115,8 +115,7 @@ system_prompt_cn_mc = '''
     当你获得工具调用结果时,你将继续根据工具调用结果回答用户查询。
     永远不要编造不在其中的工具或参数。
 '''
-system_prompt_en_mc_v2 = '''
-    as a player in minecraft, you will answer user queries and use tools to get information.
+system_prompt_en_mc_v2 = '''as a player in minecraft, you will answer user queries and use tools to get information.
     you will use the tools provided by the server to get information.
     if you need to call tools, you should return the function call in the format without any explanation or other words:
     {
@@ -136,7 +135,6 @@ system_prompt_en_mc_v2 = '''
     when you get the tool call results, you will continue to answer the user query based on the tool call results.
     never make up tools or parameters that are not in.
 '''
-
 system_prompt_cn_mc_v2 = '''
     作为 minecraft 中的玩家,你将回答用户的查询并使用工具获取信息。
     你将使用服务器提供的工具来获取信息。
@@ -158,11 +156,319 @@ system_prompt_cn_mc_v2 = '''
     当你获得工具调用结果时,你将继续根据工具调用结果回答用户查询。
     永远不要编造不在其中的工具或参数。
 '''
+sub_mission_prompt_en = '''
+    as a player in minecraft, you will decompose the user's task into several sub-tasks, each sub-task should be as short and easy to complete as possible.
+    the types of sub-tasks are divided into the following categories:
+    1. find tasks: such as "find wood", "find water", etc.
+    2. gather tasks: such as "gather wood", "gather stone", etc.
+    3. craft tasks: such as "craft planks", "craft tools", etc.
+    4. explore tasks: such as "explore cave", "explore map", etc.
+    please decompose the user's task description into several sub-tasks in order, the format of the sub-tasks is
+    {
+        1:"find wood",
+        2:"gather wood",
+        3:"craft planks",
+        4:"explore cave"
+    }
+'''
+sub_mission_prompt_cn = '''
+    作为 minecraft 中的玩家,你将用户的任务拆解成多个子任务,每个子任务应尽可能简短且易于完成。
+    子任务的类型分为以下几种：
+    1. 寻找类任务：如“寻找 木头”、寻找 水”等。
+    2. 采集类任务：如“采集 木头”、“采集 石头”等。
+    3. 制作类任务：如“制作 木板”、“制作 工具”等。
+    4. 探索类任务：如“探索 洞穴”、“探索 地图”等。
+    请根据用户的任务描述,将任务拆解成多个子任务,并按顺序列出,其子任务格式为
+    {
+        1:"找到 木头",
+        2:"采集 木头",
+        3:"制作 木板",
+        4:"探索 洞穴"
+    }
+    请确保子任务简洁明了,并且每个子任务都可以通过游戏内的动作来完成。
+'''
 
-# 加入 memory
+# 对每个 动作 进行技能描述
+
+act_info_enV2 = {
+    "move 1": "Move forward",
+    "move -1": "Move backward",
+    "turn 1": "yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90",
+    "turn -1": "yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270",
+    "look 1": "Look down, view degree minus 90, max is -180",
+    "look -1": "Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change",
+    "jumpmove": "Jump while moving forward, when there is an obstacle in front, can jump over the obstacle",
+    "attack": "Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2",
+    "use": "Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item",
+    "jumpuse": "Jump and use item",
+    "discardCurrentItem": "Discard the currently selected item",
+    
+    "hotbar.[int]": "Select hotbar slot [int]",
+    "swapInventoryItems [i j]": "Swap inventory slots i and j items",
+    "combineInventoryItems [i j]": "Combine inventory slots i and j items",
+    
+    "craft [item_name]": "Craft [item_name] when enough materials in inventory",
+    "nearbyCraft [item_name]": "Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory",
+    "nearbySmelt [item_name]": "Smelt [item_name] using nearby furnace when enough materials in inventory",
+
+}
+
+act_info_en = {
+    "move 1": "Move forward",
+    "move -1": "Move backward",
+    "turn 1": "yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90",
+    "turn -1": "yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270",
+    "look 1": "Look down, view degree minus 90, max is -180",
+    "look -1": "Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change",
+    "jumpmove": "Jump while moving forward, when there is an obstacle in front, can jump over the obstacle",
+    "attack": "Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2",
+    "use": "Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item",
+    "jumpuse": "Jump and use item",
+    "discardCurrentItem": "Discard the currently selected item",
+    
+    "hotbar.[int]": "Select hotbar slot [int]",
+    "swapInventoryItems [i j]": "Swap inventory slots i and j items",
+    "combineInventoryItems [i j]": "Combine inventory slots i and j items",
+    
+    "craft [item_name]": "Craft [item_name] when enough materials in inventory",
+    "nearbyCraft [item_name]": "Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory",
+    "nearbySmelt [item_name]": "Smelt [item_name] using nearby furnace when enough materials in inventory",
+
+}
+
+act_info_cnV2 = {
+    "move 1": "前进一步",
+    "move -1": "后退一步",
+    "turn 1": "向右转90度",
+    "turn -1": "向左转90度",
+    "look 1": "向下看,视角角度减90,最大值为-180,当视角角度为-180时,下一次向下看将不再变化",
+    "look -1": "向上看,视角角度加90,最小值为180,当视角角度为180时,下一次向上看将不再变化",
+    "jumpmove": "跳跃并前进,当前方有障碍物时,可以跳跃前进越过障碍物",
+    "attack": "攻击前方1-2格的目标,采集物品,当需要采集REL y=0的物品时,先 look 1 向下调整视角到第0层,再使用attack进行采集, 采集 REL y=1 的物品时,不需要调整视角, 采集 REL y=2 的物品时,需要 look -1 向上调整视角到第2层",
+    "use": "使用物品, 将当前快捷栏选中的物品使用在前方1-2格的目标上,必须有目标才能使用物品",
+    "jumpuse": "跳跃并使用物品",
+    "hotbar.[int]": "选择快捷栏槽位[int]",
+    "swapInventoryItems [i j]": "交换库存槽位i和j的物品",
+    "combineInventoryItems [i j]": "将库存槽位i和j的物品合并",
+    "discardCurrentItem": "丢弃当前选中的物品",
+    "craft [item_name]": "当库存中有足够材料时,制作[item_name]",
+    "nearbyCraft [item_name]": "需要先将crafr table放置在周围的环境中,当库存中有足够材料时,使用附近的工作台制作[item_name]",
+    "nearbySmelt [item_name]": "当库存中有足够材料时,使用附近的熔炉熔炼[item_name]",
+}
+
+act_info_cn = {
+    "move 1": "前进一步",
+    "move -1": "后退一步",
+    "turn 1": "向右转90度",
+    "turn -1": "向左转90度",
+    "look 1": "向下看,视角角度减90,最大值为-180,当视角角度为-180时,下一次向下看将不再变化",
+    "look -1": "向上看,视角角度加90,最小值为180,当视角角度为180时,下一次向上看将不再变化",
+    "jumpmove": "跳跃并前进,当前方有障碍物时,可以跳跃前进越过障碍物",
+    "attack": "攻击前方1-2格的目标,采集物品,当需要采集REL y=0的物品时,先 look 1 向下调整视角到第0层,再使用attack进行采集, 采集 REL y=1 的物品时,不需要调整视角, 采集 REL y=2 的物品时,需要 look -1 向上调整视角到第2层",
+    "use": "使用物品, 将当前快捷栏选中的物品使用在前方1-2格的目标上,必须有目标才能使用物品",
+    "jumpuse": "跳跃并使用物品",
+    "hotbar.[int]": "选择快捷栏槽位[int]",
+    "swapInventoryItems [i j]": "交换库存槽位i和j的物品",
+    "combineInventoryItems [i j]": "将库存槽位i和j的物品合并",
+    "discardCurrentItem": "丢弃当前选中的物品",
+    "craft [item_name]": "当库存中有足够材料时,制作[item_name]",
+}
 
 
-# 新增：从 mission xml 中解析 ObservationFromGrid 的 min/max
+viewinfo_en = """yaw 0 is z axis positive direction,yaw 180 is z axis negative direction
+    yaw 270 is x axis positive direction.yaw 90 is x axis negative direction.
+    player is located at the center of around, y axis level 0 is the player's level, the center grid of level 0 is the player's grid,
+    y axis level 1 is the player's view level, to observe the next level of the grid in front, you need to adjust the view with look 1.
+    when you need to collect objects on the y axis level 0 in front of the player, you need to adjust the view down to level 0 with look 1.
+    """
+    
+viewinfo_cn = """yaw 0 是 z 轴正方向,yaw 180 是 z 轴负方向,
+    yaw 270 是 x 轴正方向,yaw 90 是 x 轴负方向。
+    玩家位于 around 的中心位置,y轴第0层为玩家所在层级,第0层中心格为玩家所在格,
+    y轴第1层为玩家视角层级,观察前面一格的下一级需要 look 1 调整视角。
+    当需要搜集玩家面前y轴第0层的物体,需要look 1向下调整视界到第0层。
+    """
+
+around_info_en = """the observation is 3D, the first dimension is y axis,
+the second dimension is z axis,
+the third dimension is x axis.
+"""
+
+around_info_cn = """观察是3D的,第一个维度是y轴,
+第二个维度是z轴,
+第三个维度是x轴。
+"""
+
+craftitem_enV2 = """
+    Notes:
+        - 'craft' works only for 2*2 recipes.
+        - 'nearbyCraft' works only if a crafting table is within reach.
+        - 'nearbySmelt' works only if a furnace is within reach.
+        - All recipes require enough materials in inventory.
+    """
+
+craftitem_cnV2 = """
+    注意：
+        - 'craft'仅适用于2*2配方,包括planks stick torch。
+        - 'nearbyCraft'仅在工作台在可达范围内时有效。
+        - 'nearbySmelt'仅在熔炉在可达范围内时有效。
+        - 所有配方都需要库存中有足够的材料。
+    """
+
+craftitem_en = """
+    Notes:
+        - All recipes require enough materials in inventory.
+    """
+
+craftitem_cn = """
+    注意：
+        - 所有配方都需要库存中有足够的材料。
+    """
+
+# 实际运行中 都用 craft 且不需要 区分 2x2 和 3x3 和 建立工作台和熔炉, 这里只是仿真模拟
+craft_requirements = {
+    
+            "planks": {"log": 1},                 # 1 木头 → 4 木板（RL 中通常简化为 1:1）
+            "stick": {"planks": 2},               # 2 木板 → 4 木棍（简化为 2:1）
+            # 火把
+            "torch": {"stick": 1, "coal": 1},     
+
+            "crafting_table": {"planks": 4},      # 4 木板 → 1 工作台
+            # 基础工具
+            "wooden_pickaxe": {"planks": 3, "stick": 2},
+            "wooden_axe": {"planks": 3, "stick": 2},
+            "wooden_shovel": {"planks": 1, "stick": 2},
+            "wooden_sword": {"planks": 2, "stick": 1},
+
+            # 石制工具
+            "stone_pickaxe": {"cobblestone": 3, "stick": 2},
+            "stone_axe": {"cobblestone": 3, "stick": 2},
+            "stone_shovel": {"cobblestone": 1, "stick": 2},
+            "stone_sword": {"cobblestone": 2, "stick": 1},
+
+            # 熔炉与基本方块
+            "crafting_table": {"planks": 4},
+            "furnace": {"cobblestone": 8},
+            
+            # 基础工具
+            "wooden_pickaxe": {"planks": 3, "stick": 2},
+            "wooden_axe": {"planks": 3, "stick": 2},
+            "wooden_shovel": {"planks": 1, "stick": 2},
+            "wooden_sword": {"planks": 2, "stick": 1},
+            
+            # 石制工具
+            "stone_pickaxe": {"cobblestone": 3, "stick": 2},
+            "stone_axe": {"cobblestone": 3, "stick": 2},
+            "stone_shovel": {"cobblestone": 1, "stick": 2},
+            "stone_sword": {"cobblestone": 2, "stick": 1},
+
+            # 熔炉与基本方块
+            "crafting_table": {"planks": 4},
+            "furnace": {"cobblestone": 8},
+            
+            # 铁制工具
+            "iron_pickaxe": {"iron_ingot": 3, "stick": 2},
+            "iron_axe": {"iron_ingot": 3, "stick": 2},
+            "iron_shovel": {"iron_ingot": 1, "stick": 2},
+            "iron_sword": {"iron_ingot": 2, "stick": 1},
+
+            # 铁制护甲
+            "iron_helmet": {"iron_ingot": 5},
+            "iron_chestplate": {"iron_ingot": 8},
+            "iron_leggings": {"iron_ingot": 7},
+            "iron_boots": {"iron_ingot": 4},
+    
+            # 熔炼
+            "iron_ingot": {"iron_ore": 1, "coal": 1},  # 简化：需要1煤作燃料
+            "gold_ingot": {"gold_ore": 1, "coal": 1},
+            "glass": {"sand": 1, "coal": 1},
+
+            # 食物加工
+            "cooked_beef": {"raw_beef": 1, "coal": 1},
+            "cooked_salmon": {"raw_salmon": 1, "coal": 1},
+
+            # 建筑材料
+            "stone": {"cobblestone": 1, "coal": 1},     # 平滑石头（烧制）
+            "stone_bricks": {"stone": 4},
+    
+
+}
+
+craft_requirementsV2 = {
+    "craft" :  {
+            "planks": {"log": 1},                 # 1 木头 → 4 木板（RL 中通常简化为 1:1）
+            "stick": {"planks": 2},               # 2 木板 → 4 木棍（简化为 2:1）
+            # 火把
+            "torch": {"stick": 1, "coal": 1},     
+    },
+    
+    "nearbyCraft" : {
+            "crafting_table": {"planks": 4},      # 4 木板 → 1 工作台
+            # 基础工具
+            "wooden_pickaxe": {"planks": 3, "stick": 2},
+            "wooden_axe": {"planks": 3, "stick": 2},
+            "wooden_shovel": {"planks": 1, "stick": 2},
+            "wooden_sword": {"planks": 2, "stick": 1},
+
+            # 石制工具
+            "stone_pickaxe": {"cobblestone": 3, "stick": 2},
+            "stone_axe": {"cobblestone": 3, "stick": 2},
+            "stone_shovel": {"cobblestone": 1, "stick": 2},
+            "stone_sword": {"cobblestone": 2, "stick": 1},
+
+            # 熔炉与基本方块
+            "crafting_table": {"planks": 4},
+            "furnace": {"cobblestone": 8},
+            
+            # 基础工具
+            "wooden_pickaxe": {"planks": 3, "stick": 2},
+            "wooden_axe": {"planks": 3, "stick": 2},
+            "wooden_shovel": {"planks": 1, "stick": 2},
+            "wooden_sword": {"planks": 2, "stick": 1},
+            
+            # 石制工具
+            "stone_pickaxe": {"cobblestone": 3, "stick": 2},
+            "stone_axe": {"cobblestone": 3, "stick": 2},
+            "stone_shovel": {"cobblestone": 1, "stick": 2},
+            "stone_sword": {"cobblestone": 2, "stick": 1},
+
+            # 熔炉与基本方块
+            "crafting_table": {"planks": 4},
+            "furnace": {"cobblestone": 8},
+            
+            # 铁制工具
+            "iron_pickaxe": {"iron_ingot": 3, "stick": 2},
+            "iron_axe": {"iron_ingot": 3, "stick": 2},
+            "iron_shovel": {"iron_ingot": 1, "stick": 2},
+            "iron_sword": {"iron_ingot": 2, "stick": 1},
+
+            # 铁制护甲
+            "iron_helmet": {"iron_ingot": 5},
+            "iron_chestplate": {"iron_ingot": 8},
+            "iron_leggings": {"iron_ingot": 7},
+            "iron_boots": {"iron_ingot": 4},
+    },
+    
+    "nearbySmelt" : {
+            # 熔炼
+            "iron_ingot": {"iron_ore": 1, "coal": 1},  # 简化：需要1煤作燃料
+            "gold_ingot": {"gold_ore": 1, "coal": 1},
+            "glass": {"sand": 1, "coal": 1},
+
+            # 食物加工
+            "cooked_beef": {"raw_beef": 1, "coal": 1},
+            "cooked_salmon": {"raw_salmon": 1, "coal": 1},
+
+            # 建筑材料
+            "stone": {"cobblestone": 1, "coal": 1},     # 平滑石头（烧制）
+            "stone_bricks": {"stone": 4},
+    }
+
+}
+
+
+
+# 从 mission xml 中解析 ObservationFromGrid 的 min/max
 def get_observation_grid_range(source, grid_name=None):
     # 载入 xml 文本aaaaaaa
     if isinstance(source, (str, Path)) and Path(source).exists():
@@ -339,7 +645,6 @@ def info_process(env, info):
     
     return inventories, around, entity_processed
 
- 
 def around_msg(around)->str:
     print("info around: " )
     msg = "info around: \n"
@@ -396,35 +701,27 @@ def save_img(obs, env):
     else:
         print("当前观测中没有深度通道")
 
-
-
-# 加入 memory
-# 根据info来更新 memory
-# 将所有可用技能转换成 json 格式 == scene_info
+# 将所有可用技能转换成 json 格式 == scene_info # 加入 memory # 根据info来更新 memory
 def mc_cap2scene_info(actions, actions_type, act_info : dict, grid_info=None):
-    skills = []
-    skill_specs = {}
+    entity_skills_name = []
+    entity_skill_specs = {}
     
     # 遍历act_info_en,生成 capability 名称
-    i = 0
-    for key, value in act_info.items():
-        act = key
-        desc = value
+    for i, (act, desc) in enumerate(act_info.items()):
         cap_name = f"{i}:{act}".lower()
-        
-        skills.append(cap_name)
-        skill_specs[cap_name] = {
+        entity_skills_name.append(cap_name)
+        entity_skill_specs[cap_name] = {
+            "name": cap_name,
             "description": desc,
-            "type": "capability",
-            "input": None,
-            "output": None,
-            "dependencies": []
+            # "input": None,
+            # "output": None,
+            # "dependencies": []
+            # "children": []
         }
-        i += 1
     
     # 构造 entity_graph（简化版,与 scene_data.json 风格一致）
     entity_graph = {
-        "entities": {
+        "entities": { 
             "/": {
                 "name": "/",
                 "parent": "",
@@ -445,43 +742,155 @@ def mc_cap2scene_info(actions, actions_type, act_info : dict, grid_info=None):
                 "parent": "/entity",
                 "children": []
             },
-            # "/entity/radar": {
-            #     "name": "radar",
-            #     "parent": "/entity",
-            #     "children": []
-            # }, # grid_info
         },
-        "skills": {
+        "skills": { # skills 是 混合 情景节点的节点
             "/": [],
-            "/entity": skills
+            "/temp": [],
+            "/entity": entity_skills_name
         },
         "graph_structure": {
             "name": "/",
             "path": "/",
             "skills": [],
             "children": {
-                "robot": {
-                    "name": "robot",
-                    "path": "/robot",
-                    "skills": skills,
+                "entity": {
+                    "name": "entity",
+                    "path": "/entity",
+                    "skills": entity_skills_name,
+                    "children": {}
+                },
+                "temp": {
+                    "name": "temp",
+                    "path": "/temp",
+                    "skills": [],
                     "children": {}
                 }
             }
         }
-
-
     }
 
     scene_info = {
         "entity_graph": entity_graph,
-        "skill_specs": {"skill_specs": skill_specs}
+        "skill_specs": entity_skill_specs
     }
+
+    return scene_info
+
+def diff_obj_list(obj_list_bef, obj_list)->{list, list}:
+    # 计算 obj_list 的差异
+    input_diff = []
+    output_diff = []
     
-    print(scene_info)
-    # 写入 scene_info.json
-    with open("scene_info.json", "w") as f:
-        json.dump(scene_info, f, indent=4)
+    # 合并 obj_list_bef 和 obj_list 为hash 元素为 key
+    diff = {}
+    for obj in obj_list_bef:
+        if obj['ACC'] == True:
+            key = (obj['name'], obj['RELx'], obj['RELy'], obj['RELz'], obj['size'])
+            diff[key] = obj
+    for obj in obj_list:
+        if obj['ACC'] == True:
+            key = (obj['name'], obj['RELx'], obj['RELy'], obj['RELz'], obj['size'])
+            if key in diff:
+                # 已存在，表示未变化，删除该键
+                del diff[key]
+            else:
+                # 不存在，表示新增，加入 diff
+                output_diff.append(obj)
     
+    
+    # 遍历所有物体，计算数量差异
+    for key, obj in diff.items():
+        input_diff.append(obj)
+
+    return input_diff, output_diff
+
+# 生成记忆点
+def mem_generation(action, inventories_bef, aimed_object_bef, obj_list_bef, inventories, obj_list, entity, env)->list:
+    msg = {}
+    # inventory 包含的物体
+    input_items, output_items = craft_diff_get(inventories_bef, inventories)
+    # aimed 物体
+    # aimed_obj = 
+    # obj_list 
+    obj_input_diff, obj_output_diff = diff_obj_list(obj_list_bef, obj_list)
+    # around 包含的物体
+    # get_around_objects_precise_pos(entity, around, around_range)
+    # entity 的状态
+    yaw = entity['yaw']
+    degree = env.view_angle
+    hotbar_id = env.hotbarid
+    hotbar_item = get_hotbar_item(inventories, hotbar_id)
+    
+    # msg 根据action类型的不同记录不同的信息
+    msg['name'] = action
+    input = {}
+    output = {}
+    # dependencies = {}
+    if "craft" in action or "nearbyCraft" in action or "nearbySmelt" in action:
+        if output_items != {}:
+            input["input_items"] = input_items
+            output["output_items"] = output_items
+    elif action == "attack":
+        input['yaw'] = yaw
+        input["obj_list"] = obj_input_diff
+        input['aimed_obj'] = aimed_object_bef
+        output["output_items"] = output_items
+        output["obj_list"] = obj_output_diff
+    elif action == "use" or action == "jumpuse" or "hotbar." in action:
+        input['hotbar_item'] = hotbar_item
+    elif "Item" in action:
+        pass
+    elif "look" in action :
+        input['degree'] = degree
+    else:
+        # 移动的指令 ， 连续移动不做记录，但最后一次移动需要记录， 仅保留上一次移动的场景 即寻找最后的场景信息
+        input["obj_list"] = obj_list
+        input['aimed_obj'] = aimed_object_bef
+        # output["obj_list"] = obj_output_diff
+        
+    msg['input'] = input
+    msg['output'] = output
+    # msg['dependencies'] = dependencies
+    return msg
+
+# 将 动作序列转换为 固定记忆 格式 TODO CS的场景mem 对记忆信息进行处理 删除无用的 移动信息， 只保留移动后的场景信息
+def skill2FIXED_mem(task_describe, record_actions, scene_info):
+    
+    
+    
+    task_name = task_describe.replace(" ", "_").lower()
+    task_describe = f"{task_describe} - composed of {len(record_actions)} steps."
+    
+    task_skills_spec = []
+    task_skills_name = []
+    # 遍历act_info_en,生成 capability 名称
+    for i, mem_msg in enumerate(record_actions):
+        action_name = mem_msg.get('name', '')
+        # 改名 唯一
+        cap_name = f"{i}:{action_name}".lower()
+        mem_msg['action'] = cap_name
+        mem_msg["description"] = f"step {i} action {action_name}"
+        # 
+        task_skills_name.append(cap_name)
+        task_skills_spec.append(mem_msg)
+        
+    # 将 task_memory 添加到 temp_skills 中
+    temp_skills = scene_info.get("entity_graph", {}).get("skills", {}).get("/temp", [])
+    temp_skills.append(task_name)
+    
+    temp_skills_gs = scene_info.get("entity_graph", {}).get("graph_structure", {}).get("children", {}).get("temp", {}).get("skills", [])
+    temp_skills_gs.append(task_name)
+    
+    # entity_skill_specs 中 加入 task_spec 说明
+    task_spec = {
+        "name": task_name,
+        "description": task_describe,
+        "input": record_actions[0].get("input", None), # 获取第一步的 input 作为 task_memory 的 input
+        "output": record_actions[-1].get("output", None), # 获取最后一步的 output 作为 task_memory 的 output
+        "actions": task_skills_spec,
+    }
+    temp_skill_specs = scene_info.get("skill_specs", {})
+    temp_skill_specs[task_name] = task_spec
 
     return scene_info
 
@@ -495,23 +904,41 @@ def record_short_space_memory(scene_info, obj_list, entity):
     if not entity:
         return scene_info
     
-
-    # 将物体作为 entities/temp 的 孩子 添加到 /temp 下
+    # TODO 增量更新
+    
+    # 清空 /temp 下的 children
+    entity_graph["entities"]["/temp"]["children"] = []
+    entity_graph["graph_structure"]["children"]["temp"]["children"] = {}
+    for child in list(entity_graph["entities"].keys()):
+        if child.startswith("/temp/"):
+            del entity_graph["entities"][child]
+    
+    obj_name_list = []
+    # 将物体作为 entities /temp 的 孩子 添加到 /temp 下
     for obj in obj_list:
         obj_name = obj.get('name', 'unknown')
-        obj_x = obj.get('x', 0)
-        obj_y = obj.get('y', 0)
-        obj_z = obj.get('z', 0) 
+        obj_x = obj.get('RELx', 0)
+        obj_y = obj.get('RELy', 0)
+        obj_z = obj.get('RELz', 0) 
         # 生成唯一路径
-        obj_entity_path = f"/temp/{obj_name}_{int(obj_x)}_{int(obj_y)}_{int(obj_z)}"
+        obj_name = f"{obj_name}_{int(obj_x)}_{int(obj_y)}_{int(obj_z)}"
+        obj_entity_path = f"/temp/{obj_name}"
+        obj_name_list.append(obj_entity_path)
         entity_graph["entities"][obj_entity_path] = {
             "name": obj_name,
             "parent": "/temp",
-            "children": []
+            "RElx": obj_x,
+            "REly": obj_y,
+            "RElz": obj_z,
+            "size": obj.get('size', 1),
+        }
+        # scene_info 中  entity_graph 的 graph_structure 也要更新
+        entity_graph["graph_structure"]["children"]["temp"]["children"][obj_name] = {
+            "name": obj_name,
+            "path": obj_entity_path,
         }
         # 将该物体添加到 /temp 的 children 中
         entity_graph["entities"]["/temp"]["children"].append(obj_entity_path)
-    
     return scene_info
     
 def short2long_space_memory(entity, around, scene_info):
@@ -546,15 +973,6 @@ def short2long_space_memory(entity, around, scene_info):
                 temp_entity['precise_position'] = (precise_x, precise_y, precise_z)
             except ValueError:
                 continue
-
-# 将 动作序列转换为 固定记忆 格式 TODO
-def skill2FIXED_mem(task_describe, action_sequence, finish_or_not=True):
-    pass
-
-# TODO 子任务划分
-def subtask_divide(task_describe, action_sequence):
-    pass
-
 
 '''
 depth = 0 对应 距离对应 0格
@@ -660,163 +1078,6 @@ def inventory_parse(info):
             
     return inventory
 
-
-# 对每个 动作 进行技能描述
-
-act_info_en = {
-    "move 1": "Move forward",
-    "move -1": "Move backward",
-    "turn 1": "yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90",
-    "turn -1": "yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270",
-    "look 1": "Look down, view degree minus 90, max is -180",
-    "look -1": "Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change",
-    "jumpmove": "Jump while moving forward, when there is an obstacle in front, can jump over the obstacle",
-    "attack": "Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2",
-    "use": "Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item",
-    "jumpuse": "Jump and use item",
-    "discardCurrentItem": "Discard the currently selected item",
-    
-    "hotbar.[int]": "Select hotbar slot [int]",
-    "swapInventoryItems [i j]": "Swap inventory slots i and j items",
-    "combineInventoryItems [i j]": "Combine inventory slots i and j items",
-    
-    "craft [item_name]": "Craft [item_name] when enough materials in inventory",
-    "nearbyCraft [item_name]": "Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory",
-    "nearbySmelt [item_name]": "Smelt [item_name] using nearby furnace when enough materials in inventory",
-
-}
-
-act_info_cn = {
-    "move 1": "前进一步",
-    "move -1": "后退一步",
-    "turn 1": "向右转90度",
-    "turn -1": "向左转90度",
-    "look 1": "向下看,视角角度减90,最大值为-180,当视角角度为-180时,下一次向下看将不再变化",
-    "look -1": "向上看,视角角度加90,最小值为180,当视角角度为180时,下一次向上看将不再变化",
-    "jumpmove": "跳跃并前进,当前方有障碍物时,可以跳跃前进越过障碍物",
-    "attack": "攻击前方1-2格的目标,采集物品,当需要采集REL y=0的物品时,先 look 1 向下调整视角到第0层,再使用attack进行采集, 采集 REL y=1 的物品时,不需要调整视角, 采集 REL y=2 的物品时,需要 look -1 向上调整视角到第2层",
-    "use": "使用物品, 将当前快捷栏选中的物品使用在前方1-2格的目标上,必须有目标才能使用物品",
-    "jumpuse": "跳跃并使用物品",
-    "hotbar.[int]": "选择快捷栏槽位[int]",
-    "swapInventoryItems [i j]": "交换库存槽位i和j的物品",
-    "combineInventoryItems [i j]": "将库存槽位i和j的物品合并",
-    "discardCurrentItem": "丢弃当前选中的物品",
-    "craft [item_name]": "当库存中有足够材料时,制作[item_name]",
-    "nearbyCraft [item_name]": "需要先将crafr table放置在周围的环境中,当库存中有足够材料时,使用附近的工作台制作[item_name]",
-    "nearbySmelt [item_name]": "当库存中有足够材料时,使用附近的熔炉熔炼[item_name]",
-}
-
-viewinfo_en = """yaw 0 is z axis positive direction,yaw 180 is z axis negative direction
-    yaw 270 is x axis positive direction.yaw 90 is x axis negative direction.
-    player is located at the center of around, y axis level 0 is the player's level, the center grid of level 0 is the player's grid,
-    y axis level 1 is the player's view level, to observe the next level of the grid in front, you need to adjust the view with look 1.
-    when you need to collect objects on the y axis level 0 in front of the player, you need to adjust the view down to level 0 with look 1.
-    """
-    
-viewinfo_cn = """yaw 0 是 z 轴正方向,yaw 180 是 z 轴负方向,
-    yaw 270 是 x 轴正方向,yaw 90 是 x 轴负方向。
-    玩家位于 around 的中心位置,y轴第0层为玩家所在层级,第0层中心格为玩家所在格,
-    y轴第1层为玩家视角层级,观察前面一格的下一级需要 look 1 调整视角。
-    当需要搜集玩家面前y轴第0层的物体,需要look 1向下调整视界到第0层。
-    """
-
-around_info_en = """the observation is 3D, the first dimension is y axis,
-the second dimension is z axis,
-the third dimension is x axis.
-"""
-around_info_cn = """观察是3D的,第一个维度是y轴,
-第二个维度是z轴,
-第三个维度是x轴。
-"""
-
-craftitem_en = """The name of an item to be crafted or smelted.
-    Notes:
-        - 'craft' works only for 2*2 recipes.
-        - 'nearbyCraft' works only if a crafting table is within reach.
-        - 'nearbySmelt' works only if a furnace is within reach.
-        - All recipes require enough materials in inventory.
-    """
-
-craftitem_cn = """要制作或熔炼的物品名称。
-    注意：
-        - 'craft'仅适用于2*2配方,包括planks stick torch。
-        - 'nearbyCraft'仅在工作台在可达范围内时有效。
-        - 'nearbySmelt'仅在熔炉在可达范围内时有效。
-        - 所有配方都需要库存中有足够的材料。
-    """
-
-craft_requirements = {
-    "craft" :  {
-            "planks": {"log": 1},                 # 1 木头 → 4 木板（RL 中通常简化为 1:1）
-            "stick": {"planks": 2},               # 2 木板 → 4 木棍（简化为 2:1）
-            # 火把
-            "torch": {"stick": 1, "coal": 1},     
-    },
-    
-    "nearbyCraft" : {
-            "crafting_table": {"planks": 4},      # 4 木板 → 1 工作台
-            # 基础工具
-            "wooden_pickaxe": {"planks": 3, "stick": 2},
-            "wooden_axe": {"planks": 3, "stick": 2},
-            "wooden_shovel": {"planks": 1, "stick": 2},
-            "wooden_sword": {"planks": 2, "stick": 1},
-
-            # 石制工具
-            "stone_pickaxe": {"cobblestone": 3, "stick": 2},
-            "stone_axe": {"cobblestone": 3, "stick": 2},
-            "stone_shovel": {"cobblestone": 1, "stick": 2},
-            "stone_sword": {"cobblestone": 2, "stick": 1},
-
-            # 熔炉与基本方块
-            "crafting_table": {"planks": 4},
-            "furnace": {"cobblestone": 8},
-            
-            # 基础工具
-            "wooden_pickaxe": {"planks": 3, "stick": 2},
-            "wooden_axe": {"planks": 3, "stick": 2},
-            "wooden_shovel": {"planks": 1, "stick": 2},
-            "wooden_sword": {"planks": 2, "stick": 1},
-            
-            # 石制工具
-            "stone_pickaxe": {"cobblestone": 3, "stick": 2},
-            "stone_axe": {"cobblestone": 3, "stick": 2},
-            "stone_shovel": {"cobblestone": 1, "stick": 2},
-            "stone_sword": {"cobblestone": 2, "stick": 1},
-
-            # 熔炉与基本方块
-            "crafting_table": {"planks": 4},
-            "furnace": {"cobblestone": 8},
-            
-            # 铁制工具
-            "iron_pickaxe": {"iron_ingot": 3, "stick": 2},
-            "iron_axe": {"iron_ingot": 3, "stick": 2},
-            "iron_shovel": {"iron_ingot": 1, "stick": 2},
-            "iron_sword": {"iron_ingot": 2, "stick": 1},
-
-            # 铁制护甲
-            "iron_helmet": {"iron_ingot": 5},
-            "iron_chestplate": {"iron_ingot": 8},
-            "iron_leggings": {"iron_ingot": 7},
-            "iron_boots": {"iron_ingot": 4},
-    },
-    
-    "nearbySmelt" : {
-            # 熔炼
-            "iron_ingot": {"iron_ore": 1, "coal": 1},  # 简化：需要1煤作燃料
-            "gold_ingot": {"gold_ore": 1, "coal": 1},
-            "glass": {"sand": 1, "coal": 1},
-
-            # 食物加工
-            "cooked_beef": {"raw_beef": 1, "coal": 1},
-            "cooked_salmon": {"raw_salmon": 1, "coal": 1},
-
-            # 建筑材料
-            "stone": {"cobblestone": 1, "coal": 1},     # 平滑石头（烧制）
-            "stone_bricks": {"stone": 4},
-    }
-
-}
-
 def parse_action_sequence(action_sequence):    # 解析动作序列字符串,返回动作列表和动作类型列表
     # 提取 { }可能有多个 { }
     ret = []
@@ -826,7 +1087,6 @@ def parse_action_sequence(action_sequence):    # 解析动作序列字符串,返
     for action_line in action_lines:
         ret.append(action_line)
     return ret
-    
 
 def parse_action_string(action_str):    # 解析动作字符串,返回动作和动作类型
     try:
@@ -888,8 +1148,7 @@ def get_around_list(around):
             listz.insert(0, listx)
         listy.insert(0, listz)
     return listy
-    
-    
+
 def get_around_objects_precise_pos(entity, around, around_range):
     # TODO 根据 around 信息 获取物体的精确位置列表
     obj_list = []
@@ -971,16 +1230,16 @@ def get_around_objects_precise_pos(entity, around, around_range):
                     obj = {
                         'name': label,
                         'ACC': True,
-                        'x': grid_x_i,
-                        'y': grid_y_i,
-                        'z': grid_z_i,
+                        'RELx': -grid_z_i,
+                        'RELy': -grid_y_i,
+                        'RELz': -grid_x_i,
                         'size': n,
                         'coords': coords,
                     }
                     obj_list.append(obj)
     print("Precise detected objects from around info:")
     for obj in obj_list:
-        print(f"Object: {obj['name']}, Position: ({obj['x']}, {obj['y']}, {obj['z']}), Size: {obj['size']}")
+        print(f"Object: {obj['name']}, Position: (y:{obj['RELy']}, z:{obj['RELz']}, x:{obj['RELx']}), Size: {obj['size']}")
     return obj_list
 
 def process_detect_from_json(entity, json_path="detection_output_kimi.json"):
@@ -1030,7 +1289,39 @@ def craft_check(action, inventories_bef, inventories):
         
         return False, f"Failed to craft {item_name}, possibly due to insufficient materials"
 
-# TODO 获取 中心点 的瞄准的物体
+def craft_diff_get(inventories_bef, inventories)->{dict, dict}:
+    # 对比 inventories_bef 和 inventories, 返回制作的物品和数量
+    item_counts_bef = {}
+    item_counts_aft = {}
+    
+    input_items = {}
+    output_items = {}
+    
+    for item in inventories_bef:
+        item_name = item['item']
+        item_size = item['size']
+        item_counts_bef[item_name] = item_size
+    
+    for item in inventories:
+        item_name = item['item']
+        item_size = item['size']
+        item_counts_aft[item_name] = item_size
+    
+    # 计算差异
+    for item_name, aft_size in item_counts_aft.items():
+        bef_size = item_counts_bef.get(item_name, 0)
+        if aft_size > bef_size:
+            output_items[item_name] = aft_size - bef_size
+            
+    for item_name, bef_size in item_counts_bef.items():
+        aft_size = item_counts_aft.get(item_name, 0)
+        if aft_size < bef_size:
+            input_items[item_name] = bef_size - aft_size
+            
+    
+    return input_items, output_items
+
+# 获取 中心点 的瞄准的物体 TODO 对准物体进行采集操作 同时不破坏物体 使用指令 chat /give @p minecraft:stick 64
 def get_aimed_object(yaw, around, view_angle)->str:
     msg = "the current aimed object is "
     
@@ -1172,7 +1463,54 @@ def get_aimed_object(yaw, around, view_angle)->str:
     msg += item + "." + f"rel position is x={a_x}, y={a_y}, z={a_z}."
     print(msg)
     
-    return msg
+    
+    return item, msg
+
+def get_hotbar_item(inventories, hotbar_id)->dict:
+    # hotbar_id 从 0 开始
+    for item in inventories:
+        if item['id'] == hotbar_id:
+            return item
+    return {}
+
+# 划分 action sequence
+def split_action_sequence(action_sequence):
+    """
+    {
+        0:move 1
+        7:attack
+        4:look 1
+        7:attack
+        4:look -1
+        4:look -1
+        7:attack
+        4:look 1
+    }
+    """
+    actions = []
+    action_lines = re.findall(r'\{([^}]*)\}', action_sequence, re.DOTALL)
+    for action_line in action_lines:
+        individual_actions = action_line.split("\n")
+        for act in individual_actions:
+            act = act.strip()
+            if act:
+                actions.append(act)
+    return actions
+
+def load_scene_info(json_path):
+    with open(json_path, 'r', encoding='utf-8') as json_file:
+        scene_info = json.load(json_file)
+    
+    # 删除 entity_graph entities /temp children 
+    entity_graph = scene_info.get("entity_graph", {})
+    if entity_graph:
+        entity_graph["entities"]["/temp"]["children"] = []
+        entity_graph["graph_structure"]["children"]["temp"]["children"] = {}
+        for child in list(entity_graph["entities"].keys()):
+            if child.startswith("/temp/"):
+                del entity_graph["entities"][child]
+    
+    return scene_info
 
 if __name__ == '__main__':
     
@@ -1201,10 +1539,11 @@ if __name__ == '__main__':
     if args.server2 is None:
         args.server2 = args.server
     
-    LLM_MODE = True
-    MEM_MODE = False
-    DETECT_MODE = True
+    LLM_MODE = False
+    MEM_MODE = True
+    DETECT_MODE = False
     USERINPUT_MODE = False
+    SUBMISSION_MODE = False
     # if args.LLM.lower() == 'enable':
     #     LLM_MODE = True
     # if args.MEM.lower() == 'enable':
@@ -1252,11 +1591,15 @@ if __name__ == '__main__':
              action_filter=action_filter,
              resync=args.resync)
     
-    # # TODO 创建当前场景记忆
+    # # TODO 创建当前场景记忆 初始化历史记忆
     if MEM_MODE == True:
         cs = CurrentState()
+        # 如果存在历史记忆那先读取历史记忆 并 删除 历史 temp 记忆
+        if os.path.exists(f'scene_info.json'):
+            scene_info = load_scene_info('scene_info.json')
+        else:
+            scene_info = mc_cap2scene_info(env.actions, env.actions_type, act_info_en, around_range)
         
-        scene_info = mc_cap2scene_info(env.actions, env.actions_type, act_info_en, around_range)
         cs.init_Scene(scene_info)
         
     # 在当前目录下创建log文件夹,并获取当前时间作为log文件名
@@ -1323,176 +1666,261 @@ if __name__ == '__main__':
         if user_request.lower() == 'exit':
             print("Exiting the experiment.")
             break
+        
         # 获取初始化环境信息
         env.render()
         action = "jump 1"
         obs, reward, done, info = env.step_diy(action)
-        save_img(obs, env)
-        
-        # TODO 进行图像识别
-        if DETECT_MODE == True:
-            
-            test5_kimiV2()
-            
-        
         inventories, around, entity = info_process(env, info)
+        
+        #进行图像识别
+        obj_list = get_around_objects_precise_pos(entity, around, around_range)
+        save_img(obs, env)
+        if DETECT_MODE == True:
+            test5_kimiV2()
+            detect_obj = process_detect_from_json(entity)
+            for do in detect_obj:
+                obj_list.append(do)
+
         user_request_init = f"\nThe player's current inventory is: {inventories}\n"
         user_request_init += f"The player's current position and orientation is: {entity}\n"
         user_request_init += around_msg(around)
+        user_request_init += f"Detected objects : {obj_list}\n"
+        aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
         
+        user_request_init += aimed_object_msg
+
         # TODO 根据 记忆 检索相关信息加入 prompt
         if MEM_MODE == True:
-            relative_info = cs.retrieval_Request(user_request+user_request_init)
-            prompt += f"\nRelevant information from memory:\n{relative_info}\n"
-        
+            # 更新短期空间记忆 + 短期-》长期 + 更新当前 空间 场景记忆 + 检索相关信息
+            scene_info = record_short_space_memory(scene_info, obj_list, entity)
+            # scene_info = short2long_space_memory(entity, around, scene_info)
+            cs.update_Scene(scene_info)
+            retrieval_rel_ans = cs.retrieval_Request(user_request+user_request_init)
+            # 在 scene_info 中 对 retrieval_rel_ans 进行对比 ，找到相应的节点 
+            rel_info = ""
+            for node in retrieval_rel_ans:
+                node_name = node.get('name', '')
+                
+                # 查看 entity_graph entities 中是否存在该节点 - 空间
+                if node_name in scene_info.get('entity_graph', {}).get('entities', {}):
+                    print(f"Found related spatial node in memory: {node_name}")
+                    rel_info += f"\nrel info {scene_info.get('entity_graph', {}).get('entities', {}).get(node_name, {})}\n"
+                # 查看 skill_specs 中是否存在该节点 - 技能
+                elif node_name in scene_info.get('skill_specs', {}):
+                    print(f"Found related skill node in memory: {node_name}")
+                    rel_info += f"\nrel info {scene_info.get('skill_specs', {}).get(node_name, {})}\n"
+            if rel_info != "":
+                prompt += f"\nRelevant information from memory:{rel_info}\n"
         
         # 通过 llm 生成一系列动作
         # TODO 子任务拆解
-        sub_missions = []
-        
-        
-        action_sequence = []
-        if LLM_MODE == True:
-            action_sequence, messages = client.query_request(query=user_request+user_request_init,
-                                                            info=None,
+        sub_mission = ""
+        sub_mission_list = []
+        if SUBMISSION_MODE == True:
+            user_request_init += sub_mission_prompt_en
+            sub_mission_list, messages = client.query_request(query="Decompose the following task into several sub-tasks: " + user_request,
+                                                            info=user_request_init,
                                                             safe_rule=None,
                                                             prompt=prompt)
+        else :
+            sub_mission = user_request
+            sub_mission_list.append(sub_mission)
         
-        user_input = ""
-        
-        while not done and (args.episodemaxsteps <= 0 or steps < args.episodemaxsteps):
-
-            # add 根据当前环境和用户指令生成一系列动作
-            action = 0
+        for sub_mission in sub_mission_list:
+            print(f"Starting sub-mission: {sub_mission}")
+            with open(log_file, 'a') as f:
+                f.write(f"\nStarting sub-mission: {sub_mission}\n")
             
-            if LLM_MODE and (action_sequence is None or len(action_sequence) == 0 or len(action_sequence) > 50):
-                print("No action sequence generated, exiting the episode.")
-                break
-            elif LLM_MODE == False:
-                # 手动输入 action_sequence
-                user_input = input("Enter action sequence (format:{4:look 1}), or 'q' to quit: ")
-                if user_input.lower() == 'q':
-                    user_input = 'q'
+            
+            sub_mission_init = f"\nThe player's current inventory is: {inventories}\n"
+            sub_mission_init += f"The player's current position and orientation is: {entity}\n"
+            aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
+            sub_mission_init += aimed_object_msg
+            sub_mission_init += around_msg(around)
+            sub_mission_init += f"Detected objects : {obj_list}\n"
+            
+        
+            action_sequence = []
+            record_actions = []
+            if LLM_MODE == True:
+                action_sequence, messages = client.query_request(query=sub_mission,
+                                                                info=sub_mission_init,
+                                                                safe_rule=None,
+                                                                prompt=prompt)
+            
+            user_input = ""
+            
+            while not done and (args.episodemaxsteps <= 0 or steps < args.episodemaxsteps):
+
+                # add 根据当前环境和用户指令生成一系列动作
+                action = 0
+                
+                if LLM_MODE and (action_sequence is None or len(action_sequence) == 0 or len(action_sequence) > 50):
+                    print("No action sequence generated, exiting the episode.")
                     break
-                action_sequence = parse_action_sequence(user_input)
-                if len(action_sequence) == 0:
-                    print("No valid actions entered, please try again.")
-                    continue
-            
-            # 遍历 action_sequence
-            cur_act_msg = ""
-
-            for act in action_sequence:
-                # 解析动作字符串
-                act_idx, act_str = parse_action_string(act)
-                if act_idx is None:
-                    print(f"Invalid action format: {act}, skipping.")
-                    with open(log_file, 'a') as f:
-                        f.write(f"Invalid action format: {act}, skipping.\n")
-                    cur_act_msg += f"Invalid action format: {act}, the right format is 0:move 1.\n"
-                    continue
-                action = act_str
-                
-                # 调试：用户决定是否执行 每5步
-                if USERINPUT_MODE == False and (steps+1) % 10 == 0:
-                    print("enter to continue, input 'q' to quit:")
-                    user_input = input(":")
+                elif LLM_MODE == False and USERINPUT_MODE == False:
+                    # 读取文件中的 action_sequence
+                    user_input = input("Enter action sequence in input_action.txt, or 'q' to quit: ")
                     if user_input.lower() == 'q':
+                        user_input = 'q'
                         break
-                print("\n" * 5)
+                    with open('input_action.txt', 'r') as f:
+                        file_content = f.read()
+                    action_sequence = split_action_sequence(file_content)
+                    if len(action_sequence) == 0:
+                        print("No valid actions entered, please try again.")
+                        continue
+                elif USERINPUT_MODE == True:
+                    # 手动输入 action_sequence
+                    user_input = input("Enter action sequence (format:{4:look 1}), or 'q' to quit: ")
+                    if user_input.lower() == 'q':
+                        user_input = 'q'
+                        break
+                    action_sequence = parse_action_sequence(user_input)
+                    if len(action_sequence) == 0:
+                        print("No valid actions entered, please try again.")
+                        continue
                 
-                # 执行动作
-                with open(log_file, 'a') as f:
-                    f.write("diy action: " + action + '\n')
-                print("diy action: " + action)
-                
-                env.render()
-                
-                
-                # TODO check inventory
-                obs, reward, done, info = env.step_diy(action)
-                steps += 1
+                # 遍历 action_sequence
+                cur_act_msg = ""
 
-                print("action: " + str(act_str))
-                # print("reward: " + str(reward))
-                # print("done: " + str(done))
-                inventories_bef = inventories
-                inventories, around, entity = info_process(env, info)
-                
-                # 将以上信息写入action.log
-                with open(log_file, 'a') as f:
-                    f.write("action: " + str(action) + '\n')
-                    f.write('reward: ' + str(reward) + '\n')
-                    f.write('done: ' + str(done) + '\n')
-                    # f.write('obs: ' + str(obs) + '\n')
-                    f.write('Inventory: ' + str(inventories) + '\n')
-                    f.write('around: ' + str(around) + '\n')
-                    f.write('entity: ' + str(entity) + '\n')
-                    f.write('-------------------------\n')
+                for act in action_sequence:
+                    # 解析动作字符串
+                    act_idx, act_str = parse_action_string(act)
+                    if act_idx is None:
+                        print(f"Invalid action format: {act}, skipping.")
+                        with open(log_file, 'a') as f:
+                            f.write(f"Invalid action format: {act}, skipping.\n")
+                        cur_act_msg += f"Invalid action format: {act}, the right format is 0:move 1.\n"
+                        continue
+                    action = act_str
                     
-                    # 保存图像
-                
+                    # 调试：用户决定是否执行 每5步
+                    if USERINPUT_MODE == False and (steps+1) % 30 == 0:
+                        print("enter to continue, input 'q' to quit:")
+                        user_input = input(":")
+                        if user_input.lower() == 'q':
+                            break
+                    print("\n" * 5)
+                    
+                    # 执行动作
+                    with open(log_file, 'a') as f:
+                        f.write("diy action: " + action + '\n')
+                    print("diy action: " + action)
+                    
+                    env.render()
+                    
+                    
+                    # TODO check inventory
+                    obs, reward, done, info = env.step_diy(action)
+                    
+                    steps += 1
 
-                # LLM 做法
+                    print("action: " + str(act_str))
+                    # print("reward: " + str(reward))
+                    # print("done: " + str(done))
+                    inventories_bef = inventories
+                    aimed_object_bef = aimed_object
+                    obj_list_bef = obj_list.copy()
+                    inventories, around, entity = info_process(env, info)
+                    aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
+
+                    cur_act_msg += around_msg(around)
+                    cur_act_msg += aimed_object_msg
+                    
+                    # 将以上信息写入action.log
+                    with open(log_file, 'a') as f:
+                        f.write("action: " + str(action) + '\n')
+                        f.write('reward: ' + str(reward) + '\n')
+                        f.write('done: ' + str(done) + '\n')
+                        # f.write('obs: ' + str(obs) + '\n')
+                        f.write('Inventory: ' + str(inventories) + '\n')
+                        f.write('around: ' + str(around) + '\n')
+                        f.write('entity: ' + str(entity) + '\n')
+                        f.write('-------------------------\n')
+                        
+
+                    
+
+                    # LLM 做法
+                    if LLM_MODE == True:
+                        # 更新 cur_act_msg
+                        cur_act_msg += f"action :{act_str}, entity info :{entity}\n"
+
+                    # TODO 如果环境没有改变 则不更新 obs # 保存图像
+                    if "inventory" not in act_str and "hotbar" not in act_str and "craft" not in act_str:
+                        
+                        save_img(obs, env)
+                        
+                        print("---------detect info---------")
+                        # 根据 around 信息更新 obj_list 中物体的精确位置  对 obj_list 中物体进行精确定位 如果是在 around 范围内的物体 则进行精确定位 TODO 待测试 需要完善删除机制
+                        obj_list = get_around_objects_precise_pos(entity, around, around_range)
+                        
+                        if DETECT_MODE == True:
+                            test5_kimiV2()
+                            
+                            # 读取json文件打印识别到的物体和深度信息
+                            detect_obj = process_detect_from_json(entity)
+                            for do in detect_obj:
+                                obj_list.append(do)
+                        
+                        cur_act_msg += f"Detected objects : {obj_list}\n"
+
+                    elif "inventory" in act_str or "craft" in act_str:
+                        cur_act_msg += f"Inventory info : {inventories}\n"
+                        if "craft" in act_str:
+                            # craft 相关动作 进行特殊处理,检查材料是否充足 如果不足则跳过,加提示词 或者 是检测生成物是否增加
+                            craft_success, craft_msg = craft_check(action, inventories_bef, inventories)
+                            cur_act_msg += f"Craft check info : {craft_msg}\n"
+                    
+                    
+                        
+                    if MEM_MODE == True: 
+                        # TODO LLM+MEM 做法(包括 MEM 做法)
+                        mem_record = mem_generation(action, inventories_bef, aimed_object_bef, obj_list_bef, inventories, obj_list, entity, env)
+                        # TODO 需要记录之前的 信息 包括 aimed_obj inventories
+                        record_actions.append(mem_record)
+                        
+                        # 更新短期空间记忆 + 短期-》长期 + 更新当前 空间 场景记忆 + 检索相关信息
+                        scene_info = record_short_space_memory(scene_info, obj_list, entity)
+                        # scene_info = short2long_space_memory(entity, around, scene_info)
+                        cs.update_Scene(scene_info)
+                        cur_act_msg += str(cs.retrieval_Request(sub_mission))
+                        
+                    time.sleep(1)
+
+                # 整体退出
+                if user_input.lower() == 'q':
+                    break
+                
+                # 更新 llm messages 并根据当前场景继续完成任务
                 if LLM_MODE == True:
-                    # 更新 cur_act_msg
-                    cur_act_msg += f"action :{act_str}, entity info :{entity}\n"
-
-                if "inventory" not in act_str and "hotbar" not in act_str and "craft" not in act_str:
-                    # TODO 如果环境没有改变 则不更新 obs
-                    save_img(obs, env)
+                    messages.append({"role": "user", "content": cur_act_msg})
+                    action_sequence, messages = client.query_request(messages=messages)
                     
-                    print("---------detect info---------")
-                    obj_list = []
-                    if DETECT_MODE == True:
-                        test5_kimiV2()
-                        
-                        # 读取json文件打印识别到的物体和深度信息
-                        obj_list = process_detect_from_json(entity)
-                        
-                    # 根据 around 信息更新 obj_list 中物体的精确位置 TODO 对 obj_list 中物体进行精确定位 如果是在 around 范围内的物体 则进行精确定位
-                    obj_list.append(get_around_objects_precise_pos(entity, around, around_range))
-                    
-                    cur_act_msg += f"Detected objects : {obj_list}\n"
-                    
-                    
-                    
-                elif "inventory" in act_str or "craft" in act_str:
-                    cur_act_msg += f"Inventory info : {inventories}\n"
-                    if "craft" in act_str:
-                        # craft 相关动作 进行特殊处理,检查材料是否充足 如果不足则跳过,加提示词 或者 是检测生成物是否增加
-                        craft_msg = craft_check(action, inventories_bef, inventories)
-                        cur_act_msg += f"Craft check info : {craft_msg}\n"
+           
                 
-                cur_act_msg += around_msg(around)
-                    
-                cur_act_msg += get_aimed_object(entity.get('yaw'), around, env.view_angle)
-                    
-                if LLM_MODE == True and MEM_MODE == True: 
-                    # TODO LLM+MEM 做法(包括 MEM 做法)
-                    # 更新短期空间记忆 + 短期-》长期 + 更新当前场景记忆 + 检索相关信息
-                    scene_info = record_short_space_memory(scene_info, obj_list, entity)
-                    # scene_info = short2long_space_memory(entity, around, scene_info)
-                    cs.update_Scene(scene_info)
-                    cur_act_msg += cs.retrieval_Request(user_request)
-                    
-                time.sleep(1)
-
-            # 整体退出
+            # TODO 判断该子任务是否完成 - 由 LLM 判断
+            print(f"Sub-mission '{sub_mission}' ended.")
+            # 如果完成则 将 record_actions 转换成 情景记忆 MEM
+            if MEM_MODE == True:
+                scene_info = skill2FIXED_mem(sub_mission, record_actions, scene_info)
+                # 不用 update_Scene 会更新CS中的信息吗
+                cs.update_Scene(scene_info)
+                print("Memory updated with sub-mission actions.")
+                
+             # 整体退出
             if user_input.lower() == 'q':
                 break
-            
-            # 更新 llm messages 并根据当前场景继续完成任务
+            # 打印messages最后一个 content 
             if LLM_MODE == True:
-                messages.append({"role": "user", "content": cur_act_msg})
-                action_sequence, messages = client.query_request(messages=messages)
-                
+                print(messages[-1]['content'] if messages else "No messages.")
+        # TODO user 任务 的记忆 记录 submission 
+        
         # 整体退出
-        if user_input.lower() == 'q':
-            break
-        # 打印messages最后一个 content 
-        if LLM_MODE == True:
-            print(messages[-1]['content'] if messages else "No messages.")
+            if user_input.lower() == 'q':
+                break
 
     env.close()
 

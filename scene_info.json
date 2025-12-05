@@ -12,7 +12,13 @@
             "/temp": {
                 "name": "temp",
                 "parent": "/",
-                "children": []
+                "children": [
+                    "/temp/log_0_1_2",
+                    "/temp/log_2_1_-2",
+                    "/temp/grass_2_-1_0",
+                    "/temp/dirt_1_-2_0",
+                    "/temp/sand_-1_-2_0"
+                ]
             },
             "/entity": {
                 "name": "entity",
@@ -25,10 +31,53 @@
                 "name": "camera",
                 "parent": "/entity",
                 "children": []
+            },
+            "/temp/log_0_1_2": {
+                "name": "log_0_1_2",
+                "parent": "/temp",
+                "RElx": 0,
+                "REly": 1,
+                "RElz": 2,
+                "size": 3
+            },
+            "/temp/log_2_1_-2": {
+                "name": "log_2_1_-2",
+                "parent": "/temp",
+                "RElx": 2,
+                "REly": 1,
+                "RElz": -2,
+                "size": 3
+            },
+            "/temp/grass_2_-1_0": {
+                "name": "grass_2_-1_0",
+                "parent": "/temp",
+                "RElx": 2,
+                "REly": -1,
+                "RElz": 0,
+                "size": 8
+            },
+            "/temp/dirt_1_-2_0": {
+                "name": "dirt_1_-2_0",
+                "parent": "/temp",
+                "RElx": 1,
+                "REly": -2,
+                "RElz": 0,
+                "size": 12
+            },
+            "/temp/sand_-1_-2_0": {
+                "name": "sand_-1_-2_0",
+                "parent": "/temp",
+                "RElx": -1,
+                "REly": -2,
+                "RElz": 0,
+                "size": 30
             }
         },
         "skills": {
             "/": [],
+            "/temp": [
+                "make_wooden_axe"
+            ],
             "/entity": [
                 "0:move 1",
                 "1:move -1",
@@ -54,9 +103,9 @@
             "path": "/",
             "skills": [],
             "children": {
-                "robot": {
-                    "name": "robot",
-                    "path": "/robot",
+                "entity": {
+                    "name": "entity",
+                    "path": "/entity",
                     "skills": [
                         "0:move 1",
                         "1:move -1",
@@ -77,131 +126,993 @@
                         "16:nearbysmelt [item_name]"
                     ],
                     "children": {}
+                },
+                "temp": {
+                    "name": "temp",
+                    "path": "/temp",
+                    "skills": [
+                        "make_wooden_axe"
+                    ],
+                    "children": {
+                        "log_0_1_2": {
+                            "name": "log_0_1_2",
+                            "path": "/temp/log_0_1_2"
+                        },
+                        "log_2_1_-2": {
+                            "name": "log_2_1_-2",
+                            "path": "/temp/log_2_1_-2"
+                        },
+                        "grass_2_-1_0": {
+                            "name": "grass_2_-1_0",
+                            "path": "/temp/grass_2_-1_0"
+                        },
+                        "dirt_1_-2_0": {
+                            "name": "dirt_1_-2_0",
+                            "path": "/temp/dirt_1_-2_0"
+                        },
+                        "sand_-1_-2_0": {
+                            "name": "sand_-1_-2_0",
+                            "path": "/temp/sand_-1_-2_0"
+                        }
+                    }
                 }
             }
         }
     },
     "skill_specs": {
-        "skill_specs": {
-            "0:move 1": {
-                "description": "Move forward",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
+        "0:move 1": {
+            "name": "0:move 1",
+            "description": "Move forward"
+        },
+        "1:move -1": {
+            "name": "1:move -1",
+            "description": "Move backward"
+        },
+        "2:turn 1": {
+            "name": "2:turn 1",
+            "description": "yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90"
+        },
+        "3:turn -1": {
+            "name": "3:turn -1",
+            "description": "yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270"
+        },
+        "4:look 1": {
+            "name": "4:look 1",
+            "description": "Look down, view degree minus 90, max is -180"
+        },
+        "5:look -1": {
+            "name": "5:look -1",
+            "description": "Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change"
+        },
+        "6:jumpmove": {
+            "name": "6:jumpmove",
+            "description": "Jump while moving forward, when there is an obstacle in front, can jump over the obstacle"
+        },
+        "7:attack": {
+            "name": "7:attack",
+            "description": "Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2"
+        },
+        "8:use": {
+            "name": "8:use",
+            "description": "Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item"
+        },
+        "9:jumpuse": {
+            "name": "9:jumpuse",
+            "description": "Jump and use item"
+        },
+        "10:discardcurrentitem": {
+            "name": "10:discardcurrentitem",
+            "description": "Discard the currently selected item"
+        },
+        "11:hotbar.[int]": {
+            "name": "11:hotbar.[int]",
+            "description": "Select hotbar slot [int]"
+        },
+        "12:swapinventoryitems [i j]": {
+            "name": "12:swapinventoryitems [i j]",
+            "description": "Swap inventory slots i and j items"
+        },
+        "13:combineinventoryitems [i j]": {
+            "name": "13:combineinventoryitems [i j]",
+            "description": "Combine inventory slots i and j items"
+        },
+        "14:craft [item_name]": {
+            "name": "14:craft [item_name]",
+            "description": "Craft [item_name] when enough materials in inventory"
+        },
+        "15:nearbycraft [item_name]": {
+            "name": "15:nearbycraft [item_name]",
+            "description": "Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory"
+        },
+        "16:nearbysmelt [item_name]": {
+            "name": "16:nearbysmelt [item_name]",
+            "description": "Smelt [item_name] using nearby furnace when enough materials in inventory"
+        },
+        "make_wooden_axe": {
+            "name": "make_wooden_axe",
+            "description": "Make wooden axe - composed of 13 steps.",
+            "input": {
+                "obj_list": [
+                    {
+                        "name": "log",
+                        "ACC": true,
+                        "RELx": 0,
+                        "RELy": 1,
+                        "RELz": 1,
+                        "size": 3,
+                        "coords": [
+                            [
+                                1,
+                                0,
+                                2
+                            ],
+                            [
+                                1,
+                                1,
+                                2
+                            ],
+                            [
+                                1,
+                                2,
+                                2
+                            ]
+                        ]
+                    },
+                    {
+                        "name": "grass",
+                        "ACC": true,
+                        "RELx": 1,
+                        "RELy": -1,
+                        "RELz": 0,
+                        "size": 12,
+                        "coords": [
+                            [
+                                0,
+                                3,
+                                0
+                            ],
+                            [
+                                1,
+                                3,
+                                0
+                            ],
+                            [
+                                0,
+                                3,
+                                1
+                            ],
+                            [
+                                2,
+                                3,
+                                0
+                            ],
+                            [
+                                1,
+                                3,
+                                1
+                            ],
+                            [
+                                0,
+                                3,
+                                2
+                            ],
+                            [
+                                3,
+                                3,
+                                0
+                            ],
+                            [
+                                2,
+                                3,
+                                1
+                            ],
+                            [
+                                0,
+                                3,
+                                3
+                            ],
+                            [
+                                4,
+                                3,
+                                0
+                            ],
+                            [
+                                3,
+                                3,
+                                1
+                            ],
+                            [
+                                4,
+                                3,
+                                1
+                            ]
+                        ]
+                    },
+                    {
+                        "name": "sand",
+                        "ACC": true,
+                        "RELx": -1,
+                        "RELy": -2,
+                        "RELz": 0,
+                        "size": 24,
+                        "coords": [
+                            [
+                                0,
+                                3,
+                                4
+                            ],
+                            [
+                                0,
+                                4,
+                                4
+                            ],
+                            [
+                                1,
+                                3,
+                                4
+                            ],
+                            [
+                                1,
+                                4,
+                                4
+                            ],
+                            [
+                                2,
+                                3,
+                                4
+                            ],
+                            [
+                                1,
+                                3,
+                                3
+                            ],
+                            [
+                                2,
+                                4,
+                                4
+                            ],
+                            [
+                                1,
+                                4,
+                                3
+                            ],
+                            [
+                                3,
+                                3,
+                                4
+                            ],
+                            [
+                                2,
+                                3,
+                                3
+                            ],
+                            [
+                                3,
+                                4,
+                                4
+                            ],
+                            [
+                                2,
+                                4,
+                                3
+                            ],
+                            [
+                                4,
+                                3,
+                                4
+                            ],
+                            [
+                                3,
+                                3,
+                                3
+                            ],
+                            [
+                                2,
+                                3,
+                                2
+                            ],
+                            [
+                                4,
+                                4,
+                                4
+                            ],
+                            [
+                                3,
+                                4,
+                                3
+                            ],
+                            [
+                                2,
+                                4,
+                                2
+                            ],
+                            [
+                                4,
+                                3,
+                                3
+                            ],
+                            [
+                                3,
+                                3,
+                                2
+                            ],
+                            [
+                                4,
+                                4,
+                                3
+                            ],
+                            [
+                                3,
+                                4,
+                                2
+                            ],
+                            [
+                                4,
+                                3,
+                                2
+                            ],
+                            [
+                                4,
+                                4,
+                                2
+                            ]
+                        ]
+                    },
+                    {
+                        "name": "dirt",
+                        "ACC": true,
+                        "RELx": 1,
+                        "RELy": -2,
+                        "RELz": 0,
+                        "size": 14,
+                        "coords": [
+                            [
+                                1,
+                                3,
+                                2
+                            ],
+                            [
+                                1,
+                                4,
+                                2
+                            ],
+                            [
+                                0,
+                                4,
+                                2
+                            ],
+                            [
+                                1,
+                                4,
+                                1
+                            ],
+                            [
+                                0,
+                                4,
+                                1
+                            ],
+                            [
+                                0,
+                                4,
+                                3
+                            ],
+                            [
+                                2,
+                                4,
+                                1
+                            ],
+                            [
+                                1,
+                                4,
+                                0
+                            ],
+                            [
+                                0,
+                                4,
+                                0
+                            ],
+                            [
+                                3,
+                                4,
+                                1
+                            ],
+                            [
+                                2,
+                                4,
+                                0
+                            ],
+                            [
+                                4,
+                                4,
+                                1
+                            ],
+                            [
+                                3,
+                                4,
+                                0
+                            ],
+                            [
+                                4,
+                                4,
+                                0
+                            ]
+                        ]
+                    }
+                ],
+                "aimed_obj": "log"
             },
-            "1:move -1": {
-                "description": "Move backward",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
+            "output": {
+                "output_items": {
+                    "wooden_pickaxe": 1
+                }
             },
-            "2:turn 1": {
-                "description": "yaw degrees add 90, when yaw degree is 360, next turn 1 will be 90",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "3:turn -1": {
-                "description": "yaw degrees minus 90",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "4:look 1": {
-                "description": "Look down, view degree minus 90, max is -180",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "5:look -1": {
-                "description": "Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "6:jumpmove": {
-                "description": "Jump while moving forward",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "7:attack": {
-                "description": "Attack the target in front",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "8:use": {
-                "description": "Use item",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "9:jumpuse": {
-                "description": "Jump and use item",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "10:discardcurrentitem": {
-                "description": "Discard the currently selected item",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "11:hotbar.[int]": {
-                "description": "Select hotbar slot [int]",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "12:swapinventoryitems [i j]": {
-                "description": "Swap inventory slots i and j items",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "13:combineinventoryitems [i j]": {
-                "description": "Combine inventory slots i and j items",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "14:craft [item_name]": {
-                "description": "Craft [item_name] when enough materials in inventory",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "15:nearbycraft [item_name]": {
-                "description": "Craft [item_name] using nearby crafting table when enough materials in inventory",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            },
-            "16:nearbysmelt [item_name]": {
-                "description": "Smelt [item_name] using nearby furnace when enough materials in inventory",
-                "type": "capability",
-                "input": null,
-                "output": null,
-                "dependencies": []
-            }
+            "actions": [
+                {
+                    "name": "move 1",
+                    "input": {
+                        "obj_list": [
+                            {
+                                "name": "log",
+                                "ACC": true,
+                                "RELx": 0,
+                                "RELy": 1,
+                                "RELz": 1,
+                                "size": 3,
+                                "coords": [
+                                    [
+                                        1,
+                                        0,
+                                        2
+                                    ],
+                                    [
+                                        1,
+                                        1,
+                                        2
+                                    ],
+                                    [
+                                        1,
+                                        2,
+                                        2
+                                    ]
+                                ]
+                            },
+                            {
+                                "name": "grass",
+                                "ACC": true,
+                                "RELx": 1,
+                                "RELy": -1,
+                                "RELz": 0,
+                                "size": 12,
+                                "coords": [
+                                    [
+                                        0,
+                                        3,
+                                        0
+                                    ],
+                                    [
+                                        1,
+                                        3,
+                                        0
+                                    ],
+                                    [
+                                        0,
+                                        3,
+                                        1
+                                    ],
+                                    [
+                                        2,
+                                        3,
+                                        0
+                                    ],
+                                    [
+                                        1,
+                                        3,
+                                        1
+                                    ],
+                                    [
+                                        0,
+                                        3,
+                                        2
+                                    ],
+                                    [
+                                        3,
+                                        3,
+                                        0
+                                    ],
+                                    [
+                                        2,
+                                        3,
+                                        1
+                                    ],
+                                    [
+                                        0,
+                                        3,
+                                        3
+                                    ],
+                                    [
+                                        4,
+                                        3,
+                                        0
+                                    ],
+                                    [
+                                        3,
+                                        3,
+                                        1
+                                    ],
+                                    [
+                                        4,
+                                        3,
+                                        1
+                                    ]
+                                ]
+                            },
+                            {
+                                "name": "sand",
+                                "ACC": true,
+                                "RELx": -1,
+                                "RELy": -2,
+                                "RELz": 0,
+                                "size": 24,
+                                "coords": [
+                                    [
+                                        0,
+                                        3,
+                                        4
+                                    ],
+                                    [
+                                        0,
+                                        4,
+                                        4
+                                    ],
+                                    [
+                                        1,
+                                        3,
+                                        4
+                                    ],
+                                    [
+                                        1,
+                                        4,
+                                        4
+                                    ],
+                                    [
+                                        2,
+                                        3,
+                                        4
+                                    ],
+                                    [
+                                        1,
+                                        3,
+                                        3
+                                    ],
+                                    [
+                                        2,
+                                        4,
+                                        4
+                                    ],
+                                    [
+                                        1,
+                                        4,
+                                        3
+                                    ],
+                                    [
+                                        3,
+                                        3,
+                                        4
+                                    ],
+                                    [
+                                        2,
+                                        3,
+                                        3
+                                    ],
+                                    [
+                                        3,
+                                        4,
+                                        4
+                                    ],
+                                    [
+                                        2,
+                                        4,
+                                        3
+                                    ],
+                                    [
+                                        4,
+                                        3,
+                                        4
+                                    ],
+                                    [
+                                        3,
+                                        3,
+                                        3
+                                    ],
+                                    [
+                                        2,
+                                        3,
+                                        2
+                                    ],
+                                    [
+                                        4,
+                                        4,
+                                        4
+                                    ],
+                                    [
+                                        3,
+                                        4,
+                                        3
+                                    ],
+                                    [
+                                        2,
+                                        4,
+                                        2
+                                    ],
+                                    [
+                                        4,
+                                        3,
+                                        3
+                                    ],
+                                    [
+                                        3,
+                                        3,
+                                        2
+                                    ],
+                                    [
+                                        4,
+                                        4,
+                                        3
+                                    ],
+                                    [
+                                        3,
+                                        4,
+                                        2
+                                    ],
+                                    [
+                                        4,
+                                        3,
+                                        2
+                                    ],
+                                    [
+                                        4,
+                                        4,
+                                        2
+                                    ]
+                                ]
+                            },
+                            {
+                                "name": "dirt",
+                                "ACC": true,
+                                "RELx": 1,
+                                "RELy": -2,
+                                "RELz": 0,
+                                "size": 14,
+                                "coords": [
+                                    [
+                                        1,
+                                        3,
+                                        2
+                                    ],
+                                    [
+                                        1,
+                                        4,
+                                        2
+                                    ],
+                                    [
+                                        0,
+                                        4,
+                                        2
+                                    ],
+                                    [
+                                        1,
+                                        4,
+                                        1
+                                    ],
+                                    [
+                                        0,
+                                        4,
+                                        1
+                                    ],
+                                    [
+                                        0,
+                                        4,
+                                        3
+                                    ],
+                                    [
+                                        2,
+                                        4,
+                                        1
+                                    ],
+                                    [
+                                        1,
+                                        4,
+                                        0
+                                    ],
+                                    [
+                                        0,
+                                        4,
+                                        0
+                                    ],
+                                    [
+                                        3,
+                                        4,
+                                        1
+                                    ],
+                                    [
+                                        2,
+                                        4,
+                                        0
+                                    ],
+                                    [
+                                        4,
+                                        4,
+                                        1
+                                    ],
+                                    [
+                                        3,
+                                        4,
+                                        0
+                                    ],
+                                    [
+                                        4,
+                                        4,
+                                        0
+                                    ]
+                                ]
+                            }
+                        ],
+                        "aimed_obj": "log"
+                    },
+                    "output": {},
+                    "action": "0:move 1",
+                    "description": "step 0 action move 1"
+                },
+                {
+                    "name": "attack",
+                    "input": {
+                        "yaw": 0.0,
+                        "obj_list": [
+                            {
+                                "name": "log",
+                                "ACC": true,
+                                "RELx": 0,
+                                "RELy": 1,
+                                "RELz": 1,
+                                "size": 3,
+                                "coords": [
+                                    [
+                                        1,
+                                        0,
+                                        2
+                                    ],
+                                    [
+                                        1,
+                                        1,
+                                        2
+                                    ],
+                                    [
+                                        1,
+                                        2,
+                                        2
+                                    ]
+                                ]
+                            }
+                        ],
+                        "aimed_obj": "log"
+                    },
+                    "output": {
+                        "output_items": {
+                            "log": 1
+                        },
+                        "obj_list": [
+                            {
+                                "name": "log",
+                                "ACC": true,
+                                "RELx": 0,
+                                "RELy": 2,
+                                "RELz": 1,
+                                "size": 1,
+                                "coords": [
+                                    [
+                                        1,
+                                        0,
+                                        2
+                                    ]
+                                ]
+                            },
+                            {
+                                "name": "log",
+                                "ACC": true,
+                                "RELx": 0,
+                                "RELy": 0,
+                                "RELz": 1,
+                                "size": 1,
+                                "coords": [
+                                    [
+                                        1,
+                                        2,
+                                        2
+                                    ]
+                                ]
+                            }
+                        ]
+                    },
+                    "action": "1:attack",
+                    "description": "step 1 action attack"
+                },
+                {
+                    "name": "look 1",
+                    "input": {
+                        "degree": 1
+                    },
+                    "output": {},
+                    "action": "2:look 1",
+                    "description": "step 2 action look 1"
+                },
+                {
+                    "name": "attack",
+                    "input": {
+                        "yaw": 0.0,
+                        "obj_list": [
+                            {
+                                "name": "log",
+                                "ACC": true,
+                                "RELx": 0,
+                                "RELy": 0,
+                                "RELz": 1,
+                                "size": 1,
+                                "coords": [
+                                    [
+                                        1,
+                                        2,
+                                        2
+                                    ]
+                                ]
+                            }
+                        ],
+                        "aimed_obj": "log"
+                    },
+                    "output": {
+                        "output_items": {
+                            "log": 1
+                        },
+                        "obj_list": []
+                    },
+                    "action": "3:attack",
+                    "description": "step 3 action attack"
+                },
+                {
+                    "name": "look -1",
+                    "input": {
+                        "degree": 0
+                    },
+                    "output": {},
+                    "action": "4:look -1",
+                    "description": "step 4 action look -1"
+                },
+                {
+                    "name": "look -1",
+                    "input": {
+                        "degree": -1
+                    },
+                    "output": {},
+                    "action": "5:look -1",
+                    "description": "step 5 action look -1"
+                },
+                {
+                    "name": "attack",
+                    "input": {
+                        "yaw": 0.0,
+                        "obj_list": [
+                            {
+                                "name": "log",
+                                "ACC": true,
+                                "RELx": 0,
+                                "RELy": 2,
+                                "RELz": 1,
+                                "size": 1,
+                                "coords": [
+                                    [
+                                        1,
+                                        0,
+                                        2
+                                    ]
+                                ]
+                            }
+                        ],
+                        "aimed_obj": "log"
+                    },
+                    "output": {
+                        "output_items": {
+                            "log": 1
+                        },
+                        "obj_list": []
+                    },
+                    "action": "6:attack",
+                    "description": "step 6 action attack"
+                },
+                {
+                    "name": "look 1",
+                    "input": {
+                        "degree": 0
+                    },
+                    "output": {},
+                    "action": "7:look 1",
+                    "description": "step 7 action look 1"
+                },
+                {
+                    "name": "craft planks",
+                    "input": {
+                        "input_items": {
+                            "log": 1
+                        }
+                    },
+                    "output": {
+                        "output_items": {
+                            "planks": 4
+                        }
+                    },
+                    "action": "8:craft planks",
+                    "description": "step 8 action craft planks"
+                },
+                {
+                    "name": "craft planks",
+                    "input": {
+                        "input_items": {
+                            "log": 1
+                        }
+                    },
+                    "output": {
+                        "output_items": {
+                            "planks": 4
+                        }
+                    },
+                    "action": "9:craft planks",
+                    "description": "step 9 action craft planks"
+                },
+                {
+                    "name": "craft planks",
+                    "input": {
+                        "input_items": {
+                            "log": 1
+                        }
+                    },
+                    "output": {
+                        "output_items": {
+                            "planks": 4
+                        }
+                    },
+                    "action": "10:craft planks",
+                    "description": "step 10 action craft planks"
+                },
+                {
+                    "name": "craft stick",
+                    "input": {
+                        "input_items": {
+                            "planks": 2
+                        }
+                    },
+                    "output": {
+                        "output_items": {
+                            "stick": 4
+                        }
+                    },
+                    "action": "11:craft stick",
+                    "description": "step 11 action craft stick"
+                },
+                {
+                    "name": "craft wooden_pickaxe",
+                    "input": {
+                        "input_items": {
+                            "stick": 2,
+                            "planks": 3
+                        }
+                    },
+                    "output": {
+                        "output_items": {
+                            "wooden_pickaxe": 1
+                        }
+                    },
+                    "action": "12:craft wooden_pickaxe",
+                    "description": "step 12 action craft wooden_pickaxe"
+                }
+            ]
         }
     }
 }

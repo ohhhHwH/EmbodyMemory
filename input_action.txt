@@ -1,0 +1,15 @@
+{
+    0:move 1
+    7:attack
+    4:look 1
+    7:attack
+    4:look -1
+    4:look -1
+    7:attack
+    4:look 1
+    14:craft planks
+    14:craft planks
+    14:craft planks
+    14:craft stick
+    14:craft wooden_pickaxe
+}

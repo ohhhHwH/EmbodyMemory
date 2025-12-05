@@ -113,6 +113,7 @@ class Env:
         self.last_obs = None
         
         self.view_angle = 0  # 视角角度
+        self.hotbarid  = 1 # 当前快捷栏槽位
 
     def init(self, xml, port, server=None,
              server2=None, port2=None,
@@ -318,10 +319,18 @@ class Env:
         pass
     
     def hotbar_switch(self, action_str):
+        # 提取出槽位id
+        hotbarid = int(action_str.split(".")[1])
+        # 如果当前槽位就是要切换的槽位，则不进行任何操作
+        if hotbarid == self.hotbarid:
+            return self.chat_update()
+        
+        self.hotbarid = hotbarid
         action_str1 = action_str + " 1"
         obs, reward, done, info = self.chat_update(action_str1)
         action_str0 = action_str + " 0"
         obs, reward, done, info = self.chat_update(action_str0)
+        
         return obs, reward, done, info
     
     def step_diy(self, action_str="craft planks oak"):
@@ -344,6 +353,11 @@ class Env:
             elif "hotbar." in action_str:
                 # hotbar.[int] 进行特殊处理，先 hotbar.1 1 再 hotbar.1 0 完成切换
                 return self.hotbar_switch(action_str)
+            elif "nearbyCraft" in action_str :
+                action_str = action_str.replace("nearbyCraft", "craft").lower()
+            elif "nearbySmelt" in action_str :
+                action_str = action_str.replace("nearbySmelt", "craft").lower()
+                
             step_message = "<Step" + str(self.step_options) + ">" + \
                            action_str + \
                            "</Step" + str(self.step_options) + " >"
@@ -404,6 +418,7 @@ class Env:
             step_message = "<Step" + str(self.step_options) + ">" + \
                            action_str + \
                            "</Step" + str(self.step_options) + " >"
+
 
             comms.send_message(self.client_socket, step_message.encode())
             if withturnkey:

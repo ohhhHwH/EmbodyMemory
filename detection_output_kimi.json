@@ -2,36 +2,50 @@
     {
         "id": 1,
         "label": "log",
-        "x": 0.5,
-        "y": 0.5,
-        "nearby": ["log", "log"]
+        "x": 0.35,
+        "y": 0.45,
+        "nearby": ["log", "leaves"]
     },
     {
         "id": 2,
         "label": "log",
-        "x": 0.25,
-        "y": 0.5,
-        "nearby": ["log", "log"]
+        "x": 0.85,
+        "y": 0.45,
+        "nearby": ["log", "leaves"]
     },
     {
         "id": 3,
-        "label": "log",
-        "x": 0.75,
-        "y": 0.5,
-        "nearby": ["log", "log"]
+        "label": "leaves",
+        "x": 0.0,
+        "y": 0.0,
+        "nearby": ["log"]
     },
     {
         "id": 4,
         "label": "leaves",
-        "x": 0.5,
-        "y": 0.05,
+        "x": 1.0,
+        "y": 0.0,
         "nearby": ["log"]
     },
     {
         "id": 5,
-        "label": "leaves",
+        "label": "grass",
+        "x": 0.0,
+        "y": 0.5,
+        "nearby": ["dirt", "log"]
+    },
+    {
+        "id": 6,
+        "label": "dirt",
         "x": 0.5,
-        "y": 0.95,
+        "y": 0.5,
+        "nearby": ["grass", "log"]
+    },
+    {
+        "id": 7,
+        "label": "grass",
+        "x": 1.0,
+        "y": 0.5,
         "nearby": ["log"]
     }
 ]

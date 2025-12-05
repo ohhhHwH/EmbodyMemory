@@ -418,6 +418,8 @@ class CurrentState:
         pass
     
     def init_Scene(self, scene_info: dict):
+        with open("scene_info.json", "w") as f:
+            json.dump(scene_info, f, indent=4)
 
         entity_graph = scene_info.get("entity_graph", {})
         skill_specs = scene_info.get("skill_specs", {})
@@ -473,15 +475,17 @@ class CurrentState:
                 # get skill dict form skill_specs
                 skill = skill_specs.get(skill_name, {})
 
-                # skill_name = skill.get("name", "")
+                skill_name = skill.get("name", "")
                 skill_desc = skill.get("description", "")
-                skill_type = skill.get("description", "")
                 skill_input = skill.get("input", {})
                 skill_output = skill.get("output", {})
                 skill_dependencies = skill.get("dependencies", [])
-
-                skill_summary = f"Skill: {skill_name}, Type: {skill_type}, Input: {skill_input}, Output: {skill_output}, Dependencies: {skill_dependencies}"
-
+                
+                if skill_desc != "":
+                    skill_summary = skill_desc
+                else :
+                    skill_summary = f"Skill {skill_name} with input {skill_input} and output {skill_output}, dependencies: {skill_dependencies}"
+                
                 # Create a context node for the skill
                 skill_node_id = self.memory_graph.add_node(
                     node_type=NodeType.FIXED,
@@ -496,12 +500,20 @@ class CurrentState:
                 # Add the skill node as a child of the space node
                 self.memory_graph.add_child(space_node_id, skill_node_id)
             
+            # TODO 对 SKILL的子节点遍历处理
             
             # Recursively add children is a dict
             # 遍历children
-            for _, child_info in children.items():
-                add_space_nodes_recursively(child_info, space_node_id)
+            # 如果 children 是列表 ，遍历列表
+            if isinstance(children, list):
+                for child_info in children:
+                    add_space_nodes_recursively(child_info, space_node_id)
+            elif isinstance(children, dict):
+                for _, child_info in children.items():
+                    add_space_nodes_recursively(child_info, space_node_id)
         self.root_space_node_id = add_space_nodes_recursively(graph_structure, self.root_node_id)
+        
+        
 
     def init_Skill(self, skill_info_list: dict):
         # 生成一个 skill_info_id_list 记录 存入当前graph后id的位置，便于确定技能节点的位置
@@ -550,8 +562,21 @@ class CurrentState:
     
     # update scene
     def update_Scene(self, scene_info: dict):
-        # 目前将所有scene信息重新初始化
+        with open("scene_info.json", "w") as f:
+            json.dump(scene_info, f, indent=4)
+        # TODO 增量更新 # 目前将所有scene信息重新初始化 
+       
+        del self.memory_graph
+        # 新建 当前graph
+        self.memory_graph = MemoryGraph()
         self.init_Scene(scene_info)
+        
+        # 保存当前graph
+        self.memory_graph.save_to_file("memory/data/current_memory_graph.json")
+        self.memory_graph.visualize("memory/data/current_memory_graph.png")
+        
+        
+        
     
     # 场景所有信息更新到memory/data/retrieval_memory.json中
     def update_retrieval(self):
@@ -602,8 +627,22 @@ class CurrentState:
 
         # 将 event_chain 整合summary 作为检索结果返回
         # print("Event Chain:", event_chain)
+        
+        # TODO 待优化 应该返回两个列表，一个名字列表，一个对应的事件链列表
+        # 这里先遍历 current_memory_graph.json 根据 summary 找到对应的 name
+        event_chain_with_names = []
+        for event in event_chain:
+            # 遍历 memory_graph 找到对应 summary 的 name
+            for node_id, node in self.memory_graph._node_map.items():
+                if node.summary == event or node.name == event:
+                    event_chain_with_names.append({
+                        "name": node.name,
+                        "event": event
+                    })
+                    break
+        
 
-        return event_chain
+        return event_chain_with_names
 
 def read_scene_json(file_path: str) -> dict:
     with open(file_path, 'r') as f:
@@ -640,7 +679,7 @@ def test():
     
 
 
-        
+# TODO short -> long term skill 的转变
         
 def main():
     mg = MemoryGraph()

@@ -2,218 +2,115 @@
     "nodes": [
         {
             "id": 0,
-            "event": "Root of the memory graph"
+            "event": "Space node for / at /"
         },
         {
             "id": 1,
-            "event": "Space node for / at /"
+            "event": "Space node for entity at /entity"
         },
         {
             "id": 2,
-            "event": "Space node for robot at /robot"
+            "event": "Move forward"
         },
         {
             "id": 3,
-            "event": "Skill: move:0:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Move backward"
         },
         {
             "id": 4,
-            "event": "Skill: move:1:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90"
         },
         {
             "id": 5,
-            "event": "Skill: jumpmove:2:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270"
         },
         {
             "id": 6,
-            "event": "Skill: jumpmove:3:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Look down, view degree minus 90, max is -180"
         },
         {
             "id": 7,
-            "event": "Skill: strafe:4:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change"
         },
         {
             "id": 8,
-            "event": "Skill: strafe:5:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Jump while moving forward, when there is an obstacle in front, can jump over the obstacle"
         },
         {
             "id": 9,
-            "event": "Skill: jumpstrafe:6:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2"
         },
         {
             "id": 10,
-            "event": "Skill: jumpstrafe:7:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item"
         },
         {
             "id": 11,
-            "event": "Skill: turn:8:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Jump and use item"
         },
         {
             "id": 12,
-            "event": "Skill: turn:9:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Discard the currently selected item"
         },
         {
             "id": 13,
-            "event": "Skill: movenorth:10:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Select hotbar slot [int]"
         },
         {
             "id": 14,
-            "event": "Skill: moveeast:11:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Swap inventory slots i and j items"
         },
         {
             "id": 15,
-            "event": "Skill: movesouth:12:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Combine inventory slots i and j items"
         },
         {
             "id": 16,
-            "event": "Skill: movewest:13:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Craft [item_name] when enough materials in inventory"
         },
         {
             "id": 17,
-            "event": "Skill: jumpnorth:14:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory"
         },
         {
             "id": 18,
-            "event": "Skill: jumpeast:15:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Smelt [item_name] using nearby furnace when enough materials in inventory"
         },
         {
             "id": 19,
-            "event": "Skill: jumpsouth:16:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Space node for temp at /temp"
         },
         {
             "id": 20,
-            "event": "Skill: jumpwest:17:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Make wooden axe - composed of 13 steps."
         },
         {
             "id": 21,
-            "event": "Skill: jump:18:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Space node for log_0_1_2 at /temp/log_0_1_2"
         },
         {
             "id": 22,
-            "event": "Skill: look:19:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Space node for log_2_1_-2 at /temp/log_2_1_-2"
         },
         {
             "id": 23,
-            "event": "Skill: look:20:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Space node for grass_2_-1_0 at /temp/grass_2_-1_0"
         },
         {
             "id": 24,
-            "event": "Skill: attack:21:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Space node for dirt_1_-2_0 at /temp/dirt_1_-2_0"
         },
         {
             "id": 25,
-            "event": "Skill: use:22:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 26,
-            "event": "Skill: jumpuse:23:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 27,
-            "event": "Space node for / at /"
-        },
-        {
-            "id": 28,
-            "event": "Space node for robot at /robot"
-        },
-        {
-            "id": 29,
-            "event": "Skill: move:0:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 30,
-            "event": "Skill: move:1:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 31,
-            "event": "Skill: jumpmove:2:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 32,
-            "event": "Skill: jumpmove:3:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 33,
-            "event": "Skill: strafe:4:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 34,
-            "event": "Skill: strafe:5:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 35,
-            "event": "Skill: jumpstrafe:6:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 36,
-            "event": "Skill: jumpstrafe:7:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 37,
-            "event": "Skill: turn:8:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 38,
-            "event": "Skill: turn:9:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 39,
-            "event": "Skill: movenorth:10:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 40,
-            "event": "Skill: moveeast:11:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 41,
-            "event": "Skill: movesouth:12:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 42,
-            "event": "Skill: movewest:13:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 43,
-            "event": "Skill: jumpnorth:14:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 44,
-            "event": "Skill: jumpeast:15:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 45,
-            "event": "Skill: jumpsouth:16:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 46,
-            "event": "Skill: jumpwest:17:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 47,
-            "event": "Skill: jump:18:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 48,
-            "event": "Skill: look:19:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 49,
-            "event": "Skill: look:20:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 50,
-            "event": "Skill: attack:21:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 51,
-            "event": "Skill: use:22:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
-        },
-        {
-            "id": 52,
-            "event": "Skill: jumpuse:23:discretemovement, Type: , Input: {}, Output: {}, Dependencies: []"
+            "event": "Space node for sand_-1_-2_0 at /temp/sand_-1_-2_0"
         }
     ],
     "edges": [
+        {
+            "source": 0,
+            "target": 0,
+            "relation": "next"
+        },
         {
             "source": 0,
             "target": 1,
@@ -221,7 +118,7 @@
         },
         {
             "source": 0,
-            "target": 27,
+            "target": 19,
             "relation": "next"
         },
         {
@@ -230,248 +127,113 @@
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 3,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 4,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 5,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 6,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 7,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 8,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 9,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 10,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 11,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 12,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 13,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 14,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 15,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 16,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 17,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 1,
             "target": 18,
             "relation": "next"
         },
         {
-            "source": 2,
-            "target": 19,
-            "relation": "next"
-        },
-        {
-            "source": 2,
+            "source": 19,
             "target": 20,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 19,
             "target": 21,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 19,
             "target": 22,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 19,
             "target": 23,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 19,
             "target": 24,
             "relation": "next"
         },
         {
-            "source": 2,
+            "source": 19,
             "target": 25,
-            "relation": "next"
-        },
-        {
-            "source": 2,
-            "target": 26,
-            "relation": "next"
-        },
-        {
-            "source": 27,
-            "target": 28,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 29,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 30,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 31,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 32,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 33,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 34,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 35,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 36,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 37,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 38,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 39,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 40,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 41,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 42,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 43,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 44,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 45,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 46,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 47,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 48,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 49,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 50,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 51,
-            "relation": "next"
-        },
-        {
-            "source": 28,
-            "target": 52,
             "relation": "next"
         }
     ]

@@ -10,7 +10,7 @@
             "tree trunk",
             "water"
         ],
-        "depth": 67
+        "depth": 173
     },
     {
         "id": 2,
@@ -24,7 +24,7 @@
             "flower",
             "water"
         ],
-        "depth": 174
+        "depth": 0
     },
     {
         "id": 3,
@@ -36,7 +36,7 @@
             "flower",
             "tree trunk"
         ],
-        "depth": 206
+        "depth": 0
     },
     {
         "id": 4,
@@ -47,7 +47,7 @@
             "tall grass",
             "flower"
         ],
-        "depth": 206
+        "depth": 0
     },
     {
         "id": 5,
@@ -59,7 +59,7 @@
             "sky",
             "cloud"
         ],
-        "depth": 220
+        "depth": 0
     },
     {
         "id": 6,
@@ -71,7 +71,7 @@
             "tall grass",
             "tree trunk"
         ],
-        "depth": 47
+        "depth": 186
     },
     {
         "id": 7,
@@ -83,7 +83,7 @@
             "leaves",
             "grass block"
         ],
-        "depth": 142
+        "depth": 237
     },
     {
         "id": 8,
@@ -94,7 +94,7 @@
             "leaves",
             "cloud"
         ],
-        "depth": 254
+        "depth": 0
     },
     {
         "id": 9,
@@ -105,6 +105,6 @@
             "sky",
             "leaves"
         ],
-        "depth": 236
+        "depth": 0
     }
 ]

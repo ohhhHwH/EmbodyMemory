@@ -32,7 +32,13 @@
                 
                 <Inventory>
                     <InventoryItem slot="0" type="crafting_table" quantity="1"/>
-                    <!-- <InventoryItem slot="1" type="log" quantity="64"/> -->
+                    <!-- <InventoryItem slot="0" type="furnace" quantity="1"/>
+                    <InventoryItem slot="1" type="log" quantity="64"/>
+                    <InventoryItem slot="2" type="stick" quantity="64"/>
+                    <InventoryItem slot="3" type="planks" quantity="64"/>
+                    <InventoryItem slot="4" type="cobblestone" quantity="64"/>
+                    <InventoryItem slot="5" type="iron_ore" quantity="64"/>
+                    <InventoryItem slot="6" type="coal" quantity="64"/> -->
                 </Inventory>
             </AgentStart>
             <AgentHandlers>
