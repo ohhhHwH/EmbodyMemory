@@ -134,6 +134,7 @@ system_prompt_en_mc_v2 = '''as a player in minecraft, you will answer user queri
     you will not call the tools directly, but return the function call in the format above.
     when you get the tool call results, you will continue to answer the user query based on the tool call results.
     never make up tools or parameters that are not in.
+    when you think the task is completed, you should directly tell the user that the task is completed, rather than returning any actions.
 '''
 system_prompt_cn_mc_v2 = '''
     作为 minecraft 中的玩家,你将回答用户的查询并使用工具获取信息。
@@ -155,6 +156,7 @@ system_prompt_cn_mc_v2 = '''
     你不会直接调用工具,而是以上述格式返回函数调用。
     当你获得工具调用结果时,你将继续根据工具调用结果回答用户查询。
     永远不要编造不在其中的工具或参数。
+    当你认为任务已经完成时，你应该直接告诉用户任务已经完成，而不是返回任何动作。
 '''
 # 减去探索类任务
 sub_mission_prompt_en = '''
@@ -664,7 +666,7 @@ def save_img(obs, env):
     obs = cv2.flip(obs, 0)
     print("obs.shape:", obs.shape, "obs.size:", obs.size)
     frame = cv2.cvtColor(obs, cv2.COLOR_RGB2BGR)
-    # cv2.imwrite("malmo_obs.png", frame)
+    # cv2.imwrite("log/malmo_obs.png", frame)
     
     # --- 分离通道 ---
     if d == 4:
@@ -676,8 +678,8 @@ def save_img(obs, env):
     
     # --- 保存 RGB 图像 ---
     rgb_bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
-    cv2.imwrite("malmo_rgb.png", rgb_bgr)
-    # print("已保存 RGB 图像: malmo_rgb.png")
+    cv2.imwrite("log/malmo_rgb.png", rgb_bgr)
+    # print("已保存 RGB 图像: log/malmo_rgb.png")
 
     # --- 保存深度图像 ---
     if depth is not None:
@@ -685,8 +687,8 @@ def save_img(obs, env):
         # 为了保存可视化效果,将其归一化到 0~255
         depth_norm = cv2.normalize(depth, None, 0, 255, cv2.NORM_MINMAX)
         depth_uint8 = depth_norm.astype(np.uint8)
-        cv2.imwrite("malmo_depth.png", depth_uint8)
-        # print("已保存 Depth 图像: malmo_depth.png")
+        cv2.imwrite("log/malmo_depth.png", depth_uint8)
+        # print("已保存 Depth 图像: log/malmo_depth.png")
         # 根据图像的深度信息加 mask ,超过阈值的部分设为白色
         depth_threshold = 200  # 根据需要调整阈值
         mask = depth_uint8 < depth_threshold
@@ -694,7 +696,7 @@ def save_img(obs, env):
         rgb_masked = np.ones_like(rgb) * 255  # 白色背景
         rgb_masked[mask] = rgb[mask]
         rgb_masked_bgr = cv2.cvtColor(rgb_masked, cv2.COLOR_RGB2BGR)
-        cv2.imwrite("malmo_obs.png", rgb_masked_bgr)
+        cv2.imwrite("log/malmo_obs.png", rgb_masked_bgr)
     else:
         print("当前观测中没有深度通道")
 
@@ -843,7 +845,13 @@ def mem_generation(action, inventories_bef, aimed_object_bef, obj_list_bef, inve
     elif "Item" in action:
         pass
     elif "look" in action :
-        input['degree'] = degree
+        in_degree = degree
+        if action == "look 1":
+            in_degree -= 1
+        elif action == "look -1":
+            in_degree += 1
+        input['degree'] = in_degree
+        output['degree'] = degree
     else:
         # 移动的指令 ， 连续移动不做记录，但最后一次移动需要记录， 仅保留上一次移动的场景 即寻找最后的场景信息
         input["obj_list"] = obj_list
@@ -1249,7 +1257,7 @@ def get_around_objects_precise_pos(entity, around, around_range):
         print(f"Object: {obj['name']}, Position: (y:{obj['RELy']}, z:{obj['RELz']}, x:{obj['RELx']}), Size: {obj['size']}")
     return obj_list
 
-def process_detect_from_json(entity, json_path="detection_output_kimi.json"):
+def process_detect_from_json(entity, json_path="log/detection_output_kimi.png"):
     obj_list = []
     with open(json_path, 'r', encoding='utf-8') as json_file:
         detection_data = json.load(json_file) # detection_data 是一个列表
@@ -1541,7 +1549,7 @@ if __name__ == '__main__':
     parser.add_argument('--LLM', type=str, default='enable', help="enable or disable LLM")
     parser.add_argument('--MEM', type=str, default='enable', help="enable or disable MEM")
     parser.add_argument('--DETECT', type=str, default='disable', help="enable or disable MEM")
-    parser.add_argument('--userinput', type=str, default='disable', help="enable or disable user input")
+    parser.add_argument('--userinput', type=str, default='enable', help="enable or disable user input")
     # user_request = 'Make wooden axe'
     parser.add_argument('--userrequest', type=str, default='Make wooden axe', help="Make wooden axe")
     # TODO 可更换 llm model
@@ -1557,22 +1565,24 @@ if __name__ == '__main__':
     MEM_MODE = False
     DETECT_MODE = False
     # DEBUG
-    USERINPUT_MODE = True
+    USERINPUT_MODE = False
     SUBMISSION_MODE = False
     
-    # if args.LLM.lower() == 'enable':
-    #     LLM_MODE = True
+    if args.LLM.lower() == 'enable':
+        LLM_MODE = True
+    else:
+        LLM_MODE = False
+    if args.MEM.lower() == 'enable':
+        MEM_MODE = True
+    else:
+        MEM_MODE = False
+    if args.DETECT.lower() == 'enable':
+        DETECT_MODE = True
+    else:
+        DETECT_MODE = False
+    # if args.userinput.lower() == 'enable':
+    #     USERINPUT_MODE = True
     # else:
-    #     LLM_MODE = False
-    # if args.MEM.lower() == 'enable':
-    #     MEM_MODE = True
-    # else:
-    #     MEM_MODE = False
-    # if args.DETECT.lower() == 'enable':
-    #     DETECT_MODE = True
-    # else:
-    #     DETECT_MODE = False
-    # if args.userinput.lower() == 'disable':
     #     USERINPUT_MODE = False
 
     
@@ -1853,8 +1863,8 @@ if __name__ == '__main__':
                         continue
                     action = act_str
                     
-                    # 调试：用户决定是否执行 每5步
-                    if USERINPUT_MODE == False and (steps+1) % 30 == 0:
+                    # 调试：用户决定是否执行 每5步 # TODO 每15步加判定判断任务是否完成
+                    if USERINPUT_MODE == False and (steps+1) % 15 == 0:
                         print("enter to continue, input 'q' to quit:")
                         user_input = input(":")
                         if user_input.lower() == 'q':
@@ -1980,6 +1990,7 @@ if __name__ == '__main__':
                 # print f to log_file
                 with open(log_file, 'a') as f:
                     f.write(f"Current context length: {context_length} characters.\n")
+                    f.write(messages[-1]['content'] + '\n')
         # TODO user 任务 的记忆 记录 submission 
         
         # 整体退出

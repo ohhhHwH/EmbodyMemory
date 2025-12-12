@@ -195,7 +195,7 @@ def save_img(obs, env):
     obs = cv2.flip(obs, 0)
     print("obs.shape:", obs.shape, "obs.size:", obs.size)
     frame = cv2.cvtColor(obs, cv2.COLOR_RGB2BGR)
-    # cv2.imwrite("malmo_obs.png", frame)
+    # cv2.imwrite("log/malmo_obs.png", frame)
     
     # --- 分离通道 ---
     if d == 4:
@@ -207,8 +207,8 @@ def save_img(obs, env):
     
     # --- 保存 RGB 图像 ---
     rgb_bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
-    cv2.imwrite("malmo_rgb.png", rgb_bgr)
-    # print("已保存 RGB 图像: malmo_rgb.png")
+    cv2.imwrite("log/malmo_rgb.png", rgb_bgr)
+    # print("已保存 RGB 图像: log/malmo_rgb.png")
 
     # --- 保存深度图像 ---
     if depth is not None:
@@ -216,8 +216,8 @@ def save_img(obs, env):
         # 为了保存可视化效果，将其归一化到 0~255
         depth_norm = cv2.normalize(depth, None, 0, 255, cv2.NORM_MINMAX)
         depth_uint8 = depth_norm.astype(np.uint8)
-        cv2.imwrite("malmo_depth.png", depth_uint8)
-        # print("已保存 Depth 图像: malmo_depth.png")
+        cv2.imwrite("log/malmo_depth.png", depth_uint8)
+        # print("已保存 Depth 图像: log/malmo_depth.png")
         # 根据图像的深度信息加 mask ，超过阈值的部分设为白色
         depth_threshold = 200  # 根据需要调整阈值
         mask = depth_uint8 < depth_threshold
@@ -225,7 +225,7 @@ def save_img(obs, env):
         rgb_masked = np.ones_like(rgb) * 255  # 白色背景
         rgb_masked[mask] = rgb[mask]
         rgb_masked_bgr = cv2.cvtColor(rgb_masked, cv2.COLOR_RGB2BGR)
-        cv2.imwrite("malmo_obs.png", rgb_masked_bgr)
+        cv2.imwrite("log/malmo_obs.png", rgb_masked_bgr)
     else:
         print("当前观测中没有深度通道")
         
@@ -449,7 +449,7 @@ if __name__ == '__main__':
             # test3_kimi()
             
             # 读取json文件打印识别到的物体和深度信息
-            # json_output_path = "detection_output_kimi.json"
+            # json_output_path = "log/detection_output_kimi.png"
             # obj_list = []
             # with open(json_output_path, 'r', encoding='utf-8') as json_file:
             #     detection_data = json.load(json_file) # detection_data 是一个列表
@@ -470,7 +470,7 @@ if __name__ == '__main__':
             #             }
             #         )
 
-            # 将以上信息写入action.log 图像存入 malmo_obs.png
+            # 将以上信息写入action.log 图像存入 log/malmo_obs.png
             with open(log_file, 'a') as f:
                 f.write('reward: ' + str(reward) + '\n')
                 f.write('done: ' + str(done) + '\n')

@@ -78,7 +78,7 @@ Minecraft commonly features objects such as tree trunks, leaves, water, sand, gr
 def test1():
     # 1. 首先将本地图片上传到临时存储或OSS,获取URL
     # 这里假设已经获取到图片URL
-    image_url = "https://gitee.com/hou-yunlong817/imagehosting/blob/master/malmo_rgb.png"
+    image_url = "https://gitee.com/hou-yunlong817/imagehosting/blob/master/log/malmo_rgb.png"
 
     client = OpenAI(
         api_key=os.getenv("QWEN_API_KEY"),
@@ -98,7 +98,7 @@ def test1():
             return False
 
     # 测试你的URL
-    image_url = "https://gitee.com/hou-yunlong817/imagehosting/raw/master/malmo_depth.png"
+    image_url = "https://gitee.com/hou-yunlong817/imagehosting/raw/master/log/malmo_depth.png"
     if check_image_url(image_url):
         print("✅ URL有效,可以继续调用API")
     else:
@@ -126,7 +126,7 @@ def test2():
             return base64.b64encode(image_file.read()).decode('utf-8')
 
     # 假设你的图片在当前目录下的obs.png
-    image_path = "malmo_rgb.png"
+    image_path = "log/malmo_rgb.png"
     base64_image = image_to_base64(image_path)
 
     # 2. 构建Data URL格式
@@ -153,7 +153,7 @@ def test2():
     print(response.choices[0].message.content)
     
     # 将 content 保存为 JSON 文件
-    json_output_path = "detection_output.json"
+    json_output_path = "log/detection_output.png"
     with open(json_output_path, 'w', encoding='utf-8') as json_file:
         json_file.write(response.choices[0].message.content)
     print(f"检测结果已保存到 {json_output_path}")
@@ -171,10 +171,10 @@ color_dir = {
 }
 
 def draw_boxes_from_json():
-    # 读取detection_output.json并绘制边框
-    input_img = "malmo_rgb.png"       # 替换为你的图片路径
-    output_img = "malmo_rgb_annotated.png"
-    json_path = "detection_output.json"   # 替换为你的JSON路径
+    # 读取log/detection_output.png并绘制边框
+    input_img = "log/malmo_rgb.png"       # 替换为你的图片路径
+    output_img = "log/malmo_rgb_annotated.png"
+    json_path = "log/detection_output.png"   # 替换为你的JSON路径
     
     # 根据 img 实际尺寸设置参考尺寸（图片右下角坐标）
     with Image.open(input_img) as img:
@@ -226,10 +226,10 @@ def draw_boxes_from_json():
         print(f"已保存带有边框的图片到 {output_img}")
     
 def draw_boxes_from_json_KIMI():
-    # 读取detection_output_kimi.json并绘制边框
-    input_img = "malmo_rgb.png"       # 替换为你的图片路径
-    output_img = "malmo_rgb_annotated.png"
-    json_path = "detection_output_kimi.json"   # 替换为你的JSON路径
+    # 读取log/detection_output_kimi.png并绘制边框
+    input_img = "log/malmo_rgb.png"       # 替换为你的图片路径
+    output_img = "log/malmo_rgb_annotated.png"
+    json_path = "log/detection_output_kimi.png"   # 替换为你的JSON路径
     
     # 根据 img 实际尺寸设置参考尺寸（图片右下角坐标）
     with Image.open(input_img) as img:
@@ -296,7 +296,7 @@ def draw_boxes_from_json_KIMI():
         img.save(output_img)
         print(f"已保存带有边框的图片到 {output_img}")
    
-def draw_boxes_from_json_KIMIV2(input_img="malmo_rgb.png", output_img="malmo_rgb_annotated.png", json_path="detection_output_kimi.json"):
+def draw_boxes_from_json_KIMIV2(input_img="log/malmo_rgb.png", output_img="log/malmo_rgb_annotated.png", json_path="log/detection_output_kimi.png"):
     with Image.open(input_img) as img:
         ref_width, ref_height = img.size
    # 使用cv2绘制中心点
@@ -319,10 +319,10 @@ def draw_boxes_from_json_KIMIV2(input_img="malmo_rgb.png", output_img="malmo_rgb
     print(f"已保存带有中心点的图片到 {output_img}")
 
 def draw_boxes_from_json_GEMINI():
-    # 读取detection_output_kimi.json并绘制边框
-    input_img = "malmo_rgb.png"       # 替换为你的图片路径
-    output_img = "malmo_rgb_annotated.png"
-    json_path = "detection_output_gemini.json"   # 替换为你的JSON路径
+    # 读取log/detection_output_kimi.png并绘制边框
+    input_img = "log/malmo_rgb.png"       # 替换为你的图片路径
+    output_img = "log/malmo_rgb_annotated.png"
+    json_path = "log/detection_output_gemini.png"   # 替换为你的JSON路径
     
     # 根据 img 实际尺寸设置参考尺寸（图片右下角坐标）
     with Image.open(input_img) as img:
@@ -391,9 +391,9 @@ def draw_boxes_from_json_GEMINI():
 
 def draw_boxes_from_json_GEMINI_v2():
     # 画中心点坐标
-    input_img = "malmo_rgb.png"       # 替换为你的图片路径
-    output_img = "malmo_rgb_annotated.png"
-    json_path = "detection_output_gemini.json"   # 替换为
+    input_img = "log/malmo_rgb.png"       # 替换为你的图片路径
+    output_img = "log/malmo_rgb_annotated.png"
+    json_path = "log/detection_output_gemini.png"   # 替换为
     # 根据 img 实际尺寸设置参考尺寸（图片右下角坐标）
     with Image.open(input_img) as img:
         ref_width, ref_height = img.size
@@ -426,7 +426,7 @@ def test3_kimi():
     )
     
     # 对图片进行base64编码
-    image_path = "malmo_rgb.png"
+    image_path = "log/malmo_rgb.png"
     with open(image_path, 'rb') as f:
         img_base = base64.b64encode(f.read()).decode('utf-8')
     
@@ -474,7 +474,7 @@ def test3_kimi():
         
     
     # 将 content 保存为 JSON 文件
-    json_output_path = "detection_output_kimi.json"
+    json_output_path = "log/detection_output_kimi.png"
     with open(json_output_path, 'w', encoding='utf-8') as json_file:
         json_file.write(response.choices[0].message.content)
         
@@ -488,7 +488,7 @@ def test4_gemini(user_input=""):
         api_key=os.getenv("OPENROUTER_API_KEY"),
     )
     # 对图片进行base64编码
-    image_path = "malmo_rgb.png"
+    image_path = "log/malmo_rgb.png"
     with open(image_path, 'rb') as f:
         img_base = base64.b64encode(f.read()).decode('utf-8')
     
@@ -540,7 +540,7 @@ def test4_gemini(user_input=""):
         content = content[:-len("```")].strip()
     
     # 将 content 保存为 JSON 文件
-    json_output_path = "detection_output_gemini.json"
+    json_output_path = "log/detection_output_gemini.png"
     with open(json_output_path, 'w', encoding='utf-8') as json_file:
         json_file.write(content)
 
@@ -555,7 +555,7 @@ def test5_kimiV2(user_input=""):
     )
     
     # 对图片进行base64编码
-    image_path = "malmo_rgb.png"
+    image_path = "log/malmo_rgb.png"
     with open(image_path, 'rb') as f:
         img_base = base64.b64encode(f.read()).decode('utf-8')
     messages=[
@@ -616,7 +616,7 @@ def test5_kimiV2(user_input=""):
         
     
     # 将 content 保存为 JSON 文件
-    json_output_path = "detection_output_kimi.json"
+    json_output_path = "log/detection_output_kimi.png"
     with open(json_output_path, 'w', encoding='utf-8') as json_file:
         json_file.write(response.choices[0].message.content)
     
@@ -626,13 +626,13 @@ def test5_kimiV2(user_input=""):
 # 根据框和深度图像计算物体位置
 def cal_pos():
     # 深度图像路径
-    depth_image_path = "malmo_depth.png"
+    depth_image_path = "log/malmo_depth.png"
     # 读取深度图像
     depth_image = Image.open(depth_image_path)
     depth_pixels = depth_image.load()
     
     # 遍历检测结果
-    json_path = "detection_output_kimi.json"
+    json_path = "log/detection_output_kimi.png"
     with open(json_path, 'r', encoding='utf-8') as f:
         detections = json.load(f)
     for det in detections:
@@ -675,7 +675,7 @@ def cal_pos():
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(detections, f, ensure_ascii=False, indent=4)
 
-def cal_posV2(depth_image_path="malmo_depth.png", json_path="detection_output_gemini.json"):
+def cal_posV2(depth_image_path="log/malmo_depth.png", json_path="log/detection_output_gemini.png"):
     # 深度图像路径
 
     # 读取深度图像
@@ -735,7 +735,7 @@ def obj_detect_init():
     print(f"Time taken: {end_time - start_time} seconds, response: {response}")
     return client, messages
 
-def obj_detect_and_draw(client, messages, image_path="malmo_rgb.png", model="moonshot-v1-8k-vision-preview"):
+def obj_detect_and_draw(client, messages, image_path="log/malmo_rgb.png", model="moonshot-v1-8k-vision-preview"):
 
     start_time = time.time()
     
@@ -762,7 +762,7 @@ def obj_detect_and_draw(client, messages, image_path="malmo_rgb.png", model="moo
     print(f"Time taken: {end_time - start_time} seconds")
     
     # 将 content 保存为 JSON 文件
-    json_output_path = "detection_output_kimi.json"
+    json_output_path = "log/detection_output_kimi.png"
     with open(json_output_path, 'w', encoding='utf-8') as json_file:
         json_file.write(response.choices[0].message.content)
         

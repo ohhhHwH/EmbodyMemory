@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+    <Mission xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <About>
+            <Summary>Everyday Minecraft life: survival</Summary>
+        </About>
+
+        <ModSettings>
+            <MsPerTick>50</MsPerTick>
+        </ModSettings>
+
+        <ServerSection>
+            <ServerInitialConditions>
+                <Time>
+                <StartTime>0</StartTime>
+                <AllowPassageOfTime>false</AllowPassageOfTime>
+                </Time>
+                <Weather>clear</Weather>
+                
+                <AllowSpawning>false</AllowSpawning>
+            </ServerInitialConditions>
+            <ServerHandlers>
+                <DefaultWorldGenerator forceReset="true" seed="115102116540990794" />
+                <ServerQuitFromTimeUp timeLimitMs="3000000" description="out_of_time"/>
+                <ServerQuitWhenAnyAgentFinishes />
+            </ServerHandlers>
+        </ServerSection>
+
+        <AgentSection mode="Survival">
+            <Name>Agent0</Name>
+            <AgentStart>
+                <Placement x="-173.5" y="63.0" z="259.5"/>
+                
+                <Inventory>
+                    <InventoryItem slot="0" type="crafting_table" quantity="1"/>
+                    <!-- <InventoryItem slot="0" type="furnace" quantity="1"/>
+                    <InventoryItem slot="1" type="log" quantity="64"/>
+                    <InventoryItem slot="2" type="stick" quantity="64"/>
+                    <InventoryItem slot="3" type="planks" quantity="64"/>
+                    <InventoryItem slot="4" type="cobblestone" quantity="64"/>
+                    <InventoryItem slot="5" type="iron_ore" quantity="64"/>
+                    <InventoryItem slot="6" type="coal" quantity="64"/> -->
+                </Inventory>
+            </AgentStart>
+            <AgentHandlers>
+                <DiscreteMovementCommands/>
+                
+                <!-- <ContinuousMovementCommands turnSpeedDegs="30"/> -->
+                <MissionQuitCommands/>
+
+                <InventoryCommands/>
+
+                <SimpleCraftCommands/>
+
+                <NearbyCraftCommands/>
+
+                <NearbySmeltCommands/>
+
+                <ObservationFromFullInventory/>
+
+                <ChatCommands/>
+
+                <ObservationFromNearbyEntities>
+                    <Range name="entities" xrange="8" yrange="2" zrange="6" />
+                </ObservationFromNearbyEntities>
+                <ObservationFromGrid>
+                    <Grid name="around">
+                        <min x="-2" y="-2" z="-2" />
+                        <max x="2" y="2" z="2" />
+                    </Grid>
+                </ObservationFromGrid>
+                <VideoProducer want_depth="true">
+                   <Width>1440</Width>
+                   <Height>960</Height>
+                </VideoProducer>
+                <RewardForMissionEnd>
+                    <Reward description="found_goal" reward="1000" />
+                    <Reward description="out_of_time" reward="-1000" />
+                </RewardForMissionEnd>
+                <AgentQuitFromTouchingBlockType>
+                    <Block type="gold_block diamond_block redstone_block" description="found_goal" />
+                </AgentQuitFromTouchingBlockType>
+            </AgentHandlers>            
+        </AgentSection>
+</Mission>

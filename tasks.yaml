@@ -1,59 +1,206 @@
 basic:
-  - mine log
-  - mine sand
-  - mine sapling
-  - mine wheat seeds
-  - mine dirt
-  - mine grass
-  - craft plank
-  - craft stick
-  - craft button
-  - craft crafting table
+  - task_name: "mine log"
+    description: "mine one log from a tree"
+    steps: 100
+    judge: "log"
+  - task_name: "mine sand"
+    description: "mine one block of sand"
+    steps: 100
+    judge: "sand"
+  - task_name: "mine sapling"
+    description: "mine one sapling from a tree"
+    steps: 100
+    judge: "sapling"
+  - task_name: "mine wheat seeds"
+    description: "mine one wheat seed from grass"
+    steps: 100
+    judge: "wheat_seeds"
+  - task_name: "mine dirt"
+    description: "mine one block of dirt"
+    steps: 100
+    judge: "dirt"
+  - task_name: "mine grass"
+    description: "mine one block of grass"
+    steps: 100
+    judge: "grass"
+  - task_name: "craft plank"
+    description: "craft one wooden plank from log"
+    steps: 100
+    judge: "plank"
+  - task_name: "craft stick"
+    description: "craft one stick from wooden plank"
+    steps: 100
+    judge: "stick"
+  - task_name: "craft button"
+    description: "craft one wooden button from wooden plank"
+    steps: 100
+    judge: "wooden_button"
+  - task_name: "craft crafting table
+    description: "craft one crafting table from wooden plank"
+    steps: 100
+    judge: "crafting_table"
 
 easy:
-  - craft chest
-  - craft bowl
-  - craft boat
-  - craft wooden pressure
-  - craft wooden slab plate
-  - craft ladder
-  - craft barrel
-  - craft wooden pickaxe
-  - craft wooden axe
-  - craft wooden sword
+  - task_name: "craft chest"
+    description: "craft one chest from wooden plank"
+    steps: 100
+    judge: "chest"
+  - task_name: "craft bowl"
+    description: "craft one bowl from wooden plank"
+    steps: 100
+    judge: "bowl"
+  - task_name: "craft boat"
+    description: "craft one boat from wooden plank"
+    steps: 100
+    judge: "boat"
+  - task_name: "craft wooden pressure"
+    description: "craft one wooden pressure plate from wooden plank"
+    steps: 100
+    judge: "wooden_pressure_plate"
+  - task_name: "craft wooden slab plate"
+    description: "craft one wooden slab from wooden plank"
+    steps: 100
+    judge: "wooden_slab"
+  - task_name: "craft ladder"
+    description: "craft one ladder from stick"
+    steps: 100
+    judge: "ladder"
+  - task_name: "craft barrel"
+    description: "craft one barrel from wooden plank"
+    steps: 100
+    judge: "barrel"
+  - task_name: "craft wooden pickaxe"
+    description: "craft one wooden pickaxe from wooden plank and stick"
+    steps: 100
+    judge: "wooden_pickaxe"
+  - task_name: "craft wooden axe"
+    description: "craft one wooden axe from wooden plank and stick"
+    steps: 100
+    judge: "wooden_axe"
+  - task_name: "craft wooden sword
+    description: "craft one wooden sword from wooden plank and stick"
+    steps: 100
+    judge: "wooden_sword"
 
 medium:
-  - mine cobblestone
-  - mine coal ore
-  - craft furnace
-  - craft lever
-  - craft stone pickaxe
-  - craft stone axe
-  - craft stone hoe
-  - craft stone shovel
-  - craft stone sword
-  - mine iron ore
+  - task_name: "mine cobblestone"
+    description: "mine one block of cobblestone"
+    steps: 100
+    judge: "cobblestone"
+  - task_name: "mine coal ore"
+    description: "mine one block of coal ore"
+    steps: 100
+    judge: "coal_ore"
+  - task_name: "craft furnace"
+    description: "craft one furnace from cobblestone"
+    steps: 100
+    judge: "furnace"
+  - task_name: "craft lever"
+    description: "craft one lever from cobblestone and stick"
+    steps: 100
+    judge: "lever"
+  - task_name: "craft stone pickaxe"
+    description: "craft one stone pickaxe from cobblestone and stick"
+    steps: 100
+    judge: "stone_pickaxe"
+  - task_name: "craft stone axe"
+    description: "craft one stone axe from cobblestone and stick"
+    steps: 100
+    judge: "stone_axe"
+  - task_name: "craft stone hoe"
+    description: "craft one stone hoe from cobblestone and stick"
+    steps: 100
+    judge: "stone_hoe"
+  - task_name: "craft stone shovel"
+    description: "craft one stone shovel from cobblestone and stick"
+    steps: 100
+    judge: "stone_shovel"
+  - task_name: "craft stone sword"
+    description: "craft one stone sword from cobblestone and stick"
+    steps: 100
+    judge: "stone_sword"
+  - task_name: "mine iron ore
+    description: "mine one block of iron ore"
+    steps: 100
+    judge: "iron_ore"
 
 hard:
-  - smelt glass
-  - smelt iron ingot
-  - craft iron bars
-  - craft carpentry table
-  - craft iron pickaxe
-  - craft iron door
-  - craft iron trapdoor
-  - craft rail
-  - craft cauldron
+  - task_name: "smelt glass"
+    description: "smelt one block of glass from sand using furnace"
+    steps: 100
+    judge: "glass"
+  - task_name: "smelt iron ingot"
+    description: "smelt one iron ingot from iron ore using furnace"
+    steps: 100
+    judge: "iron_ingot"
+  - task_name: "craft iron bars"
+    description: "craft one iron bars from iron ingot"
+    steps: 100
+    judge: "iron_bars"
+  - task_name: "craft carpentry table"
+    description: "craft one carpentry table from iron ingot and wooden plank"
+    steps: 100
+    judge: "carpentry_table"
+  - task_name: "craft iron pickaxe"
+    description: "craft one iron pickaxe from iron ingot and stick"
+    steps: 100
+    judge: "iron_pickaxe"
+  - task_name: "craft iron door"
+    description: "craft one iron door from iron ingot"
+    steps: 100
+    judge: "iron_door"
+  - task_name: "craft iron trapdoor"
+    description: "craft one iron trapdoor from iron ingot"
+    steps: 100
+    judge: "iron_trapdoor"
+  - task_name: "craft rail"
+    description: "craft one rail from iron ingot and stick"
+    steps: 100
+    judge: "rail"
+  - task_name: "craft cauldron
+    description: "craft one cauldron from iron ingot"
+    steps: 100
+    judge: "cauldron"
 
 
 complex:
-  - obtain diamond
-  - mine redstone
-  - craft redstone torch
-  - craft dropper
-  - craft compass
-  - craft clock
-  - craft piston
-  - craft diamond pickaxe
-  - craft diamond sword
-  - craft raw gold block
+  - task_name: "obtain diamond"
+    description: "obtain one diamond by mining diamond ore"
+    steps: 200
+    judge: "diamond"
+  - task_name: "mine redstone"
+    description: "mine one block of redstone ore"
+    steps: 200
+    judge: "redstone"
+  - task_name: "craft redstone torch"
+    description: "craft one redstone torch from redstone and stick"
+    steps: 200
+    judge: "redstone_torch"
+  - task_name: "craft dropper"
+    description: "craft one dropper from cobblestone, redstone and wooden plank"
+    steps: 200
+    judge: "dropper"
+  - task_name: "craft compass"
+    description: "craft one compass from iron ingot and redstone"
+    steps: 200
+    judge: "compass"
+  - task_name: "craft clock"
+    description: "craft one clock from gold ingot and redstone"
+    steps: 200
+    judge: "clock"
+  - task_name: "craft piston"
+    description: "craft one piston from wooden plank, cobblestone, iron ingot and redstone"
+    steps: 200
+    judge: "piston"
+  - task_name: "craft diamond pickaxe"
+    description: "craft one diamond pickaxe from diamond and stick"
+    steps: 200
+    judge: "diamond_pickaxe"
+  - task_name: "craft diamond sword"
+    description: "craft one diamond sword from diamond and stick"
+    steps: 200
+    judge: "diamond_sword"
+  - task_name: "craft raw gold block
+    description: "craft one raw gold block from raw gold"
+    steps: 200
+    judge: "raw_gold_block"
