@@ -230,7 +230,7 @@
         },
         "make_wooden_axe": {
             "name": "make_wooden_axe",
-            "description": "Make wooden axe - composed of 13 steps.",
+            "description": "Make wooden axe - composed of 14 steps.",
             "input": {
                 "obj_list": [
                     {
@@ -541,11 +541,7 @@
                 ],
                 "aimed_obj": "log"
             },
-            "output": {
-                "output_items": {
-                    "wooden_pickaxe": 1
-                }
-            },
+            "output": {},
             "actions": [
                 {
                     "name": "move 1",
@@ -954,13 +950,13 @@
                                 "name": "log",
                                 "ACC": true,
                                 "RELx": 0,
-                                "RELy": 0,
+                                "RELy": 2,
                                 "RELz": 1,
                                 "size": 1,
                                 "coords": [
                                     [
                                         1,
-                                        2,
+                                        0,
                                         2
                                     ]
                                 ]
@@ -1004,19 +1000,19 @@
                                 "name": "log",
                                 "ACC": true,
                                 "RELx": 0,
-                                "RELy": 2,
+                                "RELy": 0,
                                 "RELz": 1,
                                 "size": 1,
                                 "coords": [
                                     [
                                         1,
-                                        0,
+                                        2,
                                         2
                                     ]
                                 ]
                             }
                         ],
-                        "aimed_obj": "log"
+                        "aimed_obj": "air"
                     },
                     "output": {
                         "output_items": {
@@ -1097,7 +1093,7 @@
                     "description": "step 11 action craft stick"
                 },
                 {
-                    "name": "craft wooden_pickaxe",
+                    "name": "craft wooden_axe",
                     "input": {
                         "input_items": {
                             "stick": 2,
@@ -1106,11 +1102,18 @@
                     },
                     "output": {
                         "output_items": {
-                            "wooden_pickaxe": 1
+                            "wooden_axe": 1
                         }
                     },
-                    "action": "12:craft wooden_pickaxe",
-                    "description": "step 12 action craft wooden_pickaxe"
+                    "action": "12:craft wooden_axe",
+                    "description": "step 12 action craft wooden_axe"
+                },
+                {
+                    "name": "craft wooden_axe",
+                    "input": {},
+                    "output": {},
+                    "action": "13:craft wooden_axe",
+                    "description": "step 13 action craft wooden_axe"
                 }
             ]
         }

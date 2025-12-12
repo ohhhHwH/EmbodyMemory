@@ -348,8 +348,10 @@ class Env:
             action_str = action_str
             if action_str == 'look 1' and self.view_angle < 2:
                 self.view_angle += 1
+                action_str = 'look -1'
             elif action_str == 'look -1' and self.view_angle > -2:
                 self.view_angle -= 1
+                action_str = 'look 1'
             elif "hotbar." in action_str:
                 # hotbar.[int] 进行特殊处理，先 hotbar.1 1 再 hotbar.1 0 完成切换
                 return self.hotbar_switch(action_str)

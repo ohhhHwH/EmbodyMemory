@@ -156,19 +156,18 @@ system_prompt_cn_mc_v2 = '''
     当你获得工具调用结果时,你将继续根据工具调用结果回答用户查询。
     永远不要编造不在其中的工具或参数。
 '''
+# 减去探索类任务
 sub_mission_prompt_en = '''
     as a player in minecraft, you will decompose the user's task into several sub-tasks, each sub-task should be as short and easy to complete as possible.
     the types of sub-tasks are divided into the following categories:
     1. find tasks: such as "find wood", "find water", etc.
     2. gather tasks: such as "gather wood", "gather stone", etc.
     3. craft tasks: such as "craft planks", "craft tools", etc.
-    4. explore tasks: such as "explore cave", "explore map", etc.
     please decompose the user's task description into several sub-tasks in order, the format of the sub-tasks is
     {
         1:"find wood",
         2:"gather wood",
         3:"craft planks",
-        4:"explore cave"
     }
 '''
 sub_mission_prompt_cn = '''
@@ -177,13 +176,11 @@ sub_mission_prompt_cn = '''
     1. 寻找类任务：如“寻找 木头”、寻找 水”等。
     2. 采集类任务：如“采集 木头”、“采集 石头”等。
     3. 制作类任务：如“制作 木板”、“制作 工具”等。
-    4. 探索类任务：如“探索 洞穴”、“探索 地图”等。
     请根据用户的任务描述,将任务拆解成多个子任务,并按顺序列出,其子任务格式为
     {
         1:"找到 木头",
         2:"采集 木头",
         3:"制作 木板",
-        4:"探索 洞穴"
     }
     请确保子任务简洁明了,并且每个子任务都可以通过游戏内的动作来完成。
 '''
@@ -195,10 +192,10 @@ act_info_enV2 = {
     "move -1": "Move backward",
     "turn 1": "yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90",
     "turn -1": "yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270",
-    "look 1": "Look down, view degree minus 90, max is -180",
-    "look -1": "Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change",
+    "look -1": "Look down, view degree minus 1, max is -2",
+    "look 1": "Look up, view degree add 1, max is 2, when view degree is 2, next look 1 will not change",
     "jumpmove": "Jump while moving forward, when there is an obstacle in front, can jump over the obstacle",
-    "attack": "Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2",
+    "attack": "Attack the aimed target, collect items. When you need to collect items at REL y=0, first use look -1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look 1 to adjust the view to level 2",
     "use": "Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item",
     "jumpuse": "Jump and use item",
     "discardCurrentItem": "Discard the currently selected item",
@@ -218,10 +215,10 @@ act_info_en = {
     "move -1": "Move backward",
     "turn 1": "yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90",
     "turn -1": "yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270",
-    "look 1": "Look down, view degree minus 90, max is -180",
-    "look -1": "Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change",
+    "look -1": "Look down, view degree minus 1, max is -2",
+    "look 1": "Look up, view degree add 1, min is 2, when view degree is 2, next look 1 will not change",
     "jumpmove": "Jump while moving forward, when there is an obstacle in front, can jump over the obstacle",
-    "attack": "Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2",
+    "attack": "Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look -1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look 1 to adjust the view to level 2",
     "use": "Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item",
     "jumpuse": "Jump and use item",
     "discardCurrentItem": "Discard the currently selected item",
@@ -241,8 +238,8 @@ act_info_cnV2 = {
     "move -1": "后退一步",
     "turn 1": "向右转90度",
     "turn -1": "向左转90度",
-    "look 1": "向下看,视角角度减90,最大值为-180,当视角角度为-180时,下一次向下看将不再变化",
-    "look -1": "向上看,视角角度加90,最小值为180,当视角角度为180时,下一次向上看将不再变化",
+    "look -1": "向下看,视角角度减1,最大值为-2,当视角角度为-2时,下一次向下看将不再变化",
+    "look 1": "向上看,视角角度加1,最小值为2,当视角角度为2时,下一次向上看将不再变化",
     "jumpmove": "跳跃并前进,当前方有障碍物时,可以跳跃前进越过障碍物",
     "attack": "攻击前方1-2格的目标,采集物品,当需要采集REL y=0的物品时,先 look 1 向下调整视角到第0层,再使用attack进行采集, 采集 REL y=1 的物品时,不需要调整视角, 采集 REL y=2 的物品时,需要 look -1 向上调整视角到第2层",
     "use": "使用物品, 将当前快捷栏选中的物品使用在前方1-2格的目标上,必须有目标才能使用物品",
@@ -261,10 +258,10 @@ act_info_cn = {
     "move -1": "后退一步",
     "turn 1": "向右转90度",
     "turn -1": "向左转90度",
-    "look 1": "向下看,视角角度减90,最大值为-180,当视角角度为-180时,下一次向下看将不再变化",
-    "look -1": "向上看,视角角度加90,最小值为180,当视角角度为180时,下一次向上看将不再变化",
+    "look -1": "向下看,视角角度减90,最大值为-180,当视角角度为-180时,下一次向下看将不再变化",
+    "look 1": "向上看,视角角度加90,最小值为180,当视角角度为180时,下一次向上看将不再变化",
     "jumpmove": "跳跃并前进,当前方有障碍物时,可以跳跃前进越过障碍物",
-    "attack": "攻击前方1-2格的目标,采集物品,当需要采集REL y=0的物品时,先 look 1 向下调整视角到第0层,再使用attack进行采集, 采集 REL y=1 的物品时,不需要调整视角, 采集 REL y=2 的物品时,需要 look -1 向上调整视角到第2层",
+    "attack": "攻击前方1-2格的目标,采集物品,当需要采集REL y=0的物品时,先向下调整视角到第0层,再使用attack进行采集, 采集 REL y=1 的物品时,不需要调整视角, 采集 REL y=2 的物品时,需要向上调整视角到第2层",
     "use": "使用物品, 将当前快捷栏选中的物品使用在前方1-2格的目标上,必须有目标才能使用物品",
     "jumpuse": "跳跃并使用物品",
     "hotbar.[int]": "选择快捷栏槽位[int]",
@@ -725,10 +722,15 @@ def mc_cap2scene_info(actions, actions_type, act_info : dict, grid_info=None):
             "/": {
                 "name": "/",
                 "parent": "",
-                "children": ["/entity", "/temp"]
+                "children": ["/entity", "/long", "/temp"]
             },
             "/temp": {
                 "name": "temp",
+                "parent": "/",
+                "children": []
+            },
+            "/long": {
+                "name": "long",
                 "parent": "/",
                 "children": []
             },
@@ -861,6 +863,14 @@ def skill2FIXED_mem(task_describe, record_actions, scene_info):
     task_name = task_describe.replace(" ", "_").lower()
     task_describe = f"{task_describe} - composed of {len(record_actions)} steps."
     
+    # 将 task_memory 添加到 temp_skills 中 不重复添加
+    temp_skills = scene_info.get("entity_graph", {}).get("skills", {}).get("/temp", [])
+    if task_name in temp_skills:
+        return scene_info
+    temp_skills.append(task_name)
+    temp_skills_gs = scene_info.get("entity_graph", {}).get("graph_structure", {}).get("children", {}).get("temp", {}).get("skills", [])
+    temp_skills_gs.append(task_name)
+    
     task_skills_spec = []
     task_skills_name = []
     # 遍历act_info_en,生成 capability 名称
@@ -874,12 +884,9 @@ def skill2FIXED_mem(task_describe, record_actions, scene_info):
         task_skills_name.append(cap_name)
         task_skills_spec.append(mem_msg)
         
-    # 将 task_memory 添加到 temp_skills 中
-    temp_skills = scene_info.get("entity_graph", {}).get("skills", {}).get("/temp", [])
-    temp_skills.append(task_name)
+
+
     
-    temp_skills_gs = scene_info.get("entity_graph", {}).get("graph_structure", {}).get("children", {}).get("temp", {}).get("skills", [])
-    temp_skills_gs.append(task_name)
     
     # entity_skill_specs 中 加入 task_spec 说明
     task_spec = {
@@ -1150,7 +1157,7 @@ def get_around_list(around):
     return listy
 
 def get_around_objects_precise_pos(entity, around, around_range):
-    # TODO 根据 around 信息 获取物体的精确位置列表
+    # TODO 根据 around 信息 获取 高价值 物体的精确位置列表 
     obj_list = []
     
     
@@ -1321,7 +1328,7 @@ def craft_diff_get(inventories_bef, inventories)->{dict, dict}:
     
     return input_items, output_items
 
-# 获取 中心点 的瞄准的物体 TODO 对准物体进行采集操作 同时不破坏物体 使用指令 chat /give @p minecraft:stick 64
+# 获取 中心点 的瞄准的物体 TODO 对准物体进行采集操作 同时不破坏物体 使用指令 chat /give @p minecraft:stick 64 TODO 加 view range 范围判定，根据范围来进行判定aimed物体， view range 范围不定
 def get_aimed_object(yaw, around, view_angle)->str:
     msg = "the current aimed object is "
     
@@ -1353,16 +1360,18 @@ def get_aimed_object(yaw, around, view_angle)->str:
             item = around[a_y][a_z][a_x]
             if item != 'air':
                 break
-    elif view_angle == 2: # 向下看
+    elif view_angle == -2: # 向下看
+        #  看地面
+        a_y = -1
         item = around[a_y][a_z][a_x]
-    elif view_angle ==  -2: # 向上看
-        for i in range(1, 3):
+    elif view_angle ==  2: # 向上看
+        for i in range(1, 2):
             a_y += 1
             # 查看 around 中该位置的物体
             item = around[a_y][a_z][a_x]
             if item != 'air':
                 break
-    elif view_angle == 1: # 斜向下看
+    elif view_angle == -1: # 斜向下看
         if yaw == 0:
             a_z = 1
             a_y = 1
@@ -1416,7 +1425,7 @@ def get_aimed_object(yaw, around, view_angle)->str:
                         a_y = -1
                         item = around[a_y][a_z][a_x]
     
-    elif view_angle == -1: # 斜向上看
+    elif view_angle == 1: # 斜向上看
         if yaw == 0:
             a_z = 1
             a_y = 1
@@ -1531,28 +1540,42 @@ if __name__ == '__main__':
     parser.add_argument('--experimentUniqueId', type=str, default='test1', help="the experiment's unique id.")
     parser.add_argument('--LLM', type=str, default='enable', help="enable or disable LLM")
     parser.add_argument('--MEM', type=str, default='enable', help="enable or disable MEM")
-    parser.add_argument('--DETECT', type=str, default='enable', help="enable or disable MEM")
+    parser.add_argument('--DETECT', type=str, default='disable', help="enable or disable MEM")
     parser.add_argument('--userinput', type=str, default='disable', help="enable or disable user input")
-    
+    # user_request = 'Make wooden axe'
+    parser.add_argument('--userrequest', type=str, default='Make wooden axe', help="Make wooden axe")
+    # TODO 可更换 llm model
+    parser.add_argument('--LLMmodel', type=str, default='gpt-4', help="gpt-4 or gpt-3.5-turbo")
+    parser.add_argument('--vLLMmodel', type=str, default='gpt-4', help="gpt-4 or gpt-3.5-turbo")
+    parser.add_argument('--log', type=str, default='default', help="log name")
     
     args = parser.parse_args()
     if args.server2 is None:
         args.server2 = args.server
     
     LLM_MODE = False
-    MEM_MODE = True
+    MEM_MODE = False
     DETECT_MODE = False
-    USERINPUT_MODE = False
+    # DEBUG
+    USERINPUT_MODE = True
     SUBMISSION_MODE = False
+    
     # if args.LLM.lower() == 'enable':
     #     LLM_MODE = True
+    # else:
+    #     LLM_MODE = False
     # if args.MEM.lower() == 'enable':
     #     MEM_MODE = True
+    # else:
+    #     MEM_MODE = False
     # if args.DETECT.lower() == 'enable':
     #     DETECT_MODE = True
+    # else:
+    #     DETECT_MODE = False
     # if args.userinput.lower() == 'disable':
     #     USERINPUT_MODE = False
 
+    
     # 载入 mission xml
     xml = Path(args.mission).read_text()
     env = malmoenv.make()
@@ -1605,12 +1628,18 @@ if __name__ == '__main__':
     # 在当前目录下创建log文件夹,并获取当前时间作为log文件名
     log_dir = Path('log')
     log_dir.mkdir(exist_ok=True)
-    log_file = log_dir / f'action_{time.strftime("%Y%m%d")}.log'
-    
+    if args.log == 'default':
+        log_file = log_dir / f'action_{time.strftime("%Y%m%d")}.log'
+    else :
+        log_file = log_dir / f'{args.log}.log'
     
     # 清空action.log写入实验信息
     with open(log_file, 'a') as f:
         f.write('======================\n')
+        # 写入参数
+        f.write('LLM_MODE ' + str(LLM_MODE) + '\n')
+        f.write('MEM_MODE ' + str(MEM_MODE) + '\n')
+        f.write('DETECT_MODE ' + str(DETECT_MODE) + '\n')
         f.write('======================\n')
         f.write('xml ' + xml + '\n')
         f.write('======================\n')
@@ -1627,12 +1656,14 @@ if __name__ == '__main__':
 
         f.write('env.commands ' + str(env.commands) + '\n')
         f.write('env.actions ' + str(env.actions) + '\n')
+        
         # 写入多行回车
         f.write('\n\n\n\n')
     
     # 初始化 MCPClient
-    load_dotenv()
+    load_dotenv(dotenv_path='.env')
     api_key = os.getenv("DS_API_KEY")
+    # print("api_key:", api_key)
     client = MCPClient(api_key=api_key)
     
     # 构建 actions_prompt
@@ -1661,7 +1692,8 @@ if __name__ == '__main__':
 
         # 获取用户指令
         # user_request = input("Press queey or type 'exit': ")
-        user_request = 'Make wooden axe'
+        # user_request = 'Make wooden axe'
+        user_request = args.userrequest
         
         if user_request.lower() == 'exit':
             print("Exiting the experiment.")
@@ -1711,7 +1743,7 @@ if __name__ == '__main__':
                     print(f"Found related skill node in memory: {node_name}")
                     rel_info += f"\nrel info {scene_info.get('skill_specs', {}).get(node_name, {})}\n"
             if rel_info != "":
-                prompt += f"\nRelevant information from memory:{rel_info}\n"
+                user_request_init += f"\nRelevant information from memory:{rel_info}\n"
         
         # 通过 llm 生成一系列动作
         # TODO 子任务拆解
@@ -1719,10 +1751,11 @@ if __name__ == '__main__':
         sub_mission_list = []
         if SUBMISSION_MODE == True:
             user_request_init += sub_mission_prompt_en
+            sub_prompt = sub_mission_prompt_en + rule_prompt + obs_prompt
             sub_mission_list, messages = client.query_request(query="Decompose the following task into several sub-tasks: " + user_request,
                                                             info=user_request_init,
                                                             safe_rule=None,
-                                                            prompt=prompt)
+                                                            prompt=sub_prompt)
         else :
             sub_mission = user_request
             sub_mission_list.append(sub_mission)
@@ -1739,7 +1772,31 @@ if __name__ == '__main__':
             sub_mission_init += aimed_object_msg
             sub_mission_init += around_msg(around)
             sub_mission_init += f"Detected objects : {obj_list}\n"
-            
+            aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
+        
+            sub_mission_init += aimed_object_msg
+
+            # TODO 根据 记忆 检索相关信息加入 prompt
+            if MEM_MODE == True:
+                # 更新短期空间记忆 + 短期-》长期 + 更新当前 空间 场景记忆 + 检索相关信息
+                scene_info = record_short_space_memory(scene_info, obj_list, entity)
+                # scene_info = short2long_space_memory(entity, around, scene_info)
+                cs.update_Scene(scene_info)
+                retrieval_rel_ans = cs.retrieval_Request(sub_mission)
+                # 在 scene_info 中 对 retrieval_rel_ans 进行对比 ，找到相应的节点 
+                rel_info = ""
+                for node in retrieval_rel_ans:
+                    node_name = node.get('name', '')
+                    # 查看 entity_graph entities 中是否存在该节点 - 空间
+                    if node_name in scene_info.get('entity_graph', {}).get('entities', {}):
+                        print(f"Found related spatial node in memory: {node_name}")
+                        rel_info += f"\nrel info {scene_info.get('entity_graph', {}).get('entities', {}).get(node_name, {})}\n"
+                    # 查看 skill_specs 中是否存在该节点 - 技能
+                    elif node_name in scene_info.get('skill_specs', {}):
+                        print(f"Found related skill node in memory: {node_name}")
+                        rel_info += f"\nrel info {scene_info.get('skill_specs', {}).get(node_name, {})}\n"
+                if rel_info != "":
+                    prompt += f"\nRelevant information from memory:{rel_info}\n"
         
             action_sequence = []
             record_actions = []
@@ -1844,9 +1901,8 @@ if __name__ == '__main__':
                     
 
                     # LLM 做法
-                    if LLM_MODE == True:
-                        # 更新 cur_act_msg
-                        cur_act_msg += f"action :{act_str}, entity info :{entity}\n"
+                    # 更新 cur_act_msg
+                    cur_act_msg += f"action :{act_str}, entity info :{entity}, look degree {env.view_angle}\n"
 
                     # TODO 如果环境没有改变 则不更新 obs # 保存图像
                     if "inventory" not in act_str and "hotbar" not in act_str and "craft" not in act_str:
@@ -1909,6 +1965,7 @@ if __name__ == '__main__':
                 # 不用 update_Scene 会更新CS中的信息吗
                 cs.update_Scene(scene_info)
                 print("Memory updated with sub-mission actions.")
+                print(f"Current actions length: {len(record_actions)} steps.")
                 
              # 整体退出
             if user_input.lower() == 'q':
@@ -1916,6 +1973,13 @@ if __name__ == '__main__':
             # 打印messages最后一个 content 
             if LLM_MODE == True:
                 print(messages[-1]['content'] if messages else "No messages.")
+                
+                # 统计上下文长度
+                context_length = sum(len(msg['content']) for msg in messages)
+                print(f"Current context length: {context_length} characters.")
+                # print f to log_file
+                with open(log_file, 'a') as f:
+                    f.write(f"Current context length: {context_length} characters.\n")
         # TODO user 任务 的记忆 记录 submission 
         
         # 整体退出

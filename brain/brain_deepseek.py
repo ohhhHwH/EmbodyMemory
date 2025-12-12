@@ -139,10 +139,17 @@ class MCPClient:
         self.exit_stack = AsyncExitStack()
         self.available_tools = []
         self.tool_session_map = {}
+        # 允许从参数或环境变量读取 API key，若缺失则给出清晰报错
+        key = api_key or os.getenv("DS_API_KEY") or os.getenv("OPENAI_API_KEY")
+        if not key:
+            raise OpenAIError("Missing API key: set DS_API_KEY or OPENAI_API_KEY, or pass api_key explicitly")
+
         self.client = OpenAI(
             base_url="https://api.deepseek.com",
-            api_key=api_key,
+            api_key=key,
         )
+        
+        self.context_length = 0
 
     async def connect_to_server(self):
         """Connect to an MCP server

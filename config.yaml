@@ -1,0 +1,11 @@
+LLM_MODE = True
+
+MEM_MODE = False
+
+DETECT_MODE = False
+
+SUBMISSION_MODE = False
+
+Task Name = `craft wooden slab`
+
+LLM_MODLE = ""

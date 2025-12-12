@@ -1,0 +1,59 @@
+basic:
+  - mine log
+  - mine sand
+  - mine sapling
+  - mine wheat seeds
+  - mine dirt
+  - mine grass
+  - craft plank
+  - craft stick
+  - craft button
+  - craft crafting table
+
+easy:
+  - craft chest
+  - craft bowl
+  - craft boat
+  - craft wooden pressure
+  - craft wooden slab plate
+  - craft ladder
+  - craft barrel
+  - craft wooden pickaxe
+  - craft wooden axe
+  - craft wooden sword
+
+medium:
+  - mine cobblestone
+  - mine coal ore
+  - craft furnace
+  - craft lever
+  - craft stone pickaxe
+  - craft stone axe
+  - craft stone hoe
+  - craft stone shovel
+  - craft stone sword
+  - mine iron ore
+
+hard:
+  - smelt glass
+  - smelt iron ingot
+  - craft iron bars
+  - craft carpentry table
+  - craft iron pickaxe
+  - craft iron door
+  - craft iron trapdoor
+  - craft rail
+  - craft cauldron
+
+
+complex:
+  - obtain diamond
+  - mine redstone
+  - craft redstone torch
+  - craft dropper
+  - craft compass
+  - craft clock
+  - craft piston
+  - craft diamond pickaxe
+  - craft diamond sword
+  - craft raw gold block

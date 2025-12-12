@@ -1,68 +1,28 @@
 Query: Make wooden axe
-The player's current inventory is: [{'id': 0, 'item': 'crafting_table', 'size': 1}]
-The player's current position and orientation is: {'yaw': 0.0, 'x': -173.5, 'y': 63.0, 'z': 259.5, 'pitch': 0.0, 'life': 20.0, 'name': 'Agent0', 'view': 0}
-info around: 
- REL y=-2:
- REL z=-2: {-2: 'sand', -1: 'sand', 0: 'sand', 1: 'sand', 2: 'dirt'}
- REL z=-1: {-2: 'sand', -1: 'sand', 0: 'sand', 1: 'dirt', 2: 'dirt'}
- REL z=0: {-2: 'sand', -1: 'sand', 0: 'sand', 1: 'dirt', 2: 'dirt'}
- REL z=1: {-2: 'sand', -1: 'sand', 0: 'sand', 1: 'dirt', 2: 'dirt'}
- REL z=2: {-2: 'sand', -1: 'sand', 0: 'dirt', 1: 'dirt', 2: 'dirt'}
 
- REL y=-1:
- REL z=-2: {-2: 'sand', -1: 'sand', 0: 'sand', 1: 'sand', 2: 'dirt'}
- REL z=-1: {-2: 'sand', -1: 'sand', 0: 'sand', 1: 'grass', 2: 'grass'}
- REL z=0: {-2: 'sand', -1: 'sand', 0: 'sand', 1: 'grass', 2: 'grass'}
- REL z=1: {-2: 'sand', -1: 'sand', 0: 'sand', 1: 'grass', 2: 'grass'}
- REL z=2: {-2: 'sand', -1: 'sand', 0: 'dirt', 1: 'grass', 2: 'grass'}
-
- REL y=0:
- REL z=-2: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'log'}
- REL z=-1: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'air'}
- REL z=0: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'air'}
- REL z=1: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'air'}
- REL z=2: {-2: 'air', -1: 'air', 0: 'log', 1: 'air', 2: 'air'}
-
- REL y=1:
- REL z=-2: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'log'}
- REL z=-1: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'air'}
- REL z=0: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'air'}
- REL z=1: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'air'}
- REL z=2: {-2: 'air', -1: 'air', 0: 'log', 1: 'air', 2: 'air'}
-
- REL y=2:
- REL z=-2: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'log'}
- REL z=-1: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'air'}
- REL z=0: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'air'}
- REL z=1: {-2: 'air', -1: 'air', 0: 'air', 1: 'air', 2: 'air'}
- REL z=2: {-2: 'air', -1: 'air', 0: 'log', 1: 'air', 2: 'air'}
-
-Detected objects : [{'name': 'log', 'ACC': True, 'RELx': 0, 'RELy': 1, 'RELz': 2, 'size': 3, 'coords': [(0, 0, 2), (0, 1, 2), (0, 2, 2)]}, {'name': 'log', 'ACC': True, 'RELx': 2, 'RELy': 1, 'RELz': -2, 'size': 3, 'coords': [(4, 0, 0), (4, 1, 0), (4, 2, 0)]}, {'name': 'grass', 'ACC': True, 'RELx': 2, 'RELy': -1, 'RELz': 0, 'size': 8, 'coords': [(0, 3, 0), (1, 3, 0), (0, 3, 1), (2, 3, 0), (1, 3, 1), (3, 3, 0), (2, 3, 1), (3, 3, 1)]}, {'name': 'dirt', 'ACC': True, 'RELx': 1, 'RELy': -2, 'RELz': 0, 'size': 12, 'coords': [(0, 3, 2), (0, 4, 2), (0, 4, 1), (1, 4, 1), (0, 4, 0), (2, 4, 1), (1, 4, 0), (3, 4, 1), (2, 4, 0), (3, 4, 0), (4, 4, 0), (4, 3, 0)]}, {'name': 'sand', 'ACC': True, 'RELx': -1, 'RELy': -2, 'RELz': 0, 'size': 30, 'coords': [(0, 3, 3), (0, 4, 3), (1, 3, 3), (0, 3, 4), (1, 4, 3), (0, 4, 4), (2, 3, 3), (1, 3, 2), (1, 3, 4), (2, 4, 3), (1, 4, 2), (1, 4, 4), (3, 3, 3), (2, 3, 2), (2, 3, 4), (3, 4, 3), (2, 4, 2), (2, 4, 4), (4, 3, 3), (3, 3, 2), (3, 3, 4), (4, 4, 3), (3, 4, 2), (3, 4, 4), (4, 3, 2), (4, 3, 4), (4, 4, 2), (4, 4, 4), (4, 3, 1), (4, 4, 1)]}]
-the current aimed object is log.rel position is x=0, y=1, z=2.
-
-0.4143	Make wooden axe - composed of 13 steps.
-0.4112	Combine inventory slots i and j items
-0.4100	Craft [item_name] when enough materials in inventory
-0.3994	Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory
-0.3852	Swap inventory slots i and j items
-0.3630	Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2
-0.3486	Smelt [item_name] using nearby furnace when enough materials in inventory
-0.3299	Jump and use item
-0.2677	Space node for dirt_1_-2_0 at /temp/dirt_1_-2_0
-0.2624	yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90
-0.2501	Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item
-0.2260	yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270
-0.2255	Space node for sand_-1_-2_0 at /temp/sand_-1_-2_0
-0.1873	Discard the currently selected item
-0.1829	Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change
-0.1483	Move backward
-0.1482	Look down, view degree minus 90, max is -180
-0.1169	Jump while moving forward, when there is an obstacle in front, can jump over the obstacle
-0.1124	Select hotbar slot [int]
-0.1014	Space node for grass_2_-1_0 at /temp/grass_2_-1_0
-0.0987	Space node for log_0_1_2 at /temp/log_0_1_2
-0.0975	Move forward
-0.0935	Space node for log_2_1_-2 at /temp/log_2_1_-2
-0.0360	Space node for entity at /entity
-0.0207	Space node for / at /
-0.0162	Space node for temp at /temp
+0.7276	Make wooden axe - composed of 14 steps.
+0.1859	Craft [item_name] when enough materials in inventory
+0.1567	Jump and use item
+0.1484	Smelt [item_name] using nearby furnace when enough materials in inventory
+0.1420	Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory
+0.1361	Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2
+0.0890	Combine inventory slots i and j items
+0.0796	Swap inventory slots i and j items
+0.0783	Discard the currently selected item
+0.0676	yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90
+0.0565	yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270
+0.0557	Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change
+0.0517	Move backward
+0.0336	Space node for dirt_1_-2_0 at /temp/dirt_1_-2_0
+0.0334	Look down, view degree minus 90, max is -180
+0.0273	Space node for log_0_1_2 at /temp/log_0_1_2
+0.0235	Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item
+0.0211	Space node for log_2_1_-2 at /temp/log_2_1_-2
+0.0092	Space node for sand_-1_-2_0 at /temp/sand_-1_-2_0
+0.0023	Space node for entity at /entity
+-0.0136	Space node for / at /
+-0.0209	Select hotbar slot [int]
+-0.0212	Move forward
+-0.0307	Jump while moving forward, when there is an obstacle in front, can jump over the obstacle
+-0.0488	Space node for grass_2_-1_0 at /temp/grass_2_-1_0
+-0.0725	Space node for temp at /temp

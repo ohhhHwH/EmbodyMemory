@@ -233,7 +233,7 @@
         "type": "FIXED",
         "class": "CONTEXT",
         "name": "make_wooden_axe",
-        "summary": "Make wooden axe - composed of 13 steps.",
+        "summary": "Make wooden axe - composed of 14 steps.",
         "parent": 19,
         "weight": 1.0,
         "child_cnt": 0,
