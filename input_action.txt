@@ -1,6 +1,3 @@
 {
     4:move 1
-    4:attack
-    4:attack
-
 }

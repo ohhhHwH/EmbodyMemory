@@ -1698,6 +1698,9 @@ if __name__ == '__main__':
         log_file = log_dir / f'action_{time.strftime("%Y%m%d")}.log'
     else :
         log_file = log_dir / f'{args.log}.log'
+        #  如果没有 log_file 则创建 依次创建父目录
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        
     
     # 清空action.log写入实验信息
     with open(log_file, 'a') as f:

@@ -19,7 +19,7 @@
                 <AllowSpawning>false</AllowSpawning>
             </ServerInitialConditions>
             <ServerHandlers>
-                <DefaultWorldGenerator forceReset="true" seed="115102416540990294" />
+                <DefaultWorldGenerator forceReset="true" seed="2343561234" />
                 <ServerQuitFromTimeUp timeLimitMs="3000000" description="out_of_time"/>
                 <ServerQuitWhenAnyAgentFinishes />
             </ServerHandlers>
@@ -28,7 +28,7 @@
         <AgentSection mode="Survival">
             <Name>Agent0</Name>
             <AgentStart>
-                <Placement x="-172.5" y="76.0" z="258.5"/>
+                <Placement x="-172.5" y="96.0" z="258.5"/>
                 
                 <Inventory>
                     <!-- <InventoryItem slot="0" type="crafting_table" quantity="1"/> -->

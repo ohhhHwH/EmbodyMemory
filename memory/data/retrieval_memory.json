@@ -106,19 +106,15 @@
         },
         {
             "id": 26,
-            "event": "Space node for grass_1_2_0 at /temp/grass_1_2_0"
+            "event": "Space node for dirt_-2_2_-1 at /temp/dirt_-2_2_-1"
         },
         {
             "id": 27,
-            "event": "Space node for sand_-1_1_0 at /temp/sand_-1_1_0"
+            "event": "Space node for dirt_-2_0_1 at /temp/dirt_-2_0_1"
         },
         {
             "id": 28,
-            "event": "Space node for dirt_1_0_0 at /temp/dirt_1_0_0"
-        },
-        {
-            "id": 29,
-            "event": "Space node for stone_0_-2_0 at /temp/stone_0_-2_0"
+            "event": "Space node for stone_0_-1_0 at /temp/stone_0_-1_0"
         }
     ],
     "edges": [
@@ -265,11 +261,6 @@
         {
             "source": 19,
             "target": 28,
-            "relation": "next"
-        },
-        {
-            "source": 19,
-            "target": 29,
             "relation": "next"
         }
     ]

@@ -13,10 +13,9 @@
                 "name": "temp",
                 "parent": "/",
                 "children": [
-                    "/temp/grass_1_2_0",
-                    "/temp/sand_-1_1_0",
-                    "/temp/dirt_1_0_0",
-                    "/temp/stone_0_-2_0"
+                    "/temp/dirt_-2_2_-1",
+                    "/temp/dirt_-2_0_1",
+                    "/temp/stone_0_-1_0"
                 ]
             },
             "/entity": {
@@ -31,37 +30,29 @@
                 "parent": "/entity",
                 "children": []
             },
-            "/temp/grass_1_2_0": {
-                "name": "grass_1_2_0",
+            "/temp/dirt_-2_2_-1": {
+                "name": "dirt_-2_2_-1",
                 "parent": "/temp",
-                "RElx": 1,
+                "RElx": -2,
                 "REly": 2,
-                "RElz": 0,
-                "size": 12
+                "RElz": -1,
+                "size": 6
             },
-            "/temp/sand_-1_1_0": {
-                "name": "sand_-1_1_0",
+            "/temp/dirt_-2_0_1": {
+                "name": "dirt_-2_0_1",
                 "parent": "/temp",
-                "RElx": -1,
-                "REly": 1,
-                "RElz": 0,
-                "size": 30
-            },
-            "/temp/dirt_1_0_0": {
-                "name": "dirt_1_0_0",
-                "parent": "/temp",
-                "RElx": 1,
+                "RElx": -2,
                 "REly": 0,
-                "RElz": 0,
-                "size": 28
+                "RElz": 1,
+                "size": 2
             },
-            "/temp/stone_0_-2_0": {
-                "name": "stone_0_-2_0",
+            "/temp/stone_0_-1_0": {
+                "name": "stone_0_-1_0",
                 "parent": "/temp",
                 "RElx": 0,
-                "REly": -2,
+                "REly": -1,
                 "RElz": 0,
-                "size": 70
+                "size": 50
             }
         },
         "skills": {
@@ -135,21 +126,17 @@
                         "mine_directly"
                     ],
                     "children": {
-                        "grass_1_2_0": {
-                            "name": "grass_1_2_0",
-                            "path": "/temp/grass_1_2_0"
+                        "dirt_-2_2_-1": {
+                            "name": "dirt_-2_2_-1",
+                            "path": "/temp/dirt_-2_2_-1"
                         },
-                        "sand_-1_1_0": {
-                            "name": "sand_-1_1_0",
-                            "path": "/temp/sand_-1_1_0"
+                        "dirt_-2_0_1": {
+                            "name": "dirt_-2_0_1",
+                            "path": "/temp/dirt_-2_0_1"
                         },
-                        "dirt_1_0_0": {
-                            "name": "dirt_1_0_0",
-                            "path": "/temp/dirt_1_0_0"
-                        },
-                        "stone_0_-2_0": {
-                            "name": "stone_0_-2_0",
-                            "path": "/temp/stone_0_-2_0"
+                        "stone_0_-1_0": {
+                            "name": "stone_0_-1_0",
+                            "path": "/temp/stone_0_-1_0"
                         }
                     }
                 }

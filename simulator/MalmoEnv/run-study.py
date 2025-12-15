@@ -1583,7 +1583,7 @@ if __name__ == '__main__':
     mission_world = 'defaultworld.xml'
     # mission_world = 'studyworld.xml'
     default_user_request = 'mine directly'
-    SAVE_MEM = True
+    SAVE_MEM = False
     mission = f'simulator/MalmoEnv/missions/{mission_world}'
     parser = argparse.ArgumentParser(description='malmovnv test')
     parser.add_argument('--mission', type=str, default=mission, help='the mission xml')

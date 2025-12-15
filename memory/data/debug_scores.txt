@@ -8,7 +8,7 @@ Query: mine directly
 0.1209	Select hotbar slot [int]
 0.1005	Look down, view degree minus 90, max is -180
 0.0916	Jump and use item
-0.0841	Space node for stone_0_-2_0 at /temp/stone_0_-2_0
+0.0791	Space node for stone_0_-1_0 at /temp/stone_0_-1_0
 0.0767	Space node for entity at /entity
 0.0756	Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item
 0.0719	Space node for / at /
@@ -22,11 +22,10 @@ Query: mine directly
 0.0256	Get one log from tree - composed of 2 steps.
 0.0221	Get three logs from tree - composed of 8 steps.
 0.0219	Discard the currently selected item
+0.0206	Space node for dirt_-2_2_-1 at /temp/dirt_-2_2_-1
 0.0197	Get two logs from tree - composed of 5 steps.
+0.0193	Space node for dirt_-2_0_1 at /temp/dirt_-2_0_1
 0.0178	yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270
 0.0165	Combine inventory slots i and j items
-0.0154	Space node for dirt_1_0_0 at /temp/dirt_1_0_0
-0.0114	Space node for sand_-1_1_0 at /temp/sand_-1_1_0
 0.0093	yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90
--0.0193	Space node for grass_1_2_0 at /temp/grass_1_2_0
 -0.0214	Craft [item_name] when enough materials in inventory

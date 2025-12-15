@@ -22,7 +22,7 @@ basic:
   - task_name: "mine grass"
     description: "mine one block of grass"
     steps: 100
-    # judge: "grass"
+    judge: "seeds"
   - task_name: "craft plank"
     description: "craft one wooden plank from log"
     steps: 100
