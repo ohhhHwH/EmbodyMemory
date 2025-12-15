@@ -1,28 +1,29 @@
-Query: Make wooden axe
+Query: mine sapling from tree
 
-0.7276	Make wooden axe - composed of 14 steps.
-0.1859	Craft [item_name] when enough materials in inventory
-0.1567	Jump and use item
-0.1484	Smelt [item_name] using nearby furnace when enough materials in inventory
-0.1420	Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory
-0.1361	Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2
-0.0890	Combine inventory slots i and j items
-0.0796	Swap inventory slots i and j items
-0.0783	Discard the currently selected item
-0.0676	yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90
-0.0565	yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270
-0.0557	Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change
-0.0517	Move backward
-0.0336	Space node for dirt_1_-2_0 at /temp/dirt_1_-2_0
-0.0334	Look down, view degree minus 90, max is -180
-0.0273	Space node for log_0_1_2 at /temp/log_0_1_2
-0.0235	Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item
-0.0211	Space node for log_2_1_-2 at /temp/log_2_1_-2
-0.0092	Space node for sand_-1_-2_0 at /temp/sand_-1_-2_0
-0.0023	Space node for entity at /entity
--0.0136	Space node for / at /
--0.0209	Select hotbar slot [int]
--0.0212	Move forward
--0.0307	Jump while moving forward, when there is an obstacle in front, can jump over the obstacle
--0.0488	Space node for grass_2_-1_0 at /temp/grass_2_-1_0
--0.0725	Space node for temp at /temp
+0.4236	Get one log from tree - composed of 2 steps.
+0.4120	Get three logs from tree - composed of 8 steps.
+0.4114	Get two logs from tree - composed of 5 steps.
+0.2253	Smelt [item_name] using nearby furnace when enough materials in inventory
+0.2125	Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory
+0.1936	Space node for log_0_0_1 at /temp/log_0_0_1
+0.1822	Craft [item_name] when enough materials in inventory
+0.0897	Space node for dirt_1_-2_0 at /temp/dirt_1_-2_0
+0.0877	Jump and use item
+0.0781	Space node for entity at /entity
+0.0773	Move forward
+0.0770	Swap inventory slots i and j items
+0.0724	Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2
+0.0694	Discard the currently selected item
+0.0687	Space node for / at /
+0.0677	Space node for grass_1_-1_0 at /temp/grass_1_-1_0
+0.0634	Move backward
+0.0563	yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270
+0.0533	Combine inventory slots i and j items
+0.0504	Space node for sand_-1_-2_0 at /temp/sand_-1_-2_0
+0.0495	yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90
+0.0381	Space node for temp at /temp
+0.0335	Look down, view degree minus 90, max is -180
+0.0221	Jump while moving forward, when there is an obstacle in front, can jump over the obstacle
+0.0063	Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change
+-0.0539	Select hotbar slot [int]
+-0.0741	Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item

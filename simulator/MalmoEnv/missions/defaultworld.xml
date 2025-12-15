@@ -31,7 +31,7 @@
                 <Placement x="-173.5" y="63.0" z="259.5"/>
                 
                 <Inventory>
-                    <InventoryItem slot="0" type="crafting_table" quantity="1"/>
+                    <!-- <InventoryItem slot="0" type="crafting_table" quantity="1"/> -->
                     <!-- <InventoryItem slot="0" type="furnace" quantity="1"/>
                     <InventoryItem slot="1" type="log" quantity="64"/>
                     <InventoryItem slot="2" type="stick" quantity="64"/>

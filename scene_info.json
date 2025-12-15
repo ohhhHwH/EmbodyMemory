@@ -13,11 +13,10 @@
                 "name": "temp",
                 "parent": "/",
                 "children": [
-                    "/temp/log_0_1_2",
-                    "/temp/log_2_1_-2",
-                    "/temp/grass_2_-1_0",
-                    "/temp/dirt_1_-2_0",
-                    "/temp/sand_-1_-2_0"
+                    "/temp/log_0_0_1",
+                    "/temp/grass_1_-1_0",
+                    "/temp/sand_-1_-2_0",
+                    "/temp/dirt_1_-2_0"
                 ]
             },
             "/entity": {
@@ -32,35 +31,19 @@
                 "parent": "/entity",
                 "children": []
             },
-            "/temp/log_0_1_2": {
-                "name": "log_0_1_2",
+            "/temp/log_0_0_1": {
+                "name": "log_0_0_1",
                 "parent": "/temp",
                 "RElx": 0,
-                "REly": 1,
-                "RElz": 2,
-                "size": 3
+                "REly": 0,
+                "RElz": 1,
+                "size": 1
             },
-            "/temp/log_2_1_-2": {
-                "name": "log_2_1_-2",
-                "parent": "/temp",
-                "RElx": 2,
-                "REly": 1,
-                "RElz": -2,
-                "size": 3
-            },
-            "/temp/grass_2_-1_0": {
-                "name": "grass_2_-1_0",
-                "parent": "/temp",
-                "RElx": 2,
-                "REly": -1,
-                "RElz": 0,
-                "size": 8
-            },
-            "/temp/dirt_1_-2_0": {
-                "name": "dirt_1_-2_0",
+            "/temp/grass_1_-1_0": {
+                "name": "grass_1_-1_0",
                 "parent": "/temp",
                 "RElx": 1,
-                "REly": -2,
+                "REly": -1,
                 "RElz": 0,
                 "size": 12
             },
@@ -70,13 +53,23 @@
                 "RElx": -1,
                 "REly": -2,
                 "RElz": 0,
-                "size": 30
+                "size": 24
+            },
+            "/temp/dirt_1_-2_0": {
+                "name": "dirt_1_-2_0",
+                "parent": "/temp",
+                "RElx": 1,
+                "REly": -2,
+                "RElz": 0,
+                "size": 14
             }
         },
         "skills": {
             "/": [],
             "/temp": [
-                
+                "get_one_log_from_tree",
+                "get_two_logs_from_tree",
+                "get_three_logs_from_tree"
             ],
             "/entity": [
                 "0:move 1",
@@ -131,28 +124,26 @@
                     "name": "temp",
                     "path": "/temp",
                     "skills": [
-                        
+                        "get_one_log_from_tree",
+                        "get_two_logs_from_tree",
+                        "get_three_logs_from_tree"
                     ],
                     "children": {
-                        "log_0_1_2": {
-                            "name": "log_0_1_2",
-                            "path": "/temp/log_0_1_2"
+                        "log_0_0_1": {
+                            "name": "log_0_0_1",
+                            "path": "/temp/log_0_0_1"
                         },
-                        "log_2_1_-2": {
-                            "name": "log_2_1_-2",
-                            "path": "/temp/log_2_1_-2"
-                        },
-                        "grass_2_-1_0": {
-                            "name": "grass_2_-1_0",
-                            "path": "/temp/grass_2_-1_0"
-                        },
-                        "dirt_1_-2_0": {
-                            "name": "dirt_1_-2_0",
-                            "path": "/temp/dirt_1_-2_0"
+                        "grass_1_-1_0": {
+                            "name": "grass_1_-1_0",
+                            "path": "/temp/grass_1_-1_0"
                         },
                         "sand_-1_-2_0": {
                             "name": "sand_-1_-2_0",
                             "path": "/temp/sand_-1_-2_0"
+                        },
+                        "dirt_1_-2_0": {
+                            "name": "dirt_1_-2_0",
+                            "path": "/temp/dirt_1_-2_0"
                         }
                     }
                 }
@@ -227,6 +218,186 @@
         "16:nearbysmelt [item_name]": {
             "name": "16:nearbysmelt [item_name]",
             "description": "Smelt [item_name] using nearby furnace when enough materials in inventory"
+        },
+        "get_one_log_from_tree": {
+            "name": "get_one_log_from_tree",
+            "description": "Get one log from tree - composed of 2 steps.",
+            "input": {
+                "obj_list": [
+                    {
+                        "name": "log",
+                        "ACC": true,
+                        "RELx": 0,
+                        "RELy": 1,
+                        "RELz": 1,
+                        "size": 3,
+                        "coords": [
+                            [
+                                1,
+                                0,
+                                2
+                            ],
+                            [
+                                1,
+                                1,
+                                2
+                            ],
+                            [
+                                1,
+                                2,
+                                2
+                            ]
+                        ]
+                    }
+                ],
+                "aimed_obj": "log",
+                "degree": 0,
+                "yaw": 0.0
+            },
+            "output": {
+                "output_items": {
+                    "log": 1
+                },
+                "obj_list": [
+                    {
+                        "name": "log",
+                        "ACC": true,
+                        "RELx": 0,
+                        "RELy": 2,
+                        "RELz": 1,
+                        "size": 1,
+                        "coords": [
+                            [
+                                1,
+                                0,
+                                2
+                            ]
+                        ]
+                    },
+                    {
+                        "name": "log",
+                        "ACC": true,
+                        "RELx": 0,
+                        "RELy": 0,
+                        "RELz": 1,
+                        "size": 1,
+                        "coords": [
+                            [
+                                1,
+                                2,
+                                2
+                            ]
+                        ]
+                    }
+                ]
+            },
+            "actions": [
+                "0:move 1",
+                "1:attack"
+            ]
+        },
+        "get_two_logs_from_tree": {
+            "name": "get_two_logs_from_tree",
+            "description": "Get two logs from tree - composed of 5 steps.",
+            "input": {
+                "obj_list": [
+                    {
+                        "name": "log",
+                        "ACC": true,
+                        "RELx": 0,
+                        "RELy": 1,
+                        "RELz": 1,
+                        "size": 3,
+                        "coords": [
+                            [
+                                1,
+                                0,
+                                2
+                            ],
+                            [
+                                1,
+                                1,
+                                2
+                            ],
+                            [
+                                1,
+                                2,
+                                2
+                            ]
+                        ]
+                    }
+                ],
+                "aimed_obj": "log",
+                "degree": 0,
+                "yaw": 0.0
+            },
+            "output": {
+                "output_items": {
+                    "log": 2
+                },
+                "obj_list": [],
+                "degree": 0
+            },
+            "actions": [
+                "0:move 1",
+                "1:attack",
+                "2:look -1",
+                "3:attack",
+                "4:look 1"
+            ]
+        },
+        "get_three_logs_from_tree": {
+            "name": "get_three_logs_from_tree",
+            "description": "Get three logs from tree - composed of 8 steps.",
+            "input": {
+                "obj_list": [
+                    {
+                        "name": "log",
+                        "ACC": true,
+                        "RELx": 0,
+                        "RELy": 1,
+                        "RELz": 1,
+                        "size": 3,
+                        "coords": [
+                            [
+                                1,
+                                0,
+                                2
+                            ],
+                            [
+                                1,
+                                1,
+                                2
+                            ],
+                            [
+                                1,
+                                2,
+                                2
+                            ]
+                        ]
+                    }
+                ],
+                "aimed_obj": "log",
+                "degree": 0,
+                "yaw": 0.0
+            },
+            "output": {
+                "output_items": {
+                    "log": 3
+                },
+                "obj_list": [],
+                "degree": 0
+            },
+            "actions": [
+                "0:move 1",
+                "1:attack",
+                "2:look -1",
+                "3:attack",
+                "4:look 1",
+                "5:look 1",
+                "6:attack",
+                "7:look -1"
+            ]
         }
     }
 }

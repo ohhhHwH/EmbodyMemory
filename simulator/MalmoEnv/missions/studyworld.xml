@@ -19,7 +19,37 @@
                 <AllowSpawning>false</AllowSpawning>
             </ServerInitialConditions>
             <ServerHandlers>
-                <DefaultWorldGenerator forceReset="true" seed="115102116540990794" />
+                <FlatWorldGenerator generatorString="3;minecraft:bedrock,2*minecraft:dirt,minecraft:grass;1;village" forceReset="true" />
+                <DrawingDecorator>
+                    <!-- Tricks to clean the map before drawing (avoid entity duplication on the map) -->
+                    <!-- coordinates for cuboid are inclusive -->
+                    <DrawCuboid type="air" x1="-24" x2="24" y1="4" y2="40" z1="-20" z2="20" />
+                    <!-- Draw world -->
+
+                    <!-- Simple tree: oak log trunk and oak leaves canopy at (x=5,z=5) -->
+                    <!-- Trunk -->
+                    <DrawBlock type="log" x="5" y="4" z="5" />
+                    <DrawBlock type="log" x="5" y="5" z="5" />
+                    <DrawBlock type="log" x="5" y="6" z="5" />
+                    <DrawBlock type="log" x="5" y="7" z="5" />
+                    <!-- Leaves layer 1 (y=8) -->
+                    <DrawBlock type="leaves" x="4" y="8" z="4" />
+                    <DrawBlock type="leaves" x="4" y="8" z="5" />
+                    <DrawBlock type="leaves" x="4" y="8" z="6" />
+                    <DrawBlock type="leaves" x="5" y="8" z="4" />
+                    <DrawBlock type="leaves" x="5" y="8" z="5" />
+                    <DrawBlock type="leaves" x="5" y="8" z="6" />
+                    <DrawBlock type="leaves" x="6" y="8" z="4" />
+                    <DrawBlock type="leaves" x="6" y="8" z="5" />
+                    <DrawBlock type="leaves" x="6" y="8" z="6" />
+                    <!-- Leaves cap (y=9) -->
+                    <DrawBlock type="leaves" x="5" y="9" z="5" />
+                    
+                    <!-- Mobs -->
+                    <!-- <DrawEntity type="Pig" x="6.5" y="4" z="8.5" />
+                    <DrawEntity type="Chicken" x="3.5" y="4" z="5.5" /> -->
+                </DrawingDecorator>
+                
                 <ServerQuitFromTimeUp timeLimitMs="3000000" description="out_of_time"/>
                 <ServerQuitWhenAnyAgentFinishes />
             </ServerHandlers>
@@ -28,10 +58,10 @@
         <AgentSection mode="Survival">
             <Name>Agent0</Name>
             <AgentStart>
-                <Placement x="-173.5" y="63.0" z="259.5"/>
+                <Placement x="5.5" y="5" z="3.5"/>
                 
                 <Inventory>
-                    <InventoryItem slot="0" type="crafting_table" quantity="1"/>
+                    <!-- <InventoryItem slot="0" type="crafting_table" quantity="1"/> -->
                     <!-- <InventoryItem slot="0" type="furnace" quantity="1"/>
                     <InventoryItem slot="1" type="log" quantity="64"/>
                     <InventoryItem slot="2" type="stick" quantity="64"/>

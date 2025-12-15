@@ -854,6 +854,8 @@ def mem_generation(action, inventories_bef, aimed_object_bef, obj_list_bef, inve
         # 移动的指令 ， 连续移动不做记录，但最后一次移动需要记录， 仅保留上一次移动的场景 即寻找最后的场景信息
         input["obj_list"] = obj_list
         input['aimed_obj'] = aimed_object_bef
+        input['degree'] = degree
+        input['yaw'] = yaw
         # output["obj_list"] = obj_output_diff
         
     msg['input'] = input
@@ -877,6 +879,9 @@ def skill2FIXED_mem(task_describe, record_actions, scene_info, check_obj_name=No
     
     task_skills_spec = []
     task_skills_name = []
+    task_input = {}
+    task_output = {}
+    task_output_items = {}
     # 遍历act_info_en,生成 capability 名称
     for i, mem_msg in enumerate(record_actions):
         action_name = mem_msg.get('name', '')
@@ -888,20 +893,38 @@ def skill2FIXED_mem(task_describe, record_actions, scene_info, check_obj_name=No
         task_skills_name.append(cap_name)
         task_skills_spec.append(mem_msg)
         
+        # TODO 合并 input output 生成初始input  最终output # TODO BUG output 应该是累计的 或 状态切换的
+        # 合并 input
+        for key, value in mem_msg.get('input', {}).items():
+            if key not in task_input:
+                task_input[key] = value
+        # 合并 output
+        for key, value in mem_msg.get('output', {}).items():
+            if key == 'output_items':
+                # 合并 output_items 时 物品叠加处理 task_output_items
+                for item_name, qty in value.items():
+                    if item_name in task_output_items:
+                        task_output_items[item_name] += qty
+                    else:
+                        task_output_items[item_name] = qty
+                    
+            else:
+                task_output[key] = value
+        task_output['output_items'] = task_output_items
 
-    # TODO 根据 check_obj_name 过滤无用的 空间 记忆点
+    # TODO 根据 check_obj_name 过滤无用的 空间 记忆点 ? 副产物 ？ 
     
     
     # entity_skill_specs 中 加入 task_spec 说明
     # skill specs 过长 不写入具体的 actions 细节，只写action序列
-    # TODO BUG output 应该是累计的
+    
     task_spec = {
         "name": task_name,
         "description": task_describe,
-        "input": record_actions[0].get("input", None), # 获取第一步的 input 作为 task_memory 的 input
+        "input":    task_input,
         
-        "output": record_actions[-1].get("output", None), # 获取最后一步的 output 作为 task_memory 的 output
-        # "actions": task_skills_spec,
+        "output":   task_output,
+
         "actions": task_skills_name,
     }
     temp_skill_specs = scene_info.get("skill_specs", {})
@@ -1554,9 +1577,10 @@ def retrieval_memory(cs, question, scene_info, log_file)->str:
     return rel_info
 
 if __name__ == '__main__':
-    mission_world = 'studyworld.xml'
-    default_user_request = 'Get two log'
-    SAVE_MEM = True
+    mission_world = 'defaultworld.xml'
+    # mission_world = 'studyworld.xml'
+    default_user_request = 'mine sapling from tree'
+    SAVE_MEM = False
     mission = f'simulator/MalmoEnv/missions/{mission_world}'
     parser = argparse.ArgumentParser(description='malmovnv test')
     parser.add_argument('--mission', type=str, default=mission, help='the mission xml')
@@ -1589,7 +1613,7 @@ if __name__ == '__main__':
         args.server2 = args.server
     
     LLM_MODE = False
-    MEM_MODE = False
+    MEM_MODE = True
     DETECT_MODE = False
     # DEBUG
     USERINPUT_MODE = False
@@ -1598,18 +1622,18 @@ if __name__ == '__main__':
     check_obj_name = args.check
     MAX_STEPS = args.steps
     
-    if args.LLM.lower() == 'enable':
-        LLM_MODE = True
-    else:
-        LLM_MODE = False
-    if args.MEM.lower() == 'enable':
-        MEM_MODE = True
-    else:
-        MEM_MODE = False
-    if args.DETECT.lower() == 'enable':
-        DETECT_MODE = True
-    else:
-        DETECT_MODE = False
+    # if args.LLM.lower() == 'enable':
+    #     LLM_MODE = True
+    # else:
+    #     LLM_MODE = False
+    # if args.MEM.lower() == 'enable':
+    #     MEM_MODE = True
+    # else:
+    #     MEM_MODE = False
+    # if args.DETECT.lower() == 'enable':
+    #     DETECT_MODE = True
+    # else:
+    #     DETECT_MODE = False
     # if args.userinput.lower() == 'enable':
     #     USERINPUT_MODE = True
     # else:
@@ -1669,7 +1693,7 @@ if __name__ == '__main__':
     log_dir = Path('log')
     log_dir.mkdir(exist_ok=True)
     if args.log == 'default':
-        log_file = log_dir / f'action_{time.strftime("%Y%m%d")}.log'
+        log_file = log_dir / f'study_{time.strftime("%Y%m%d")}.log'
     else :
         log_file = log_dir / f'{args.log}.log'
     
@@ -1970,7 +1994,7 @@ if __name__ == '__main__':
                         scene_info = record_short_space_memory(scene_info, obj_list, entity)
                         # scene_info = short2long_space_memory(entity, around, scene_info)
                         cs.update_Scene(scene_info)
-                        
+
                         rel_info = retrieval_memory(cs, sub_mission, scene_info, log_file)
                         
                         if rel_info != "":

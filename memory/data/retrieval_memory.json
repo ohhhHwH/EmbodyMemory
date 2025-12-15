@@ -82,27 +82,31 @@
         },
         {
             "id": 20,
-            "event": "Make wooden axe - composed of 14 steps."
+            "event": "Get one log from tree - composed of 2 steps."
         },
         {
             "id": 21,
-            "event": "Space node for log_0_1_2 at /temp/log_0_1_2"
+            "event": "Get two logs from tree - composed of 5 steps."
         },
         {
             "id": 22,
-            "event": "Space node for log_2_1_-2 at /temp/log_2_1_-2"
+            "event": "Get three logs from tree - composed of 8 steps."
         },
         {
             "id": 23,
-            "event": "Space node for grass_2_-1_0 at /temp/grass_2_-1_0"
+            "event": "Space node for log_0_0_1 at /temp/log_0_0_1"
         },
         {
             "id": 24,
-            "event": "Space node for dirt_1_-2_0 at /temp/dirt_1_-2_0"
+            "event": "Space node for grass_1_-1_0 at /temp/grass_1_-1_0"
         },
         {
             "id": 25,
             "event": "Space node for sand_-1_-2_0 at /temp/sand_-1_-2_0"
+        },
+        {
+            "id": 26,
+            "event": "Space node for dirt_1_-2_0 at /temp/dirt_1_-2_0"
         }
     ],
     "edges": [
@@ -234,6 +238,11 @@
         {
             "source": 19,
             "target": 25,
+            "relation": "next"
+        },
+        {
+            "source": 19,
+            "target": 26,
             "relation": "next"
         }
     ]

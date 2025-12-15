@@ -8,11 +8,13 @@ basic:
     steps: 100
     judge: "sand"
   - task_name: "mine sapling"
+  #  该任务有概率失败，因为不是每棵树都会掉落树苗
+  #  该任务稳妥的做法是跳树上然后采集5个木头，然后等待树苗掉落 等操作如何处理
     description: "mine one sapling from a tree"
     steps: 100
     judge: "sapling"
   - task_name: "mine wheat seeds"
-    description: "mine one wheat seed from grass"
+    description: "mine one wheat seed from tallgrass"
     steps: 100
     judge: "wheat_seeds"
   - task_name: "mine dirt"
@@ -35,7 +37,7 @@ basic:
     description: "craft one wooden button from wooden plank"
     steps: 100
     judge: "wooden_button"
-  - task_name: "craft crafting table
+  - task_name: "craft crafting table"
     description: "craft one crafting table from wooden plank"
     steps: 100
     judge: "crafting_table"
@@ -77,7 +79,7 @@ easy:
     description: "craft one wooden axe from wooden plank and stick"
     steps: 100
     judge: "wooden_axe"
-  - task_name: "craft wooden sword
+  - task_name: "craft wooden sword"
     description: "craft one wooden sword from wooden plank and stick"
     steps: 100
     judge: "wooden_sword"
@@ -119,7 +121,7 @@ medium:
     description: "craft one stone sword from cobblestone and stick"
     steps: 100
     judge: "stone_sword"
-  - task_name: "mine iron ore
+  - task_name: "mine iron ore"
     description: "mine one block of iron ore"
     steps: 100
     judge: "iron_ore"
@@ -157,11 +159,10 @@ hard:
     description: "craft one rail from iron ingot and stick"
     steps: 100
     judge: "rail"
-  - task_name: "craft cauldron
+  - task_name: "craft cauldron"
     description: "craft one cauldron from iron ingot"
     steps: 100
     judge: "cauldron"
-
 
 complex:
   - task_name: "obtain diamond"
@@ -200,7 +201,7 @@ complex:
     description: "craft one diamond sword from diamond and stick"
     steps: 200
     judge: "diamond_sword"
-  - task_name: "craft raw gold block
+  - task_name: "craft raw gold block"
     description: "craft one raw gold block from raw gold"
     steps: 200
     judge: "raw_gold_block"
