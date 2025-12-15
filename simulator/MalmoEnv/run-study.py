@@ -242,7 +242,7 @@ act_info_cnV2 = {
     "turn -1": "向左转90度",
     "look -1": "向下看,视角角度减1,最大值为-2,当视角角度为-2时,下一次向下看将不再变化",
     "look 1": "向上看,视角角度加1,最小值为2,当视角角度为2时,下一次向上看将不再变化",
-    "jumpmove": "跳跃并前进,当前方有障碍物时,可以跳跃前进越过障碍物",
+    "jumpmove": "跳跃并前进,当前方有障碍物时,可以跳跃前进越过障碍物,使用时头顶必须有2格的空间",
     "attack": "攻击前方1-2格的目标,采集物品,当需要采集REL y=0的物品时,先 look 1 向下调整视角到第0层,再使用attack进行采集, 采集 REL y=1 的物品时,不需要调整视角, 采集 REL y=2 的物品时,需要 look -1 向上调整视角到第2层",
     "use": "使用物品, 将当前快捷栏选中的物品使用在前方1-2格的目标上,必须有目标才能使用物品",
     "jumpuse": "跳跃并使用物品",
@@ -272,7 +272,6 @@ act_info_cn = {
     "discardCurrentItem": "丢弃当前选中的物品",
     "craft [item_name]": "当库存中有足够材料时,制作[item_name]",
 }
-
 
 viewinfo_en = """yaw 0 is z axis positive direction,yaw 180 is z axis negative direction
     yaw 270 is x axis positive direction.yaw 90 is x axis negative direction.
@@ -467,7 +466,7 @@ craft_requirementsV2 = {
 
 # 从 mission xml 中解析 ObservationFromGrid 的 min/max
 def get_observation_grid_range(source, grid_name=None):
-    # 载入 xml 文本aaaaaaa
+    # 载入 xml 文本
     if isinstance(source, (str, Path)) and Path(source).exists():
         xml_text = Path(source).read_text()
     else:
@@ -857,7 +856,10 @@ def mem_generation(action, inventories_bef, aimed_object_bef, obj_list_bef, inve
         input['degree'] = degree
         input['yaw'] = yaw
         # output["obj_list"] = obj_output_diff
-        
+        # TODO 修改成相对的的 x y z
+    output['x'] = entity['x']
+    output['y'] = entity['y']
+    output['z'] = entity['z']
     msg['input'] = input
     msg['output'] = output
     # msg['dependencies'] = dependencies
@@ -1396,12 +1398,13 @@ def get_aimed_object(yaw, around, view_angle)->str:
         a_y = -1
         item = around[a_y][a_z][a_x]
     elif view_angle ==  2: # 向上看
-        for i in range(1, 2):
+        for i in range(1, 3):
             a_y += 1
             # 查看 around 中该位置的物体
             item = around[a_y][a_z][a_x]
             if item != 'air':
                 break
+                
     elif view_angle == -1: # 斜向下看
         if yaw == 0:
             a_z = 1
@@ -1579,8 +1582,8 @@ def retrieval_memory(cs, question, scene_info, log_file)->str:
 if __name__ == '__main__':
     mission_world = 'defaultworld.xml'
     # mission_world = 'studyworld.xml'
-    default_user_request = 'mine sapling from tree'
-    SAVE_MEM = False
+    default_user_request = 'mine directly'
+    SAVE_MEM = True
     mission = f'simulator/MalmoEnv/missions/{mission_world}'
     parser = argparse.ArgumentParser(description='malmovnv test')
     parser.add_argument('--mission', type=str, default=mission, help='the mission xml')

@@ -13,10 +13,10 @@
                 "name": "temp",
                 "parent": "/",
                 "children": [
-                    "/temp/log_0_0_1",
-                    "/temp/grass_1_-1_0",
-                    "/temp/sand_-1_-2_0",
-                    "/temp/dirt_1_-2_0"
+                    "/temp/grass_1_2_0",
+                    "/temp/sand_-1_1_0",
+                    "/temp/dirt_1_0_0",
+                    "/temp/stone_0_-2_0"
                 ]
             },
             "/entity": {
@@ -31,37 +31,37 @@
                 "parent": "/entity",
                 "children": []
             },
-            "/temp/log_0_0_1": {
-                "name": "log_0_0_1",
-                "parent": "/temp",
-                "RElx": 0,
-                "REly": 0,
-                "RElz": 1,
-                "size": 1
-            },
-            "/temp/grass_1_-1_0": {
-                "name": "grass_1_-1_0",
+            "/temp/grass_1_2_0": {
+                "name": "grass_1_2_0",
                 "parent": "/temp",
                 "RElx": 1,
-                "REly": -1,
+                "REly": 2,
                 "RElz": 0,
                 "size": 12
             },
-            "/temp/sand_-1_-2_0": {
-                "name": "sand_-1_-2_0",
+            "/temp/sand_-1_1_0": {
+                "name": "sand_-1_1_0",
                 "parent": "/temp",
                 "RElx": -1,
-                "REly": -2,
+                "REly": 1,
                 "RElz": 0,
-                "size": 24
+                "size": 30
             },
-            "/temp/dirt_1_-2_0": {
-                "name": "dirt_1_-2_0",
+            "/temp/dirt_1_0_0": {
+                "name": "dirt_1_0_0",
                 "parent": "/temp",
                 "RElx": 1,
+                "REly": 0,
+                "RElz": 0,
+                "size": 28
+            },
+            "/temp/stone_0_-2_0": {
+                "name": "stone_0_-2_0",
+                "parent": "/temp",
+                "RElx": 0,
                 "REly": -2,
                 "RElz": 0,
-                "size": 14
+                "size": 70
             }
         },
         "skills": {
@@ -69,7 +69,10 @@
             "/temp": [
                 "get_one_log_from_tree",
                 "get_two_logs_from_tree",
-                "get_three_logs_from_tree"
+                "get_three_logs_from_tree",
+                "mine_leaves_from_tree_probability_drop_sapling_and_apple",
+                "mine_down",
+                "mine_directly"
             ],
             "/entity": [
                 "0:move 1",
@@ -126,24 +129,27 @@
                     "skills": [
                         "get_one_log_from_tree",
                         "get_two_logs_from_tree",
-                        "get_three_logs_from_tree"
+                        "get_three_logs_from_tree",
+                        "mine_leaves_from_tree_probability_drop_sapling_and_apple",
+                        "mine_down",
+                        "mine_directly"
                     ],
                     "children": {
-                        "log_0_0_1": {
-                            "name": "log_0_0_1",
-                            "path": "/temp/log_0_0_1"
+                        "grass_1_2_0": {
+                            "name": "grass_1_2_0",
+                            "path": "/temp/grass_1_2_0"
                         },
-                        "grass_1_-1_0": {
-                            "name": "grass_1_-1_0",
-                            "path": "/temp/grass_1_-1_0"
+                        "sand_-1_1_0": {
+                            "name": "sand_-1_1_0",
+                            "path": "/temp/sand_-1_1_0"
                         },
-                        "sand_-1_-2_0": {
-                            "name": "sand_-1_-2_0",
-                            "path": "/temp/sand_-1_-2_0"
+                        "dirt_1_0_0": {
+                            "name": "dirt_1_0_0",
+                            "path": "/temp/dirt_1_0_0"
                         },
-                        "dirt_1_-2_0": {
-                            "name": "dirt_1_-2_0",
-                            "path": "/temp/dirt_1_-2_0"
+                        "stone_0_-2_0": {
+                            "name": "stone_0_-2_0",
+                            "path": "/temp/stone_0_-2_0"
                         }
                     }
                 }
@@ -397,6 +403,833 @@
                 "5:look 1",
                 "6:attack",
                 "7:look -1"
+            ]
+        },
+        "mine_leaves_from_tree_probability_drop_sapling_and_apple": {
+            "name": "mine_leaves_from_tree_probability_drop_sapling_and_apple",
+            "description": "mine leaves from tree probability drop sapling and apple - composed of 3 steps.",
+            "input": {
+                "degree": 0,
+                "yaw": 0.0,
+                "obj_list": [
+                    {
+                        "name": "leaves",
+                        "ACC": true,
+                        "RELx": 0,
+                        "RELy": 2,
+                        "RELz": 0,
+                        "size": 18,
+                        "coords": [
+                            [
+                                0,
+                                0,
+                                0
+                            ],
+                            [
+                                1,
+                                0,
+                                0
+                            ],
+                            [
+                                0,
+                                0,
+                                1
+                            ],
+                            [
+                                2,
+                                0,
+                                0
+                            ],
+                            [
+                                1,
+                                0,
+                                1
+                            ],
+                            [
+                                3,
+                                0,
+                                0
+                            ],
+                            [
+                                2,
+                                0,
+                                1
+                            ],
+                            [
+                                1,
+                                0,
+                                2
+                            ],
+                            [
+                                3,
+                                0,
+                                1
+                            ],
+                            [
+                                2,
+                                0,
+                                2
+                            ],
+                            [
+                                1,
+                                0,
+                                3
+                            ],
+                            [
+                                4,
+                                0,
+                                1
+                            ],
+                            [
+                                3,
+                                0,
+                                2
+                            ],
+                            [
+                                2,
+                                0,
+                                3
+                            ],
+                            [
+                                0,
+                                0,
+                                3
+                            ],
+                            [
+                                1,
+                                0,
+                                4
+                            ],
+                            [
+                                4,
+                                0,
+                                2
+                            ],
+                            [
+                                0,
+                                0,
+                                4
+                            ]
+                        ]
+                    }
+                ],
+                "aimed_obj": "leaves"
+            },
+            "output": {
+                "degree": 2,
+                "output_items": {
+                    "apple": 0.0046,
+                    "sapling": 0.0474
+                }
+            },
+            "actions": [
+                "0:look 1",
+                "1:look 1",
+                "2:attack"
+            ]
+        },
+        "mine_down": {
+            "name": "mine_down",
+            "description": "mine down - composed of 3 steps.",
+            "input": {
+                "degree": 0,
+                "yaw": 0.0,
+                "obj_list": [
+                    {
+                        "name": "grass",
+                        "ACC": true,
+                        "RELx": 0,
+                        "RELy": -1,
+                        "RELz": 0,
+                        "size": 25,
+                        "coords": [
+                            [
+                                0,
+                                3,
+                                0
+                            ],
+                            [
+                                1,
+                                3,
+                                0
+                            ],
+                            [
+                                0,
+                                3,
+                                1
+                            ],
+                            [
+                                2,
+                                3,
+                                0
+                            ],
+                            [
+                                1,
+                                3,
+                                1
+                            ],
+                            [
+                                0,
+                                3,
+                                2
+                            ],
+                            [
+                                3,
+                                3,
+                                0
+                            ],
+                            [
+                                2,
+                                3,
+                                1
+                            ],
+                            [
+                                1,
+                                3,
+                                2
+                            ],
+                            [
+                                0,
+                                3,
+                                3
+                            ],
+                            [
+                                4,
+                                3,
+                                0
+                            ],
+                            [
+                                3,
+                                3,
+                                1
+                            ],
+                            [
+                                2,
+                                3,
+                                2
+                            ],
+                            [
+                                1,
+                                3,
+                                3
+                            ],
+                            [
+                                0,
+                                3,
+                                4
+                            ],
+                            [
+                                4,
+                                3,
+                                1
+                            ],
+                            [
+                                3,
+                                3,
+                                2
+                            ],
+                            [
+                                2,
+                                3,
+                                3
+                            ],
+                            [
+                                1,
+                                3,
+                                4
+                            ],
+                            [
+                                4,
+                                3,
+                                2
+                            ],
+                            [
+                                3,
+                                3,
+                                3
+                            ],
+                            [
+                                2,
+                                3,
+                                4
+                            ],
+                            [
+                                4,
+                                3,
+                                3
+                            ],
+                            [
+                                3,
+                                3,
+                                4
+                            ],
+                            [
+                                4,
+                                3,
+                                4
+                            ]
+                        ]
+                    },
+                    {
+                        "name": "dirt",
+                        "ACC": true,
+                        "RELx": 0,
+                        "RELy": -2,
+                        "RELz": 0,
+                        "size": 25,
+                        "coords": [
+                            [
+                                0,
+                                4,
+                                0
+                            ],
+                            [
+                                1,
+                                4,
+                                0
+                            ],
+                            [
+                                0,
+                                4,
+                                1
+                            ],
+                            [
+                                2,
+                                4,
+                                0
+                            ],
+                            [
+                                1,
+                                4,
+                                1
+                            ],
+                            [
+                                0,
+                                4,
+                                2
+                            ],
+                            [
+                                3,
+                                4,
+                                0
+                            ],
+                            [
+                                2,
+                                4,
+                                1
+                            ],
+                            [
+                                1,
+                                4,
+                                2
+                            ],
+                            [
+                                0,
+                                4,
+                                3
+                            ],
+                            [
+                                4,
+                                4,
+                                0
+                            ],
+                            [
+                                3,
+                                4,
+                                1
+                            ],
+                            [
+                                2,
+                                4,
+                                2
+                            ],
+                            [
+                                1,
+                                4,
+                                3
+                            ],
+                            [
+                                0,
+                                4,
+                                4
+                            ],
+                            [
+                                4,
+                                4,
+                                1
+                            ],
+                            [
+                                3,
+                                4,
+                                2
+                            ],
+                            [
+                                2,
+                                4,
+                                3
+                            ],
+                            [
+                                1,
+                                4,
+                                4
+                            ],
+                            [
+                                4,
+                                4,
+                                2
+                            ],
+                            [
+                                3,
+                                4,
+                                3
+                            ],
+                            [
+                                2,
+                                4,
+                                4
+                            ],
+                            [
+                                4,
+                                4,
+                                3
+                            ],
+                            [
+                                3,
+                                4,
+                                4
+                            ],
+                            [
+                                4,
+                                4,
+                                4
+                            ]
+                        ]
+                    }
+                ],
+                "aimed_obj": "grass"
+            },
+            "output": {
+                "degree": -2,
+                "x": -5.5,
+                "y": 3.0,
+                "z": 3.5,
+                "output_items": {
+                    "dirt": 1
+                },
+                "obj_list": [
+                    {
+                        "name": "grass",
+                        "ACC": true,
+                        "RELx": 0,
+                        "RELy": 0,
+                        "RELz": 0,
+                        "size": 24,
+                        "coords": [
+                            [
+                                0,
+                                2,
+                                0
+                            ],
+                            [
+                                1,
+                                2,
+                                0
+                            ],
+                            [
+                                0,
+                                2,
+                                1
+                            ],
+                            [
+                                2,
+                                2,
+                                0
+                            ],
+                            [
+                                1,
+                                2,
+                                1
+                            ],
+                            [
+                                0,
+                                2,
+                                2
+                            ],
+                            [
+                                3,
+                                2,
+                                0
+                            ],
+                            [
+                                2,
+                                2,
+                                1
+                            ],
+                            [
+                                1,
+                                2,
+                                2
+                            ],
+                            [
+                                0,
+                                2,
+                                3
+                            ],
+                            [
+                                4,
+                                2,
+                                0
+                            ],
+                            [
+                                3,
+                                2,
+                                1
+                            ],
+                            [
+                                1,
+                                2,
+                                3
+                            ],
+                            [
+                                0,
+                                2,
+                                4
+                            ],
+                            [
+                                4,
+                                2,
+                                1
+                            ],
+                            [
+                                3,
+                                2,
+                                2
+                            ],
+                            [
+                                2,
+                                2,
+                                3
+                            ],
+                            [
+                                1,
+                                2,
+                                4
+                            ],
+                            [
+                                4,
+                                2,
+                                2
+                            ],
+                            [
+                                3,
+                                2,
+                                3
+                            ],
+                            [
+                                2,
+                                2,
+                                4
+                            ],
+                            [
+                                4,
+                                2,
+                                3
+                            ],
+                            [
+                                3,
+                                2,
+                                4
+                            ],
+                            [
+                                4,
+                                2,
+                                4
+                            ]
+                        ]
+                    },
+                    {
+                        "name": "dirt",
+                        "ACC": true,
+                        "RELx": 0,
+                        "RELy": -2,
+                        "RELz": 0,
+                        "size": 50,
+                        "coords": [
+                            [
+                                0,
+                                3,
+                                0
+                            ],
+                            [
+                                0,
+                                4,
+                                0
+                            ],
+                            [
+                                1,
+                                3,
+                                0
+                            ],
+                            [
+                                0,
+                                3,
+                                1
+                            ],
+                            [
+                                1,
+                                4,
+                                0
+                            ],
+                            [
+                                0,
+                                4,
+                                1
+                            ],
+                            [
+                                2,
+                                3,
+                                0
+                            ],
+                            [
+                                1,
+                                3,
+                                1
+                            ],
+                            [
+                                0,
+                                3,
+                                2
+                            ],
+                            [
+                                2,
+                                4,
+                                0
+                            ],
+                            [
+                                1,
+                                4,
+                                1
+                            ],
+                            [
+                                0,
+                                4,
+                                2
+                            ],
+                            [
+                                3,
+                                3,
+                                0
+                            ],
+                            [
+                                2,
+                                3,
+                                1
+                            ],
+                            [
+                                1,
+                                3,
+                                2
+                            ],
+                            [
+                                0,
+                                3,
+                                3
+                            ],
+                            [
+                                3,
+                                4,
+                                0
+                            ],
+                            [
+                                2,
+                                4,
+                                1
+                            ],
+                            [
+                                1,
+                                4,
+                                2
+                            ],
+                            [
+                                0,
+                                4,
+                                3
+                            ],
+                            [
+                                4,
+                                3,
+                                0
+                            ],
+                            [
+                                3,
+                                3,
+                                1
+                            ],
+                            [
+                                2,
+                                3,
+                                2
+                            ],
+                            [
+                                1,
+                                3,
+                                3
+                            ],
+                            [
+                                0,
+                                3,
+                                4
+                            ],
+                            [
+                                4,
+                                4,
+                                0
+                            ],
+                            [
+                                3,
+                                4,
+                                1
+                            ],
+                            [
+                                2,
+                                4,
+                                2
+                            ],
+                            [
+                                1,
+                                4,
+                                3
+                            ],
+                            [
+                                0,
+                                4,
+                                4
+                            ],
+                            [
+                                4,
+                                3,
+                                1
+                            ],
+                            [
+                                3,
+                                3,
+                                2
+                            ],
+                            [
+                                2,
+                                3,
+                                3
+                            ],
+                            [
+                                1,
+                                3,
+                                4
+                            ],
+                            [
+                                4,
+                                4,
+                                1
+                            ],
+                            [
+                                3,
+                                4,
+                                2
+                            ],
+                            [
+                                2,
+                                4,
+                                3
+                            ],
+                            [
+                                1,
+                                4,
+                                4
+                            ],
+                            [
+                                4,
+                                3,
+                                2
+                            ],
+                            [
+                                3,
+                                3,
+                                3
+                            ],
+                            [
+                                2,
+                                3,
+                                4
+                            ],
+                            [
+                                4,
+                                4,
+                                2
+                            ],
+                            [
+                                3,
+                                4,
+                                3
+                            ],
+                            [
+                                2,
+                                4,
+                                4
+                            ],
+                            [
+                                4,
+                                3,
+                                3
+                            ],
+                            [
+                                3,
+                                3,
+                                4
+                            ],
+                            [
+                                4,
+                                4,
+                                3
+                            ],
+                            [
+                                3,
+                                4,
+                                4
+                            ],
+                            [
+                                4,
+                                3,
+                                4
+                            ],
+                            [
+                                4,
+                                4,
+                                4
+                            ]
+                        ]
+                    }
+                ]
+            },
+            "actions": [
+                "0:look -1",
+                "1:look -1",
+                "2:attack"
+            ]
+        },
+        "mine_directly": {
+            "name": "mine_directly",
+            "description": "mine directly - composed of 4 steps.",
+            "input": {
+                "degree": 0,
+                "yaw": 0.0
+            },
+            "output": {
+                "degree": -1
+            },
+            "actions": [
+                "0:look -1",
+                "1:attack",
+                "2:attack",
+                "3:move 1"
             ]
         }
     }

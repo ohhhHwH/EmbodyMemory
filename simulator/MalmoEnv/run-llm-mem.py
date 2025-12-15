@@ -242,7 +242,7 @@ act_info_cnV2 = {
     "turn -1": "向左转90度",
     "look -1": "向下看,视角角度减1,最大值为-2,当视角角度为-2时,下一次向下看将不再变化",
     "look 1": "向上看,视角角度加1,最小值为2,当视角角度为2时,下一次向上看将不再变化",
-    "jumpmove": "跳跃并前进,当前方有障碍物时,可以跳跃前进越过障碍物",
+    "jumpmove": "跳跃并前进,当前方有障碍物时,可以跳跃前进越过障碍物,使用时头顶必须有2格的空间",
     "attack": "攻击前方1-2格的目标,采集物品,当需要采集REL y=0的物品时,先 look 1 向下调整视角到第0层,再使用attack进行采集, 采集 REL y=1 的物品时,不需要调整视角, 采集 REL y=2 的物品时,需要 look -1 向上调整视角到第2层",
     "use": "使用物品, 将当前快捷栏选中的物品使用在前方1-2格的目标上,必须有目标才能使用物品",
     "jumpuse": "跳跃并使用物品",
@@ -272,7 +272,6 @@ act_info_cn = {
     "discardCurrentItem": "丢弃当前选中的物品",
     "craft [item_name]": "当库存中有足够材料时,制作[item_name]",
 }
-
 
 viewinfo_en = """yaw 0 is z axis positive direction,yaw 180 is z axis negative direction
     yaw 270 is x axis positive direction.yaw 90 is x axis negative direction.
@@ -467,7 +466,7 @@ craft_requirementsV2 = {
 
 # 从 mission xml 中解析 ObservationFromGrid 的 min/max
 def get_observation_grid_range(source, grid_name=None):
-    # 载入 xml 文本aaaaaaa
+    # 载入 xml 文本
     if isinstance(source, (str, Path)) and Path(source).exists():
         xml_text = Path(source).read_text()
     else:
@@ -854,8 +853,13 @@ def mem_generation(action, inventories_bef, aimed_object_bef, obj_list_bef, inve
         # 移动的指令 ， 连续移动不做记录，但最后一次移动需要记录， 仅保留上一次移动的场景 即寻找最后的场景信息
         input["obj_list"] = obj_list
         input['aimed_obj'] = aimed_object_bef
+        input['degree'] = degree
+        input['yaw'] = yaw
         # output["obj_list"] = obj_output_diff
-        
+        # TODO 修改成相对的的 x y z
+    output['x'] = entity['x']
+    output['y'] = entity['y']
+    output['z'] = entity['z']
     msg['input'] = input
     msg['output'] = output
     # msg['dependencies'] = dependencies
@@ -877,6 +881,9 @@ def skill2FIXED_mem(task_describe, record_actions, scene_info, check_obj_name=No
     
     task_skills_spec = []
     task_skills_name = []
+    task_input = {}
+    task_output = {}
+    task_output_items = {}
     # 遍历act_info_en,生成 capability 名称
     for i, mem_msg in enumerate(record_actions):
         action_name = mem_msg.get('name', '')
@@ -888,20 +895,38 @@ def skill2FIXED_mem(task_describe, record_actions, scene_info, check_obj_name=No
         task_skills_name.append(cap_name)
         task_skills_spec.append(mem_msg)
         
+        # TODO 合并 input output 生成初始input  最终output # TODO BUG output 应该是累计的 或 状态切换的
+        # 合并 input
+        for key, value in mem_msg.get('input', {}).items():
+            if key not in task_input:
+                task_input[key] = value
+        # 合并 output
+        for key, value in mem_msg.get('output', {}).items():
+            if key == 'output_items':
+                # 合并 output_items 时 物品叠加处理 task_output_items
+                for item_name, qty in value.items():
+                    if item_name in task_output_items:
+                        task_output_items[item_name] += qty
+                    else:
+                        task_output_items[item_name] = qty
+                    
+            else:
+                task_output[key] = value
+        task_output['output_items'] = task_output_items
 
-    # TODO 根据 check_obj_name 过滤无用的 空间 记忆点
+    # TODO 根据 check_obj_name 过滤无用的 空间 记忆点 ? 副产物 ？ 
     
     
     # entity_skill_specs 中 加入 task_spec 说明
     # skill specs 过长 不写入具体的 actions 细节，只写action序列
-    # TODO BUG output 应该是累计的
+    
     task_spec = {
         "name": task_name,
         "description": task_describe,
-        "input": record_actions[0].get("input", None), # 获取第一步的 input 作为 task_memory 的 input
+        "input":    task_input,
         
-        "output": record_actions[-1].get("output", None), # 获取最后一步的 output 作为 task_memory 的 output
-        # "actions": task_skills_spec,
+        "output":   task_output,
+
         "actions": task_skills_name,
     }
     temp_skill_specs = scene_info.get("skill_specs", {})
@@ -1373,12 +1398,13 @@ def get_aimed_object(yaw, around, view_angle)->str:
         a_y = -1
         item = around[a_y][a_z][a_x]
     elif view_angle ==  2: # 向上看
-        for i in range(1, 2):
+        for i in range(1, 3):
             a_y += 1
             # 查看 around 中该位置的物体
             item = around[a_y][a_z][a_x]
             if item != 'air':
                 break
+                
     elif view_angle == -1: # 斜向下看
         if yaw == 0:
             a_z = 1
@@ -1970,7 +1996,7 @@ if __name__ == '__main__':
                         scene_info = record_short_space_memory(scene_info, obj_list, entity)
                         # scene_info = short2long_space_memory(entity, around, scene_info)
                         cs.update_Scene(scene_info)
-                        
+
                         rel_info = retrieval_memory(cs, sub_mission, scene_info, log_file)
                         
                         if rel_info != "":

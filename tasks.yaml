@@ -8,15 +8,13 @@ basic:
     steps: 100
     judge: "sand"
   - task_name: "mine sapling"
-  #  该任务有概率失败，因为不是每棵树都会掉落树苗
-  #  该任务稳妥的做法是跳树上然后采集5个木头，然后等待树苗掉落 等操作如何处理
     description: "mine one sapling from a tree"
     steps: 100
     judge: "sapling"
-  - task_name: "mine wheat seeds"
-    description: "mine one wheat seed from tallgrass"
+  - task_name: "mine seeds"
+    description: "mine seeds from tallgrass"
     steps: 100
-    judge: "wheat_seeds"
+    judge: "seeds"
   - task_name: "mine dirt"
     description: "mine one block of dirt"
     steps: 100
@@ -24,7 +22,7 @@ basic:
   - task_name: "mine grass"
     description: "mine one block of grass"
     steps: 100
-    judge: "grass"
+    # judge: "grass"
   - task_name: "craft plank"
     description: "craft one wooden plank from log"
     steps: 100
@@ -36,39 +34,39 @@ basic:
   - task_name: "craft button"
     description: "craft one wooden button from wooden plank"
     steps: 100
-    judge: "wooden_button"
+    judge: "button"
   - task_name: "craft crafting table"
     description: "craft one crafting table from wooden plank"
     steps: 100
     judge: "crafting_table"
 
 easy:
-  - task_name: "craft chest"
+  - task_name: "craft chest" # 箱子
     description: "craft one chest from wooden plank"
     steps: 100
     judge: "chest"
   - task_name: "craft bowl"
-    description: "craft one bowl from wooden plank"
+    description: "craft bowl from wooden plank"
     steps: 100
     judge: "bowl"
   - task_name: "craft boat"
     description: "craft one boat from wooden plank"
     steps: 100
     judge: "boat"
-  - task_name: "craft wooden pressure"
+  - task_name: "craft wooden pressure plate"
     description: "craft one wooden pressure plate from wooden plank"
     steps: 100
     judge: "wooden_pressure_plate"
   - task_name: "craft wooden slab plate"
     description: "craft one wooden slab from wooden plank"
     steps: 100
-    judge: "wooden_slab"
+    judge: "oak_wood_slab"
   - task_name: "craft ladder"
     description: "craft one ladder from stick"
     steps: 100
     judge: "ladder"
   - task_name: "craft barrel"
-    description: "craft one barrel from wooden plank"
+    description: "craft one barrel from wooden plank and wooden slab"
     steps: 100
     judge: "barrel"
   - task_name: "craft wooden pickaxe"
@@ -92,7 +90,7 @@ medium:
   - task_name: "mine coal ore"
     description: "mine one block of coal ore"
     steps: 100
-    judge: "coal_ore"
+    judge: "coal"
   - task_name: "craft furnace"
     description: "craft one furnace from cobblestone"
     steps: 100
@@ -139,10 +137,10 @@ hard:
     description: "craft one iron bars from iron ingot"
     steps: 100
     judge: "iron_bars"
-  - task_name: "craft carpentry table"
-    description: "craft one carpentry table from iron ingot and wooden plank"
-    steps: 100
-    judge: "carpentry_table"
+  # - task_name: "craft carpentry_table table" # 非原版物体 
+  #   description: "craft one carpentry table from iron ingot and wooden plank"
+  #   steps: 100
+  #   judge: "carpentry_table"
   - task_name: "craft iron pickaxe"
     description: "craft one iron pickaxe from iron ingot and stick"
     steps: 100

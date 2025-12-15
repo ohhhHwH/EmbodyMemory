@@ -1,9 +1,6 @@
 {
     4:move 1
     4:attack
-    4:look 1
     4:attack
-    4:attack
-    6:jumpmove
-    4:look 1
+
 }
