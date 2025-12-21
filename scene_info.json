@@ -13,10 +13,17 @@
                 "name": "temp",
                 "parent": "/",
                 "children": [
-                    "/temp/dirt_-2_2_-1",
-                    "/temp/dirt_-2_0_1",
-                    "/temp/stone_0_-1_0"
+                    "/temp/leaves_0_2_0",
+                    "/temp/log_0_2_1",
+                    "/temp/grass_1_-2_0",
+                    "/temp/sand_-1_-2_0",
+                    "/temp/dirt_1_-3_0"
                 ]
+            },
+            "/long": {
+                "name": "long",
+                "parent": "/",
+                "children": []
             },
             "/entity": {
                 "name": "entity",
@@ -30,41 +37,61 @@
                 "parent": "/entity",
                 "children": []
             },
-            "/temp/dirt_-2_2_-1": {
-                "name": "dirt_-2_2_-1",
-                "parent": "/temp",
-                "RElx": -2,
-                "REly": 2,
-                "RElz": -1,
-                "size": 6
-            },
-            "/temp/dirt_-2_0_1": {
-                "name": "dirt_-2_0_1",
-                "parent": "/temp",
-                "RElx": -2,
-                "REly": 0,
-                "RElz": 1,
-                "size": 2
-            },
-            "/temp/stone_0_-1_0": {
-                "name": "stone_0_-1_0",
+            "/temp/leaves_0_2_0": {
+                "name": "leaves_0_2_0",
                 "parent": "/temp",
                 "RElx": 0,
-                "REly": -1,
+                "REly": 2,
                 "RElz": 0,
-                "size": 50
+                "size": 21
+            },
+            "/temp/log_0_2_1": {
+                "name": "log_0_2_1",
+                "parent": "/temp",
+                "RElx": 0,
+                "REly": 2,
+                "RElz": 1,
+                "size": 1
+            },
+            "/temp/grass_1_-2_0": {
+                "name": "grass_1_-2_0",
+                "parent": "/temp",
+                "RElx": 1,
+                "REly": -2,
+                "RElz": 0,
+                "size": 13
+            },
+            "/temp/sand_-1_-2_0": {
+                "name": "sand_-1_-2_0",
+                "parent": "/temp",
+                "RElx": -1,
+                "REly": -2,
+                "RElz": 0,
+                "size": 24
+            },
+            "/temp/dirt_1_-3_0": {
+                "name": "dirt_1_-3_0",
+                "parent": "/temp",
+                "RElx": 1,
+                "REly": -3,
+                "RElz": 0,
+                "size": 13
             }
         },
         "skills": {
             "/": [],
             "/temp": [
-                "get_one_log_from_tree",
-                "get_two_logs_from_tree",
-                "get_three_logs_from_tree",
+                "mine_log",
                 "mine_leaves_from_tree_probability_drop_sapling_and_apple",
                 "mine_down",
-                "mine_directly"
+                "mine_directly",
+                "craft_wooden_axe",
+                "find_sand",
+                "find_dirt",
+                "craft_crafting_table",
+                "find_logs"
             ],
+            "/long": [],
             "/entity": [
                 "0:move 1",
                 "1:move -1",
@@ -118,25 +145,36 @@
                     "name": "temp",
                     "path": "/temp",
                     "skills": [
-                        "get_one_log_from_tree",
-                        "get_two_logs_from_tree",
-                        "get_three_logs_from_tree",
+                        "mine_log",
                         "mine_leaves_from_tree_probability_drop_sapling_and_apple",
                         "mine_down",
-                        "mine_directly"
+                        "mine_directly",
+                        "craft_wooden_axe",
+                        "find_sand",
+                        "find_dirt",
+                        "craft_crafting_table",
+                        "find_logs"
                     ],
                     "children": {
-                        "dirt_-2_2_-1": {
-                            "name": "dirt_-2_2_-1",
-                            "path": "/temp/dirt_-2_2_-1"
+                        "leaves_0_2_0": {
+                            "name": "leaves_0_2_0",
+                            "path": "/temp/leaves_0_2_0"
                         },
-                        "dirt_-2_0_1": {
-                            "name": "dirt_-2_0_1",
-                            "path": "/temp/dirt_-2_0_1"
+                        "log_0_2_1": {
+                            "name": "log_0_2_1",
+                            "path": "/temp/log_0_2_1"
                         },
-                        "stone_0_-1_0": {
-                            "name": "stone_0_-1_0",
-                            "path": "/temp/stone_0_-1_0"
+                        "grass_1_-2_0": {
+                            "name": "grass_1_-2_0",
+                            "path": "/temp/grass_1_-2_0"
+                        },
+                        "sand_-1_-2_0": {
+                            "name": "sand_-1_-2_0",
+                            "path": "/temp/sand_-1_-2_0"
+                        },
+                        "dirt_1_-3_0": {
+                            "name": "dirt_1_-3_0",
+                            "path": "/temp/dirt_1_-3_0"
                         }
                     }
                 }
@@ -212,9 +250,9 @@
             "name": "16:nearbysmelt [item_name]",
             "description": "Smelt [item_name] using nearby furnace when enough materials in inventory"
         },
-        "get_one_log_from_tree": {
-            "name": "get_one_log_from_tree",
-            "description": "Get one log from tree - composed of 2 steps.",
+        "mine_log": {
+            "name": "mine_log",
+            "description": "mine log - composed of 8 steps.",
             "input": {
                 "obj_list": [
                     {
@@ -223,151 +261,7 @@
                         "RELx": 0,
                         "RELy": 1,
                         "RELz": 1,
-                        "size": 3,
-                        "coords": [
-                            [
-                                1,
-                                0,
-                                2
-                            ],
-                            [
-                                1,
-                                1,
-                                2
-                            ],
-                            [
-                                1,
-                                2,
-                                2
-                            ]
-                        ]
-                    }
-                ],
-                "aimed_obj": "log",
-                "degree": 0,
-                "yaw": 0.0
-            },
-            "output": {
-                "output_items": {
-                    "log": 1
-                },
-                "obj_list": [
-                    {
-                        "name": "log",
-                        "ACC": true,
-                        "RELx": 0,
-                        "RELy": 2,
-                        "RELz": 1,
-                        "size": 1,
-                        "coords": [
-                            [
-                                1,
-                                0,
-                                2
-                            ]
-                        ]
-                    },
-                    {
-                        "name": "log",
-                        "ACC": true,
-                        "RELx": 0,
-                        "RELy": 0,
-                        "RELz": 1,
-                        "size": 1,
-                        "coords": [
-                            [
-                                1,
-                                2,
-                                2
-                            ]
-                        ]
-                    }
-                ]
-            },
-            "actions": [
-                "0:move 1",
-                "1:attack"
-            ]
-        },
-        "get_two_logs_from_tree": {
-            "name": "get_two_logs_from_tree",
-            "description": "Get two logs from tree - composed of 5 steps.",
-            "input": {
-                "obj_list": [
-                    {
-                        "name": "log",
-                        "ACC": true,
-                        "RELx": 0,
-                        "RELy": 1,
-                        "RELz": 1,
-                        "size": 3,
-                        "coords": [
-                            [
-                                1,
-                                0,
-                                2
-                            ],
-                            [
-                                1,
-                                1,
-                                2
-                            ],
-                            [
-                                1,
-                                2,
-                                2
-                            ]
-                        ]
-                    }
-                ],
-                "aimed_obj": "log",
-                "degree": 0,
-                "yaw": 0.0
-            },
-            "output": {
-                "output_items": {
-                    "log": 2
-                },
-                "obj_list": [],
-                "degree": 0
-            },
-            "actions": [
-                "0:move 1",
-                "1:attack",
-                "2:look -1",
-                "3:attack",
-                "4:look 1"
-            ]
-        },
-        "get_three_logs_from_tree": {
-            "name": "get_three_logs_from_tree",
-            "description": "Get three logs from tree - composed of 8 steps.",
-            "input": {
-                "obj_list": [
-                    {
-                        "name": "log",
-                        "ACC": true,
-                        "RELx": 0,
-                        "RELy": 1,
-                        "RELz": 1,
-                        "size": 3,
-                        "coords": [
-                            [
-                                1,
-                                0,
-                                2
-                            ],
-                            [
-                                1,
-                                1,
-                                2
-                            ],
-                            [
-                                1,
-                                2,
-                                2
-                            ]
-                        ]
+                        "size": 3
                     }
                 ],
                 "aimed_obj": "log",
@@ -405,99 +299,7 @@
                         "RELx": 0,
                         "RELy": 2,
                         "RELz": 0,
-                        "size": 18,
-                        "coords": [
-                            [
-                                0,
-                                0,
-                                0
-                            ],
-                            [
-                                1,
-                                0,
-                                0
-                            ],
-                            [
-                                0,
-                                0,
-                                1
-                            ],
-                            [
-                                2,
-                                0,
-                                0
-                            ],
-                            [
-                                1,
-                                0,
-                                1
-                            ],
-                            [
-                                3,
-                                0,
-                                0
-                            ],
-                            [
-                                2,
-                                0,
-                                1
-                            ],
-                            [
-                                1,
-                                0,
-                                2
-                            ],
-                            [
-                                3,
-                                0,
-                                1
-                            ],
-                            [
-                                2,
-                                0,
-                                2
-                            ],
-                            [
-                                1,
-                                0,
-                                3
-                            ],
-                            [
-                                4,
-                                0,
-                                1
-                            ],
-                            [
-                                3,
-                                0,
-                                2
-                            ],
-                            [
-                                2,
-                                0,
-                                3
-                            ],
-                            [
-                                0,
-                                0,
-                                3
-                            ],
-                            [
-                                1,
-                                0,
-                                4
-                            ],
-                            [
-                                4,
-                                0,
-                                2
-                            ],
-                            [
-                                0,
-                                0,
-                                4
-                            ]
-                        ]
+                        "size": 18
                     }
                 ],
                 "aimed_obj": "leaves"
@@ -528,134 +330,7 @@
                         "RELx": 0,
                         "RELy": -1,
                         "RELz": 0,
-                        "size": 25,
-                        "coords": [
-                            [
-                                0,
-                                3,
-                                0
-                            ],
-                            [
-                                1,
-                                3,
-                                0
-                            ],
-                            [
-                                0,
-                                3,
-                                1
-                            ],
-                            [
-                                2,
-                                3,
-                                0
-                            ],
-                            [
-                                1,
-                                3,
-                                1
-                            ],
-                            [
-                                0,
-                                3,
-                                2
-                            ],
-                            [
-                                3,
-                                3,
-                                0
-                            ],
-                            [
-                                2,
-                                3,
-                                1
-                            ],
-                            [
-                                1,
-                                3,
-                                2
-                            ],
-                            [
-                                0,
-                                3,
-                                3
-                            ],
-                            [
-                                4,
-                                3,
-                                0
-                            ],
-                            [
-                                3,
-                                3,
-                                1
-                            ],
-                            [
-                                2,
-                                3,
-                                2
-                            ],
-                            [
-                                1,
-                                3,
-                                3
-                            ],
-                            [
-                                0,
-                                3,
-                                4
-                            ],
-                            [
-                                4,
-                                3,
-                                1
-                            ],
-                            [
-                                3,
-                                3,
-                                2
-                            ],
-                            [
-                                2,
-                                3,
-                                3
-                            ],
-                            [
-                                1,
-                                3,
-                                4
-                            ],
-                            [
-                                4,
-                                3,
-                                2
-                            ],
-                            [
-                                3,
-                                3,
-                                3
-                            ],
-                            [
-                                2,
-                                3,
-                                4
-                            ],
-                            [
-                                4,
-                                3,
-                                3
-                            ],
-                            [
-                                3,
-                                3,
-                                4
-                            ],
-                            [
-                                4,
-                                3,
-                                4
-                            ]
-                        ]
+                        "size": 25
                     },
                     {
                         "name": "dirt",
@@ -663,134 +338,7 @@
                         "RELx": 0,
                         "RELy": -2,
                         "RELz": 0,
-                        "size": 25,
-                        "coords": [
-                            [
-                                0,
-                                4,
-                                0
-                            ],
-                            [
-                                1,
-                                4,
-                                0
-                            ],
-                            [
-                                0,
-                                4,
-                                1
-                            ],
-                            [
-                                2,
-                                4,
-                                0
-                            ],
-                            [
-                                1,
-                                4,
-                                1
-                            ],
-                            [
-                                0,
-                                4,
-                                2
-                            ],
-                            [
-                                3,
-                                4,
-                                0
-                            ],
-                            [
-                                2,
-                                4,
-                                1
-                            ],
-                            [
-                                1,
-                                4,
-                                2
-                            ],
-                            [
-                                0,
-                                4,
-                                3
-                            ],
-                            [
-                                4,
-                                4,
-                                0
-                            ],
-                            [
-                                3,
-                                4,
-                                1
-                            ],
-                            [
-                                2,
-                                4,
-                                2
-                            ],
-                            [
-                                1,
-                                4,
-                                3
-                            ],
-                            [
-                                0,
-                                4,
-                                4
-                            ],
-                            [
-                                4,
-                                4,
-                                1
-                            ],
-                            [
-                                3,
-                                4,
-                                2
-                            ],
-                            [
-                                2,
-                                4,
-                                3
-                            ],
-                            [
-                                1,
-                                4,
-                                4
-                            ],
-                            [
-                                4,
-                                4,
-                                2
-                            ],
-                            [
-                                3,
-                                4,
-                                3
-                            ],
-                            [
-                                2,
-                                4,
-                                4
-                            ],
-                            [
-                                4,
-                                4,
-                                3
-                            ],
-                            [
-                                3,
-                                4,
-                                4
-                            ],
-                            [
-                                4,
-                                4,
-                                4
-                            ]
-                        ]
+                        "size": 25
                     }
                 ],
                 "aimed_obj": "grass"
@@ -810,129 +358,7 @@
                         "RELx": 0,
                         "RELy": 0,
                         "RELz": 0,
-                        "size": 24,
-                        "coords": [
-                            [
-                                0,
-                                2,
-                                0
-                            ],
-                            [
-                                1,
-                                2,
-                                0
-                            ],
-                            [
-                                0,
-                                2,
-                                1
-                            ],
-                            [
-                                2,
-                                2,
-                                0
-                            ],
-                            [
-                                1,
-                                2,
-                                1
-                            ],
-                            [
-                                0,
-                                2,
-                                2
-                            ],
-                            [
-                                3,
-                                2,
-                                0
-                            ],
-                            [
-                                2,
-                                2,
-                                1
-                            ],
-                            [
-                                1,
-                                2,
-                                2
-                            ],
-                            [
-                                0,
-                                2,
-                                3
-                            ],
-                            [
-                                4,
-                                2,
-                                0
-                            ],
-                            [
-                                3,
-                                2,
-                                1
-                            ],
-                            [
-                                1,
-                                2,
-                                3
-                            ],
-                            [
-                                0,
-                                2,
-                                4
-                            ],
-                            [
-                                4,
-                                2,
-                                1
-                            ],
-                            [
-                                3,
-                                2,
-                                2
-                            ],
-                            [
-                                2,
-                                2,
-                                3
-                            ],
-                            [
-                                1,
-                                2,
-                                4
-                            ],
-                            [
-                                4,
-                                2,
-                                2
-                            ],
-                            [
-                                3,
-                                2,
-                                3
-                            ],
-                            [
-                                2,
-                                2,
-                                4
-                            ],
-                            [
-                                4,
-                                2,
-                                3
-                            ],
-                            [
-                                3,
-                                2,
-                                4
-                            ],
-                            [
-                                4,
-                                2,
-                                4
-                            ]
-                        ]
+                        "size": 24
                     },
                     {
                         "name": "dirt",
@@ -940,259 +366,7 @@
                         "RELx": 0,
                         "RELy": -2,
                         "RELz": 0,
-                        "size": 50,
-                        "coords": [
-                            [
-                                0,
-                                3,
-                                0
-                            ],
-                            [
-                                0,
-                                4,
-                                0
-                            ],
-                            [
-                                1,
-                                3,
-                                0
-                            ],
-                            [
-                                0,
-                                3,
-                                1
-                            ],
-                            [
-                                1,
-                                4,
-                                0
-                            ],
-                            [
-                                0,
-                                4,
-                                1
-                            ],
-                            [
-                                2,
-                                3,
-                                0
-                            ],
-                            [
-                                1,
-                                3,
-                                1
-                            ],
-                            [
-                                0,
-                                3,
-                                2
-                            ],
-                            [
-                                2,
-                                4,
-                                0
-                            ],
-                            [
-                                1,
-                                4,
-                                1
-                            ],
-                            [
-                                0,
-                                4,
-                                2
-                            ],
-                            [
-                                3,
-                                3,
-                                0
-                            ],
-                            [
-                                2,
-                                3,
-                                1
-                            ],
-                            [
-                                1,
-                                3,
-                                2
-                            ],
-                            [
-                                0,
-                                3,
-                                3
-                            ],
-                            [
-                                3,
-                                4,
-                                0
-                            ],
-                            [
-                                2,
-                                4,
-                                1
-                            ],
-                            [
-                                1,
-                                4,
-                                2
-                            ],
-                            [
-                                0,
-                                4,
-                                3
-                            ],
-                            [
-                                4,
-                                3,
-                                0
-                            ],
-                            [
-                                3,
-                                3,
-                                1
-                            ],
-                            [
-                                2,
-                                3,
-                                2
-                            ],
-                            [
-                                1,
-                                3,
-                                3
-                            ],
-                            [
-                                0,
-                                3,
-                                4
-                            ],
-                            [
-                                4,
-                                4,
-                                0
-                            ],
-                            [
-                                3,
-                                4,
-                                1
-                            ],
-                            [
-                                2,
-                                4,
-                                2
-                            ],
-                            [
-                                1,
-                                4,
-                                3
-                            ],
-                            [
-                                0,
-                                4,
-                                4
-                            ],
-                            [
-                                4,
-                                3,
-                                1
-                            ],
-                            [
-                                3,
-                                3,
-                                2
-                            ],
-                            [
-                                2,
-                                3,
-                                3
-                            ],
-                            [
-                                1,
-                                3,
-                                4
-                            ],
-                            [
-                                4,
-                                4,
-                                1
-                            ],
-                            [
-                                3,
-                                4,
-                                2
-                            ],
-                            [
-                                2,
-                                4,
-                                3
-                            ],
-                            [
-                                1,
-                                4,
-                                4
-                            ],
-                            [
-                                4,
-                                3,
-                                2
-                            ],
-                            [
-                                3,
-                                3,
-                                3
-                            ],
-                            [
-                                2,
-                                3,
-                                4
-                            ],
-                            [
-                                4,
-                                4,
-                                2
-                            ],
-                            [
-                                3,
-                                4,
-                                3
-                            ],
-                            [
-                                2,
-                                4,
-                                4
-                            ],
-                            [
-                                4,
-                                3,
-                                3
-                            ],
-                            [
-                                3,
-                                3,
-                                4
-                            ],
-                            [
-                                4,
-                                4,
-                                3
-                            ],
-                            [
-                                3,
-                                4,
-                                4
-                            ],
-                            [
-                                4,
-                                3,
-                                4
-                            ],
-                            [
-                                4,
-                                4,
-                                4
-                            ]
-                        ]
+                        "size": 50
                     }
                 ]
             },
@@ -1218,6 +392,58 @@
                 "2:attack",
                 "3:move 1"
             ]
+        },
+        "find_logs": {
+            "name": "find_logs",
+            "description": "find logs in view, but dont attack it",
+            "output": {
+                "aimed_obj": "log"
+            }
+        },
+        "find_dirt": {
+            "name": "find_dirt",
+            "description": "find dirt in view",
+            "output": {
+                "aimed_obj": "dirt"
+            }
+        },
+        "find_sand": {
+            "name": "find_sand",
+            "description": "find sand in view",
+            "output": {
+                "aimed_obj": "sand"
+            }
+        },
+        "craft_wooden_axe": {
+            "name": "craft_wooden_axe",
+            "description": "craft wooden axe - composed of 3 steps.",
+            "sub_mission": [
+                "find_logs",
+                "mine_logs",
+                "craft 3 planks",
+                "craft 2 sticks",
+                "craft wooden_axe"
+            ],
+            "output": {
+                "inventory": {
+                    "wooden_axe": 3
+                }
+            }
+        },
+        "craft_crafting_table": {
+            "name": "craft_crafting_table",
+            "description": "craft crafting table - composed of 3 steps.",
+            "sub_mission": [
+                "find_logs",
+                "mine_logs",
+                "craft 4 planks",
+                "craft crafting_table"
+            ],
+            "output": {
+                "inventory": {
+                    "crafting_table": 3
+                }
+            }
         }
     }
 }

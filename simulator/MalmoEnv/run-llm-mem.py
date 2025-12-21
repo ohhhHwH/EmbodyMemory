@@ -75,46 +75,6 @@ import xml.etree.ElementTree as ET
 from vlm_detect import test3_kimi, test5_kimiV2
 from memory.memory_module import CurrentState
 
-system_prompt_en_mc = '''
-    as a player in minecraft, you will answer user queries and use tools to get information.
-    you will use the tools provided by the server to get information.
-    if you need to call tools, you should return the function call in the format without any explanation or other words:
-    {
-        `entity`:"`Action index`:`action`:`Action Type`"
-        `entity`:"`Action index`:`action`:`Action Type`"
-    }
-    for a example, if you want to move forward once and backward continuous and you have 4 actions 
-    [0:move 1 [DiscreteMovement], 1:move -1 [DiscreteMovement], 11:move 1 [ContinuousMovement], 12:move -1 [ContinuousMovement]]
-    you should return:
-    {
-        "entity":"0:move 1:DiscreteMovement"
-        "entity":"12:move -1:ContinuousMovement"
-    }
-    the action index should be correspond to the action
-    you will not call the tools directly, but return the function call in the format above.
-    when you get the tool call results, you will continue to answer the user query based on the tool call results.
-    never make up tools or parameters that are not in.
-'''
-system_prompt_cn_mc = '''
-    作为 minecraft 中的玩家,你将回答用户的查询并使用工具获取信息。
-    你将使用服务器提供的工具来获取信息。
-    如果你需要调用工具,你应该以不带任何解释或其他词语的格式返回函数调用：
-    {
-        `entity`:"`Action index`:`action`:`Action Type`"
-        `entity`:"`Action index`:`action`:`Action Type`"
-    }
-    例如,如果你想前进一次并连续后退,并且你有4个动作
-    [0:move 1 [DiscreteMovement], 1:move -1 [DiscreteMovement], 11:move 1 [ContinuousMovement], 12:move -1 [ContinuousMovement]]
-    你应该返回：
-    {
-        "entity":"0:move 1:DiscreteMovement"
-        "entity":"12:move -1:ContinuousMovement"
-    }
-    动作索引应与你的动作相对应。
-    你不会直接调用工具,而是以上述格式返回函数调用。
-    当你获得工具调用结果时,你将继续根据工具调用结果回答用户查询。
-    永远不要编造不在其中的工具或参数。
-'''
 system_prompt_en_mc_v2 = '''as a player in minecraft, you will answer user queries and use tools to get information.
     you will use the tools provided by the server to get information.
     if you need to call tools, you should return the function call in the format without any explanation or other words:
@@ -134,7 +94,7 @@ system_prompt_en_mc_v2 = '''as a player in minecraft, you will answer user queri
     you will not call the tools directly, but return the function call in the format above.
     when you get the tool call results, you will continue to answer the user query based on the tool call results.
     never make up tools or parameters that are not in.
-    when you think the task is completed, you should directly tell the user that the task is completed, rather than returning any actions.
+    when the task is completed, you should directly tell the user that the task is completed, rather than returning any actions.
 '''
 system_prompt_cn_mc_v2 = '''
     作为 minecraft 中的玩家,你将回答用户的查询并使用工具获取信息。
@@ -163,13 +123,13 @@ sub_mission_prompt_en = '''
     as a player in minecraft, you will decompose the user's task into several sub-tasks, each sub-task should be as short and easy to complete as possible.
     the types of sub-tasks are divided into the following categories:
     1. find tasks: such as "find wood", "find water", etc.
-    2. gather tasks: such as "gather wood", "gather stone", etc.
+    2. mine tasks: such as "mine wood", "mine stone", etc.
     3. craft tasks: such as "craft planks", "craft tools", etc.
     please decompose the user's task description into several sub-tasks in order, the format of the sub-tasks is
     {
-        1:"find wood",
-        2:"gather wood",
-        3:"craft planks",
+        "find wood",
+        "mine wood",
+        "craft planks",
     }
 '''
 sub_mission_prompt_cn = '''
@@ -180,41 +140,19 @@ sub_mission_prompt_cn = '''
     3. 制作类任务：如“制作 木板”、“制作 工具”等。
     请根据用户的任务描述,将任务拆解成多个子任务,并按顺序列出,其子任务格式为
     {
-        1:"找到 木头",
-        2:"采集 木头",
-        3:"制作 木板",
+        "找到 木头",
+        "采集 木头",
+        "制作 木板",
     }
     请确保子任务简洁明了,并且每个子任务都可以通过游戏内的动作来完成。
 '''
 
 # 对每个 动作 进行技能描述
 
-act_info_enV2 = {
-    "move 1": "Move forward",
-    "move -1": "Move backward",
-    "turn 1": "yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90",
-    "turn -1": "yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270",
-    "look -1": "Look down, view degree minus 1, max is -2",
-    "look 1": "Look up, view degree add 1, max is 2, when view degree is 2, next look 1 will not change",
-    "jumpmove": "Jump while moving forward, when there is an obstacle in front, can jump over the obstacle",
-    "attack": "Attack the aimed target, collect items. When you need to collect items at REL y=0, first use look -1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look 1 to adjust the view to level 2",
-    "use": "Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item",
-    "jumpuse": "Jump and use item",
-    "discardCurrentItem": "Discard the currently selected item",
-    
-    "hotbar.[int]": "Select hotbar slot [int]",
-    "swapInventoryItems [i j]": "Swap inventory slots i and j items",
-    "combineInventoryItems [i j]": "Combine inventory slots i and j items",
-    
-    "craft [item_name]": "Craft [item_name] when enough materials in inventory",
-    "nearbyCraft [item_name]": "Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory",
-    "nearbySmelt [item_name]": "Smelt [item_name] using nearby furnace when enough materials in inventory",
-
-}
 
 act_info_en = {
-    "move 1": "Move forward",
-    "move -1": "Move backward",
+    "move 1": "Move forward, current front has obstacle, will not move forward",
+    "move -1": "Move backward, current back has obstacle, will not move backward",
     "turn 1": "yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90",
     "turn -1": "yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270",
     "look -1": "Look down, view degree minus 1, max is -2",
@@ -235,29 +173,10 @@ act_info_en = {
 
 }
 
-act_info_cnV2 = {
-    "move 1": "前进一步",
-    "move -1": "后退一步",
-    "turn 1": "向右转90度",
-    "turn -1": "向左转90度",
-    "look -1": "向下看,视角角度减1,最大值为-2,当视角角度为-2时,下一次向下看将不再变化",
-    "look 1": "向上看,视角角度加1,最小值为2,当视角角度为2时,下一次向上看将不再变化",
-    "jumpmove": "跳跃并前进,当前方有障碍物时,可以跳跃前进越过障碍物,使用时头顶必须有2格的空间",
-    "attack": "攻击前方1-2格的目标,采集物品,当需要采集REL y=0的物品时,先 look 1 向下调整视角到第0层,再使用attack进行采集, 采集 REL y=1 的物品时,不需要调整视角, 采集 REL y=2 的物品时,需要 look -1 向上调整视角到第2层",
-    "use": "使用物品, 将当前快捷栏选中的物品使用在前方1-2格的目标上,必须有目标才能使用物品",
-    "jumpuse": "跳跃并使用物品",
-    "hotbar.[int]": "选择快捷栏槽位[int]",
-    "swapInventoryItems [i j]": "交换库存槽位i和j的物品",
-    "combineInventoryItems [i j]": "将库存槽位i和j的物品合并",
-    "discardCurrentItem": "丢弃当前选中的物品",
-    "craft [item_name]": "当库存中有足够材料时,制作[item_name]",
-    "nearbyCraft [item_name]": "需要先将crafr table放置在周围的环境中,当库存中有足够材料时,使用附近的工作台制作[item_name]",
-    "nearbySmelt [item_name]": "当库存中有足够材料时,使用附近的熔炉熔炼[item_name]",
-}
 
 act_info_cn = {
-    "move 1": "前进一步",
-    "move -1": "后退一步",
+    "move 1": "前进一步，当前面有障碍物时,将无法前进",
+    "move -1": "后退一步，当前后方有障碍物时,将无法后退",
     "turn 1": "向右转90度",
     "turn -1": "向左转90度",
     "look -1": "向下看,视角角度减90,最大值为-180,当视角角度为-180时,下一次向下看将不再变化",
@@ -275,14 +194,13 @@ act_info_cn = {
 
 viewinfo_en = """yaw 0 is z axis positive direction,yaw 180 is z axis negative direction
     yaw 270 is x axis positive direction.yaw 90 is x axis negative direction.
-    player is located at the center of around, y axis level 0 is the player's level, the center grid of level 0 is the player's grid,
+    the player is at y=0,x=0,z=0 position, the player's view position is at y=1,x=0,z=0.
     y axis level 1 is the player's view level, to observe the next level of the grid in front, you need to adjust the view with look 1.
     when you need to collect objects on the y axis level 0 in front of the player, you need to adjust the view down to level 0 with look 1.
     """
     
-viewinfo_cn = """yaw 0 是 z 轴正方向,yaw 180 是 z 轴负方向,
-    yaw 270 是 x 轴正方向,yaw 90 是 x 轴负方向。
-    玩家位于 around 的中心位置,y轴第0层为玩家所在层级,第0层中心格为玩家所在格,
+viewinfo_cn = """yaw 0 是 z 轴正方向,yaw 180 是 z 轴负方向, yaw 270 是 x 轴正方向,yaw 90 是 x 轴负方向。
+    玩家位于 y=0,x=0,z=0位置,玩家视角所在位置为 y=1,x=0,z=0。
     y轴第1层为玩家视角层级,观察前面一格的下一级需要 look 1 调整视角。
     当需要搜集玩家面前y轴第0层的物体,需要look 1向下调整视界到第0层。
     """
@@ -332,6 +250,8 @@ craft_requirements = {
             "torch": {"stick": 1, "coal": 1},     
 
             "crafting_table": {"planks": 4},      # 4 木板 → 1 工作台
+            "button": {"planks": 1},              # 1 木板 → 1 木按钮
+            
             # 基础工具
             "wooden_pickaxe": {"planks": 3, "stick": 2},
             "wooden_axe": {"planks": 3, "stick": 2},
@@ -785,10 +705,17 @@ def diff_obj_list(obj_list_bef, obj_list)->{list, list}:
     # 合并 obj_list_bef 和 obj_list 为hash 元素为 key
     diff = {}
     for obj in obj_list_bef:
+        # 删去 coords 信息
+        if "coords" in obj:
+            del obj["coords"]
+        
         if obj['ACC'] == True:
             key = (obj['name'], obj['RELx'], obj['RELy'], obj['RELz'], obj['size'])
             diff[key] = obj
     for obj in obj_list:
+        if "coords" in obj:
+            del obj["coords"]
+        
         if obj['ACC'] == True:
             key = (obj['name'], obj['RELx'], obj['RELy'], obj['RELz'], obj['size'])
             if key in diff:
@@ -805,11 +732,43 @@ def diff_obj_list(obj_list_bef, obj_list)->{list, list}:
 
     return input_diff, output_diff
 
+# TODO 待完善
+def action_check(action, entity_bef, entity)->str:
+    # 检查 action 是否有效
+    action_check_msg = ""
+    if "jumpmove" in action:
+        # 检查 entity 位置是否变化
+        if (entity_bef['x'] == entity['x'] and
+            entity_bef['y'] == entity['y'] and
+            entity_bef['z'] ==  entity['z'] ):
+            action_check_msg = "jumpmove action failed: position did not change. due to RELy=2or3 , RELx/z=0 obstacle."
+    elif "move" in action : # "look" in action or or "turn" in action
+        # 检查 entity 位置和朝向是否变化
+        if (entity_bef['x'] == entity['x'] and
+            entity_bef['y'] == entity['y'] and
+            entity_bef['z'] ==  entity['z'] ):
+            
+            # 根据 yaw 朝向 yaw 0 是 z 轴正方向,yaw 180 是 z 轴负方向, yaw 270 是 x 轴正方向,yaw 90 是 x 轴负方向。
+            x = 0
+            z = 0
+            if entity['yaw'] == 0:
+                z = 1
+            elif entity['yaw'] == 180:
+                z = -1
+            elif entity['yaw'] == 270:
+                x = 1
+            elif entity['yaw'] == 90:
+                x = -1
+            action_check_msg = f"move action failed: position did not change. due to RELy=1or2or3 , RELx={x} RELz={z} obstacle."
+            
+    return action_check_msg
+
 # 生成记忆点
 def mem_generation(action, inventories_bef, aimed_object_bef, obj_list_bef, inventories, obj_list, entity, env)->list:
     msg = {}
     # inventory 包含的物体
     input_items, output_items = craft_diff_get(inventories_bef, inventories)
+    
     # aimed 物体
     # aimed_obj = 
     # obj_list 
@@ -836,6 +795,7 @@ def mem_generation(action, inventories_bef, aimed_object_bef, obj_list_bef, inve
         input["obj_list"] = obj_input_diff
         input['aimed_obj'] = aimed_object_bef
         output["output_items"] = output_items
+        
         output["obj_list"] = obj_output_diff
     elif action == "use" or action == "jumpuse" or "hotbar." in action:
         input['hotbar_item'] = hotbar_item
@@ -865,7 +825,7 @@ def mem_generation(action, inventories_bef, aimed_object_bef, obj_list_bef, inve
     # msg['dependencies'] = dependencies
     return msg
 
-# 将 动作序列转换为 固定记忆 格式 TODO CS的场景mem 对记忆信息进行处理 删除无用的 移动信息， 只保留移动后的场景信息
+# 将 动作序列转换为 固定记忆 格式 TODO CS的场景mem 对记忆信息进行处理 删除无用的 移动信息， 只保留移动后的场景信息 # TODO 更新长期记忆
 def skill2FIXED_mem(task_describe, record_actions, scene_info, check_obj_name=None):
 
     task_name = task_describe.replace(" ", "_").lower()
@@ -1555,12 +1515,13 @@ def load_scene_info(json_path):
     
     return scene_info
 
-def retrieval_memory(cs, question, scene_info, log_file)->str:
+def retrieval_memory(cs, question, scene_info, log_file)-> tuple[str,dict]:
     # 从 scene_info 中检索与 task_describe 相关的记忆
     # TODO 加检索结果到 log 加 检索相似度
     retrieval_rel_ans = cs.retrieval_Request(question)
     # 在 scene_info 中 对 retrieval_rel_ans 进行对比 ，找到相应的节点 
     rel_info = ""
+    judge_info = {}
     for node in retrieval_rel_ans:
         node_name = node.get('name', '')
         
@@ -1575,14 +1536,67 @@ def retrieval_memory(cs, question, scene_info, log_file)->str:
                 f.write(f"related node in memory: {node_name}\n")
             
             rel_info += f"\nrel info {scene_info.get('skill_specs', {}).get(node_name, {})}\n"
+            # {'name': 'craft_wooden_axe', 'description': 'craft wooden axe - composed of 3 steps.', 'sub_mission': ['find_logs', 'mine_three_log_from_tree', 'craft 3 planks', 'craft 2 sticks', 'craft wooden_axe'], 'judge': {'inventory': 'wooden_axe'}}
+            rel_mem_node = scene_info.get('skill_specs', {}).get(node_name, {})
+            
+            if "output" in rel_mem_node:
+                judge_info = rel_mem_node.get("output", {})
 
+    return rel_info, judge_info
 
-    return rel_info
+# TODO 保存sub mission 到 mem 中
+def submission2MEM():
+    pass
+
+def judge_sub_mission_completion(jud_info:dict, inventories:dict, obj_list:dict, aimed_object):
+    found = False
+    for key, value in jud_info.items():
+        if key == 'inventory' or key == 'output_items':
+            # 检查 inventories 中是否存在该物品  遍历 value 字典
+            for item_name, item_count in value.items():
+                found = False
+                for item in inventories:
+                    if item['item'] == item_name and item['size'] >= item_count:
+                        found = True
+                        break
+                if not found:
+                    found = False
+        elif key == 'around' or key == 'object':
+            # 检查 obj_list 中是否存在该物体
+            obj_name = value
+            found = False
+            for obj in obj_list:
+                if obj['name'] == obj_name:
+                    found = True
+                    break
+            if not found:
+                found =  False
+        elif key == 'aimed_obj':
+            # 检查 aimed_object 是否为指定物体
+            if aimed_object != value:
+                found =  False
+            else:
+                found = True
+        elif key == 'position':
+            # TODO 检查 entity 位置是否在指定位置附近
+            pass
+    
+    return found
 
 if __name__ == '__main__':
-    mission_world = 'studyworld.xml'
-    default_user_request = 'Get two log'
-    SAVE_MEM = True
+    debug_MODE = True
+    
+    mission_world = 'defaultworld.xml'
+    # mission_world = 'studyworld.xml'
+    default_user_request = 'craft one crafting table from wooden plank'
+    LLM_MODE = True
+    MEM_MODE = False
+    DETECT_MODE = False
+    USERINPUT_MODE = False
+    SUBMISSION_MODE = True
+    SAVE_MEM = False
+    default_check_obj_name = "crafting_table"
+    
     mission = f'simulator/MalmoEnv/missions/{mission_world}'
     parser = argparse.ArgumentParser(description='malmovnv test')
     parser.add_argument('--mission', type=str, default=mission, help='the mission xml')
@@ -1593,13 +1607,13 @@ if __name__ == '__main__':
     parser.add_argument('--episodes', type=int, default=1, help='the number of resets to perform - default is 1')
     parser.add_argument('--episode', type=int, default=0, help='the start episode - default is 0')
     parser.add_argument('--role', type=int, default=0, help='the agent role - defaults to 0')
-    parser.add_argument('--episodemaxsteps', type=int, default=0, help='max number of steps per episode')
+    parser.add_argument('--episodemaxsteps', type=int, default=1000, help='max number of steps per episode')
     parser.add_argument('--saveimagesteps', type=int, default=0, help='save an image every N steps')
     parser.add_argument('--resync', type=int, default=0, help='exit and re-sync every N resets'
                                                               ' - default is 0 meaning never.')
     parser.add_argument('--experimentUniqueId', type=str, default='test1', help="the experiment's unique id.")
     parser.add_argument('--LLM', type=str, default='enable', help="enable or disable LLM")
-    parser.add_argument('--MEM', type=str, default='enable', help="enable or disable MEM")
+    parser.add_argument('--MEM', type=str, default='disable', help="enable or disable MEM")
     parser.add_argument('--DETECT', type=str, default='disable', help="enable or disable MEM")
     parser.add_argument('--userinput', type=str, default='enable', help="enable or disable user input")
     # user_request = 'Make wooden axe'
@@ -1608,38 +1622,32 @@ if __name__ == '__main__':
     parser.add_argument('--LLMmodel', type=str, default='gpt-4', help="gpt-4 or gpt-3.5-turbo")
     parser.add_argument('--vLLMmodel', type=str, default='gpt-4', help="gpt-4 or gpt-3.5-turbo")
     parser.add_argument('--log', type=str, default='default', help="log name")
-    parser.add_argument('--check', type=str, default='default', help="obj name")
-    parser.add_argument('--steps', type=int, default=100000, help="max steps")
+    parser.add_argument('--check', type=str, default=default_check_obj_name, help="obj name")
+    parser.add_argument('--subSteps', type=int, default=100, help="max steps")
+    parser.add_argument('--replan', type=int, default=1, help="max steps")
     args = parser.parse_args()
     if args.server2 is None:
         args.server2 = args.server
-    
-    LLM_MODE = False
-    MEM_MODE = False
-    DETECT_MODE = False
-    # DEBUG
-    USERINPUT_MODE = False
-    SUBMISSION_MODE = False
-    
+
     check_obj_name = args.check
-    MAX_STEPS = args.steps
-    
-    if args.LLM.lower() == 'enable':
-        LLM_MODE = True
-    else:
-        LLM_MODE = False
-    if args.MEM.lower() == 'enable':
-        MEM_MODE = True
-    else:
-        MEM_MODE = False
-    if args.DETECT.lower() == 'enable':
-        DETECT_MODE = True
-    else:
-        DETECT_MODE = False
-    # if args.userinput.lower() == 'enable':
-    #     USERINPUT_MODE = True
-    # else:
-    #     USERINPUT_MODE = False
+    MAX_STEPS = args.episodemaxsteps
+    MAX_SUB_STEPS = args.subSteps
+    # plan_times = args.replan
+    plan_times = 3
+    if debug_MODE == False:
+        if args.LLM.lower() == 'enable':
+            LLM_MODE = True
+        else:
+            LLM_MODE = False
+        if args.MEM.lower() == 'enable':
+            MEM_MODE = True
+        else:
+            MEM_MODE = False
+        if args.DETECT.lower() == 'enable':
+            DETECT_MODE = True
+        else:
+            DETECT_MODE = False
+
 
     
     # 载入 mission xml
@@ -1695,12 +1703,11 @@ if __name__ == '__main__':
     log_dir = Path('log')
     log_dir.mkdir(exist_ok=True)
     if args.log == 'default':
-        log_file = log_dir / f'action_{time.strftime("%Y%m%d")}.log'
+        log_file = log_dir / f'study_{time.strftime("%Y%m%d")}.log'
     else :
         log_file = log_dir / f'{args.log}.log'
         #  如果没有 log_file 则创建 依次创建父目录
         log_file.parent.mkdir(parents=True, exist_ok=True)
-        
     
     # 清空action.log写入实验信息
     with open(log_file, 'a') as f:
@@ -1755,7 +1762,8 @@ if __name__ == '__main__':
         # 初始化 steps, done
         steps = 0
         done = False
-             
+        context_length = 0
+        jud_info = {}
         # prompt生成
         prompt = system_prompt + actions_prompt + rule_prompt + obs_prompt
 
@@ -1769,281 +1777,306 @@ if __name__ == '__main__':
             break
         
         # 获取初始化环境信息
-        env.render()
-        action = "jump 1"
-        obs, reward, done, info = env.step_diy(action)
-        inventories, around, entity = info_process(env, info)
+        # TODO re plan 子任务
+        while plan_times != 0 or steps < MAX_STEPS:
+            plan_times -= 1
         
-        #进行图像识别
-        obj_list = get_around_objects_precise_pos(entity, around, around_range)
-        save_img(obs, env)
-        if DETECT_MODE == True:
-            test5_kimiV2()
-            detect_obj = process_detect_from_json(entity)
-            for do in detect_obj:
-                obj_list.append(do)
-
-        user_request_init = f"\nThe player's current inventory is: {inventories}\n"
-        user_request_init += f"The player's current position and orientation is: {entity}\n"
-        user_request_init += around_msg(around)
-        user_request_init += f"Detected objects : {obj_list}\n"
-        aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
-        
-        user_request_init += aimed_object_msg
-
-        # TODO 根据 记忆 检索相关信息加入 prompt
-        if MEM_MODE == True:
-            # 更新短期空间记忆 + 短期-》长期 + 更新当前 空间 场景记忆 + 检索相关信息
-            scene_info = record_short_space_memory(scene_info, obj_list, entity)
-            # scene_info = short2long_space_memory(entity, around, scene_info)
-            cs.update_Scene(scene_info)
-
-            # 在 scene_info 中 对 retrieval_rel_ans 进行对比 ，找到相应的节点 
-            rel_info = retrieval_memory(cs, user_request+user_request_init, scene_info, log_file)
-
-            if rel_info != "":
-                user_request_init += f"\nRelevant information from memory:{rel_info}\n"
-        
-        # 通过 llm 生成一系列动作
-        # TODO 子任务拆解
-        sub_mission = ""
-        sub_mission_list = []
-        if SUBMISSION_MODE == True:
-            user_request_init += sub_mission_prompt_en
-            sub_prompt = sub_mission_prompt_en + rule_prompt + obs_prompt
-            sub_mission_list, messages = client.query_request(query="Decompose the following task into several sub-tasks: " + user_request,
-                                                            info=user_request_init,
-                                                            safe_rule=None,
-                                                            prompt=sub_prompt)
-        else :
-            sub_mission = user_request
-            sub_mission_list.append(sub_mission)
-        
-        for sub_mission in sub_mission_list:
-            print(f"Starting sub-mission: {sub_mission}")
-            with open(log_file, 'a') as f:
-                f.write(f"\nStarting sub-mission: {sub_mission}\n")
-                f.write(f"-------------------------------------\n")
+            env.render()
+            action = "jump 1"
+            obs, reward, done, info = env.step_diy(action)
+            inventories, around, entity = info_process(env, info)
             
-            
-            sub_mission_init = f"\nThe player's current inventory is: {inventories}\n"
-            sub_mission_init += f"The player's current position and orientation is: {entity}\n"
-            aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
-            sub_mission_init += aimed_object_msg
-            sub_mission_init += around_msg(around)
-            sub_mission_init += f"Detected objects : {obj_list}\n"
-            aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
-        
-            sub_mission_init += aimed_object_msg
+            #进行图像识别
+            obj_list = get_around_objects_precise_pos(entity, around, around_range)
+            save_img(obs, env)
+            if DETECT_MODE == True:
+                test5_kimiV2()
+                detect_obj = process_detect_from_json(entity)
+                for do in detect_obj:
+                    obj_list.append(do)
+
+            mission_plan_init = f"\nThe player's current inventory is: {inventories}\n"
+            # user_request_init += f"The player's current position and orientation is: {entity}\n"
+            # user_request_init += around_msg(around)
+            mission_plan_init += f"Detected objects : {obj_list}\n"
+            # aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
+            # mission_plan_init += aimed_object_msg
 
             # TODO 根据 记忆 检索相关信息加入 prompt
             if MEM_MODE == True:
                 # 更新短期空间记忆 + 短期-》长期 + 更新当前 空间 场景记忆 + 检索相关信息
+                
                 scene_info = record_short_space_memory(scene_info, obj_list, entity)
                 # scene_info = short2long_space_memory(entity, around, scene_info)
                 cs.update_Scene(scene_info)
 
                 # 在 scene_info 中 对 retrieval_rel_ans 进行对比 ，找到相应的节点 
-                rel_info = retrieval_memory(cs, sub_mission, scene_info, log_file)
-    
+                rel_info, jud_info = retrieval_memory(cs, user_request, scene_info, log_file)
+
                 if rel_info != "":
-                    prompt += f"\nRelevant information from memory:{rel_info}\n"
-        
-            action_sequence = []
-            record_actions = []
-            if LLM_MODE == True:
-                action_sequence, messages = client.query_request(query=sub_mission,
-                                                                info=sub_mission_init,
+                    mission_plan_init += f"\nRelevant information from memory:{rel_info}\n"
+            
+            # 通过 llm 生成一系列动作
+            # TODO 子任务拆解
+            
+            
+            sub_mission = ""
+            sub_mission_list = []
+            if SUBMISSION_MODE == True:
+                sub_prompt = sub_mission_prompt_en + rule_prompt
+                if sub_mission_list != []:
+                    mission_plan_init += f"\nThe previous sub-tasks are: {sub_mission_list} which not finish the task\n"
+                sub_mission_list, messages = client.query_request(query="Decompose the following task into several sub-tasks: " + user_request,
+                                                                info=mission_plan_init,
                                                                 safe_rule=None,
-                                                                prompt=prompt)
+                                                                prompt=sub_prompt)
+            else :
+                sub_mission = user_request
+                sub_mission_list.append(sub_mission)
             
-            user_input = ""
-            
-            while not done and (args.episodemaxsteps <= 0 or steps < args.episodemaxsteps):
-
-                # add 根据当前环境和用户指令生成一系列动作
-                action = 0
-                
-                if LLM_MODE and (action_sequence is None or len(action_sequence) == 0 or len(action_sequence) > 50):
-                    print("No action sequence generated, exiting the episode.")
-                    break
-                elif LLM_MODE == False and USERINPUT_MODE == False:
-                    # 读取文件中的 action_sequence
-                    user_input = input("Enter action sequence in input_action.txt, or 'q' to quit: ")
-                    if user_input.lower() == 'q':
-                        user_input = 'q'
-                        break
-                    with open('input_action.txt', 'r') as f:
-                        file_content = f.read()
-                    action_sequence = split_action_sequence(file_content)
-                    if len(action_sequence) == 0:
-                        print("No valid actions entered, please try again.")
-                        continue
-                elif USERINPUT_MODE == True:
-                    # 手动输入 action_sequence
-                    user_input = input("Enter action sequence (format:{4:look 1}), or 'q' to quit: ")
-                    if user_input.lower() == 'q':
-                        user_input = 'q'
-                        break
-                    action_sequence = parse_action_sequence(user_input)
-                    if len(action_sequence) == 0:
-                        print("No valid actions entered, please try again.")
-                        continue
-                
-                # 遍历 action_sequence
+            # 执行子任务
+            for sub_mission in sub_mission_list:
+                # 这里是否重新执行该子任务都没有区别 因为 与llm 通信不保留历史信息，仅保留现场环境
+                # TODO 错误执行后加入记忆，并给记忆附加低权重，这样重新执行该子任务是有一样的
+                # 去掉sub_mission中的 " 字符 和 , 字符 并将空格替换成_
+                sub_mission = sub_mission.replace('"', '').replace(',', '').replace(' ', '_').strip()
+                print(f"Starting sub-mission: {sub_mission}")
+                with open(log_file, 'a') as f:
+                    f.write(f"\nStarting sub-mission: {sub_mission}\n")
+                    f.write(f"-------------------------------------\n")
                 cur_act_msg = ""
+                # TODO 根据 记忆 检索相关信息加入 prompt
+                if MEM_MODE == True:
+                    # 更新短期空间记忆 + 短期-》长期 + 更新当前 空间 场景记忆 + 检索相关信息
+                    scene_info = record_short_space_memory(scene_info, obj_list, entity)
+                    # scene_info = short2long_space_memory(entity, around, scene_info)
+                    cs.update_Scene(scene_info)
+                    # 在 scene_info 中 对 retrieval_rel_ans 进行对比 ，找到相应的节点 
+                    rel_info, jud_info = retrieval_memory(cs, sub_mission, scene_info, log_file)
+                    if rel_info != "":
+                        cur_act_msg = f"\nRelevant information from memory:{rel_info}\n"
 
-                for act in action_sequence:
-                    # 解析动作字符串
-                    act_idx, act_str = parse_action_string(act)
-                    if act_idx is None:
-                        print(f"Invalid action format: {act}, skipping.")
-                        with open(log_file, 'a') as f:
-                            f.write(f"Invalid action format: {act}\n")
-                        cur_act_msg += f"Invalid action format: {act}, the right format is 0:move 1.\n"
-                        continue
-                    action = act_str
+                cur_act_msg += f"\nThe player's current inventory is: {inventories}\n"
+                cur_act_msg += f"The player's current position and orientation is: {entity}\n"
+                aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
+                cur_act_msg += aimed_object_msg
+                cur_act_msg += around_msg(around)
+                obj_list = get_around_objects_precise_pos(entity, around, around_range)
+                cur_act_msg += f"Detected objects : {obj_list}\n"
+                aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
+                cur_act_msg += aimed_object_msg
+            
+                action_sequence = []
+                record_actions = []
+                # 规划子任务 
+                
+                if LLM_MODE == True:
+                    action_sequence, messages = client.query_request(query=sub_mission,
+                                                                    info=cur_act_msg,
+                                                                    safe_rule=None,
+                                                                    prompt=prompt)
+                
+                user_input = ""
+                
+                # 进入子任务执行循环
+                while MAX_STEPS <= 0 or steps < MAX_STEPS:
+                    # add 根据当前环境和用户指令生成一系列动作
+                    action = 0
                     
-                    # 调试：用户决定是否执行 每5步 # TODO 每15步加判定判断任务是否完成
-                    if USERINPUT_MODE == False and (steps+1) % 30 == 0:
-                        # 检查 check_obj_name 是否在 inventories 中
-                        obj_in_inventory = False
-                        for item in inventories:
-                            if item['item'] == check_obj_name:
-                                obj_in_inventory = True
-                                break
-                        if obj_in_inventory:
+                    # 当LLM 或 jud_info 认为子任务完成则退出
+                    if LLM_MODE and (action_sequence is None or len(action_sequence) == 0 or len(action_sequence) > 50):
+                        print("No action sequence generated, exiting the episode.")
+                        break
+                    elif LLM_MODE == False and USERINPUT_MODE == False:
+                        # 读取文件中的 action_sequence
+                        user_input = input("Enter action sequence in input_action.txt, or 'q' to quit: ")
+                        if user_input.lower() == 'q':
                             user_input = 'q'
                             break
-                        # print("enter to continue, input 'q' to quit:")
-                        # user_input = input(":")
-                        # if user_input.lower() == 'q':
-                        #     break
-                    if steps >= MAX_STEPS:
-                        user_input = 'q'
-                        break
-                    print("\n" * 5)
+                        with open('input_action.txt', 'r') as f:
+                            file_content = f.read()
+                        action_sequence = split_action_sequence(file_content)
+                        if len(action_sequence) == 0:
+                            print("No valid actions entered, please try again.")
+                            continue
+                    elif USERINPUT_MODE == True:
+                        # 手动输入 action_sequence
+                        user_input = input("Enter action sequence (format:{4:look 1}), or 'q' to quit: ")
+                        if user_input.lower() == 'q':
+                            user_input = 'q'
+                            break
+                        action_sequence = parse_action_sequence(user_input)
+                        if len(action_sequence) == 0:
+                            print("No valid actions entered, please try again.")
+                            continue
                     
-                    env.render()
+                    # 遍历 action_sequence
+                    # TODO 错误反馈 # TODO 目前没有错误反馈 只保存最后的 cur_act_msg
                     
-                    # TODO check inventory
-                    obs, reward, done, info = env.step_diy(action)
-                    
-                    steps += 1
+                    for act in action_sequence:
+                        # TODO 目前没有错误反馈 只保存最后的 cur_act_msg
+                        cur_act_msg = ""
+                        # 解析动作字符串
+                        act_idx, act_str = parse_action_string(act)
+                        if act_idx is None:
+                            print(f"Invalid action format: {act}, skipping.")
+                            with open(log_file, 'a') as f:
+                                f.write(f"Invalid action format: {act}\n")
+                            cur_act_msg += f"Invalid action format: {act}, the right format is 0:move 1.\n"
+                            continue
+                        action = act_str
 
-                    print("action: " + str(act_str))
-                    # print("reward: " + str(reward))
-                    # print("done: " + str(done))
-                    inventories_bef = inventories
-                    aimed_object_bef = aimed_object
-                    obj_list_bef = obj_list.copy()
-                    inventories, around, entity = info_process(env, info)
-                    aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
-
-                    cur_act_msg += around_msg(around)
-                    cur_act_msg += aimed_object_msg
-                    
-                    # 将以上信息写入action.log
-                    with open(log_file, 'a') as f:
-                        f.write("action: " + str(action) + '\n')
-                        f.write('reward: ' + str(reward) + '\n')
-                        f.write('done: ' + str(done) + '\n')
-                        # f.write('obs: ' + str(obs) + '\n')
-                        f.write('Inventory: ' + str(inventories) + '\n')
-                        f.write('around: ' + str(around) + '\n')
-                        f.write('entity: ' + str(entity) + '\n')
-                        f.write('-------------------------\n')
+                        if steps >= MAX_SUB_STEPS:
+                            user_input = 'q'
+                            break
+                        print("\n" * 5)
                         
-
-                    
-
-                    # LLM 做法
-                    # 更新 cur_act_msg
-                    cur_act_msg += f"action :{act_str}, entity info :{entity}, look degree {env.view_angle}\n"
-
-                    # TODO 如果环境没有改变 则不更新 obs # 保存图像
-                    if "inventory" not in act_str and "hotbar" not in act_str and "craft" not in act_str:
+                        env.render()
                         
-                        save_img(obs, env)
+                        # TODO check inventory
+                        obs, reward, done, info = env.step_diy(action)
                         
-                        print("---------detect info---------")
-                        # 根据 around 信息更新 obj_list 中物体的精确位置  对 obj_list 中物体进行精确定位 如果是在 around 范围内的物体 则进行精确定位 TODO 待测试 需要完善删除机制
-                        obj_list = get_around_objects_precise_pos(entity, around, around_range)
+                        steps += 1
+
+                        print("action: " + str(act_str))
+                        entity_bef = entity
+                        inventories_bef = inventories
+                        aimed_object_bef = aimed_object
+                        obj_list_bef = obj_list.copy()
+                        inventories, around, entity = info_process(env, info)
+                        aimed_object, aimed_object_msg = get_aimed_object(entity.get('yaw'), around, env.view_angle)
+
+                        cur_act_msg += around_msg(around)
+                        cur_act_msg += aimed_object_msg
                         
-                        if DETECT_MODE == True:
-                            test5_kimiV2()
+                        # 将以上信息写入action.log
+                        with open(log_file, 'a') as f:
+                            f.write("action: " + str(action) + '\n')
+                            f.write('reward: ' + str(reward) + '\n')
+                            f.write('done: ' + str(done) + '\n')
+                            # f.write('obs: ' + str(obs) + '\n')
+                            f.write('Inventory: ' + str(inventories) + '\n')
+                            f.write('around: ' + str(around) + '\n')
+                            f.write('entity: ' + str(entity) + '\n')
+                            f.write('-------------------------\n')
+
+                        # LLM 做法
+                        # 更新 cur_act_msg
+                        cur_act_msg += f"action :{act_str}, entity info :{entity}, look degree {env.view_angle}\n"
+
+                        # TODO 如果环境没有改变 则不更新 obs # 保存图像
+                        action_check_msg = action_check(action, entity_bef, entity)
+                        if action_check_msg != "":
+                            cur_act_msg += f"Action check info : {action_check_msg}\n"
+                        
+                        if "inventory" not in act_str and "hotbar" not in act_str and "craft" not in act_str:
                             
-                            # 读取json文件打印识别到的物体和深度信息
-                            detect_obj = process_detect_from_json(entity)
-                            for do in detect_obj:
-                                obj_list.append(do)
-                        
-                        cur_act_msg += f"Detected objects : {obj_list}\n"
+                            save_img(obs, env)
+                            
+                            print("---------detect info---------")
+                            # 根据 around 信息更新 obj_list 中物体的精确位置  对 obj_list 中物体进行精确定位 如果是在 around 范围内的物体 则进行精确定位 TODO 待测试 需要完善删除机制
+                            obj_list = get_around_objects_precise_pos(entity, around, around_range)
+                            
+                            if DETECT_MODE == True:
+                                test5_kimiV2()
+                                
+                                # 读取json文件打印识别到的物体和深度信息
+                                detect_obj = process_detect_from_json(entity)
+                                for do in detect_obj:
+                                    obj_list.append(do)
+                            
+                            cur_act_msg += f"Detected objects : {obj_list}\n"
 
-                    elif "inventory" in act_str or "craft" in act_str:
-                        cur_act_msg += f"Inventory info : {inventories}\n"
-                        if "craft" in act_str:
-                            # craft 相关动作 进行特殊处理,检查材料是否充足 如果不足则跳过,加提示词 或者 是检测生成物是否增加
-                            craft_success, craft_msg = craft_check(action, inventories_bef, inventories)
-                            cur_act_msg += f"Craft check info : {craft_msg}\n"
+                        elif "inventory" in act_str or "craft" in act_str:
+                            cur_act_msg += f"Inventory info : {inventories}\n"
+                            if "craft" in act_str:
+                                # craft 相关动作 进行特殊处理,检查材料是否充足 如果不足则跳过,加提示词 或者 是检测生成物是否增加
+                                craft_success, craft_msg = craft_check(action, inventories_bef, inventories)
+                                cur_act_msg += f"Craft check info : {craft_msg}\n"
+                        
+                        if MEM_MODE == True: 
+                            # TODO LLM+MEM 做法(包括 MEM 做法)
+                            mem_record = mem_generation(action, inventories_bef, aimed_object_bef, obj_list_bef, inventories, obj_list, entity, env)
+                            # TODO 需要记录之前的 信息 包括 aimed_obj inventories
+                            record_actions.append(mem_record)
+                            
+                            # 更新短期空间记忆 + 短期-》长期 + 更新当前 空间 场景记忆 + 检索相关信息
+                            scene_info = record_short_space_memory(scene_info, obj_list, entity)
+                            # scene_info = short2long_space_memory(entity, around, scene_info)
+                            cs.update_Scene(scene_info)
+
+                            # rel_info, _ = retrieval_memory(cs, sub_mission, scene_info, log_file)
+                            
+                            # if rel_info != "":
+                                # cur_act_msg += str(rel_info)
+                            
+                        time.sleep(1)
+
+                    # TODO 目前没有错误反馈 只保存最后的 cur_act_msg
+                    if MEM_MODE == True:
+                        cur_act_msg = sub_mission + f"\nRelevant information from memory:{rel_info}\n" + cur_act_msg
+                    else :
+                        cur_act_msg = sub_mission + "\n" + cur_act_msg
+                    # 整体退出
+                    if user_input.lower() == 'q':
+                        break
+                    
+                    # 检测子任务是否完成 TODO 失败的话可以加个失败经验存储啥的 让llm重新规划子任务这样 指定最大失败次数 max_retries # 目前只有 MEM 有这个判定 OUTPUT当作判定？
+                    if len(jud_info) > 0:
+                        sub_mission_completed = judge_sub_mission_completion(jud_info, inventories, obj_list, aimed_object)
+                        cur_act_msg += f"Sub-mission judge info : {jud_info}\n"
+                        if sub_mission_completed:
+                            print(f"Sub-mission : '{sub_mission}' completed according to judge info.")
+                            with open(log_file, 'a') as f:
+                                f.write(f"Sub-mission '{sub_mission}' completed according to judge info.\n")
+                            break
+                        
+                    # 更新 llm messages 并根据当前场景继续完成任务 # 让 LLM 判断该子任务是否完成
+                    if LLM_MODE == True:
+                        max_messages_length = 3
+                        cur_act_msg += "if you think the sub-mission is completed, just answer 'Sub-mission completed.' and wait for next sub-mission.\n"
+                        if len(messages) == max_messages_length:
+                            # 弹出后两条信息 
+                            context_length += len(messages[-1]['content']) + len(messages[-2]['content'])
+                            messages = messages[:-2]
+                        messages.append({"role": "user", "content": cur_act_msg})
+                        action_sequence, messages = client.query_request(messages=messages)
+                        print(f"New action sequence received: {action_sequence}")
+                        
+                # TODO 判断该子任务是否完成 - 由 LLM 判断
+                print(f"Sub-mission '{sub_mission}' ended.")
+                # 如果完成则 将 record_actions 转换成 情景记忆 MEM
+                if MEM_MODE == True and SAVE_MEM == True and len(record_actions) > 0:
+                    scene_info = skill2FIXED_mem(sub_mission, record_actions, scene_info, check_obj_name)
+                    # 不用 update_Scene 会更新CS中的信息吗
+                    cs.update_Scene(scene_info)
+                    print("Memory updated with sub-mission actions.")
+                    print(f"Current actions length: {len(record_actions)} steps.")
+                with open(log_file, 'a') as f:
+                    f.write(f"==============\n")
+                    f.write(f"==============\n")
+                # 打印messages最后一个 content 
+                if LLM_MODE == True:
+                    print(messages[-1]['content'] if messages else "No messages.")
+                    
+                    # 统计上下文长度
+                    context_length = sum(len(msg['content']) for msg in messages)
+                    print(f"Current context length: {context_length} characters.")
                     
                     
+                    # print f to log_file
+                    with open(log_file, 'a') as f:
                         
-                    if MEM_MODE == True: 
-                        # TODO LLM+MEM 做法(包括 MEM 做法)
-                        mem_record = mem_generation(action, inventories_bef, aimed_object_bef, obj_list_bef, inventories, obj_list, entity, env)
-                        # TODO 需要记录之前的 信息 包括 aimed_obj inventories
-                        record_actions.append(mem_record)
-                        
-                        # 更新短期空间记忆 + 短期-》长期 + 更新当前 空间 场景记忆 + 检索相关信息
-                        scene_info = record_short_space_memory(scene_info, obj_list, entity)
-                        # scene_info = short2long_space_memory(entity, around, scene_info)
-                        cs.update_Scene(scene_info)
-
-                        rel_info = retrieval_memory(cs, sub_mission, scene_info, log_file)
-                        
-                        if rel_info != "":
-                            cur_act_msg += str(rel_info)
-                        
-                    time.sleep(1)
-
-                # 整体退出
+                        f.write("last output:" + messages[-1]['content'] + '\n')
+                        f.write(f"Token used: {context_length}\n")
+                
+                with open(log_file, 'a') as f:
+                    f.write(f"steps : {steps}\n") 
+                # TODO user 任务 的记忆 记录 submission 
+                # 退出 子任务
                 if user_input.lower() == 'q':
                     break
-                
-                # 更新 llm messages 并根据当前场景继续完成任务
-                if LLM_MODE == True:
-                    messages.append({"role": "user", "content": cur_act_msg})
-                    action_sequence, messages = client.query_request(messages=messages)
-                    
-           
-                
-            # TODO 判断该子任务是否完成 - 由 LLM 判断
-            print(f"Sub-mission '{sub_mission}' ended.")
-            # 如果完成则 将 record_actions 转换成 情景记忆 MEM
-            if MEM_MODE == True and SAVE_MEM == True and len(record_actions) > 0:
-                scene_info = skill2FIXED_mem(sub_mission, record_actions, scene_info, check_obj_name)
-                # 不用 update_Scene 会更新CS中的信息吗
-                cs.update_Scene(scene_info)
-                print("Memory updated with sub-mission actions.")
-                print(f"Current actions length: {len(record_actions)} steps.")
-            with open(log_file, 'a') as f:
-                f.write(f"==============\n")
-                f.write(f"==============\n")
-            # 打印messages最后一个 content 
-            if LLM_MODE == True:
-                print(messages[-1]['content'] if messages else "No messages.")
-                
-                # 统计上下文长度
-                context_length = sum(len(msg['content']) for msg in messages)
-                print(f"Current context length: {context_length} characters.")
-                
-                
-                # print f to log_file
-                with open(log_file, 'a') as f:
-                    
-                    f.write("last output:" + messages[-1]['content'] + '\n')
-                    f.write(f"Token used: {context_length}\n")
+            
             # 检查 物品 是否存在
             if check_obj_name != 'default':
                 found = False
@@ -2054,18 +2087,23 @@ if __name__ == '__main__':
                         with open(log_file, 'a') as f:
                             f.write(f"Check : True\n")
                         break
+                    user_input = 'q'
                 if not found:
                     print(f"Checked object '{check_obj_name}' NOT found in the environment.")
                     with open(log_file, 'a') as f:
                         f.write(f"Check : False\n")
-            with open(log_file, 'a') as f:
-                f.write(f"steps : {steps}\n") 
-            # TODO user 任务 的记忆 记录 submission 
-            # 整体退出
+            
+            # TODO 对 submission 进行总结(用户问题) 生成技能记忆 skill_specs sub mission 需要加check 吗
+            submission2MEM()
+            
+            # 进入 重新规划 环节
+            
+            
+            # 退出 任务 规划
             if user_input.lower() == 'q':
                 break
-
-        # 整体退出
+        
+        # 退出 轮数
         if user_input.lower() == 'q':
             break
 

@@ -82,39 +82,59 @@
         },
         {
             "id": 20,
-            "event": "Get one log from tree - composed of 2 steps."
+            "event": "mine log - composed of 8 steps."
         },
         {
             "id": 21,
-            "event": "Get two logs from tree - composed of 5 steps."
-        },
-        {
-            "id": 22,
-            "event": "Get three logs from tree - composed of 8 steps."
-        },
-        {
-            "id": 23,
             "event": "mine leaves from tree probability drop sapling and apple - composed of 3 steps."
         },
         {
-            "id": 24,
+            "id": 22,
             "event": "mine down - composed of 3 steps."
         },
         {
-            "id": 25,
+            "id": 23,
             "event": "mine directly - composed of 4 steps."
         },
         {
+            "id": 24,
+            "event": "craft wooden axe - composed of 3 steps."
+        },
+        {
+            "id": 25,
+            "event": "find sand in view"
+        },
+        {
             "id": 26,
-            "event": "Space node for dirt_-2_2_-1 at /temp/dirt_-2_2_-1"
+            "event": "find dirt in view"
         },
         {
             "id": 27,
-            "event": "Space node for dirt_-2_0_1 at /temp/dirt_-2_0_1"
+            "event": "craft crafting table - composed of 3 steps."
         },
         {
             "id": 28,
-            "event": "Space node for stone_0_-1_0 at /temp/stone_0_-1_0"
+            "event": "find logs in view, but dont attack it"
+        },
+        {
+            "id": 29,
+            "event": "Space node for leaves_0_2_0 at /temp/leaves_0_2_0"
+        },
+        {
+            "id": 30,
+            "event": "Space node for log_0_2_1 at /temp/log_0_2_1"
+        },
+        {
+            "id": 31,
+            "event": "Space node for grass_1_-2_0 at /temp/grass_1_-2_0"
+        },
+        {
+            "id": 32,
+            "event": "Space node for sand_-1_-2_0 at /temp/sand_-1_-2_0"
+        },
+        {
+            "id": 33,
+            "event": "Space node for dirt_1_-3_0 at /temp/dirt_1_-3_0"
         }
     ],
     "edges": [
@@ -261,6 +281,31 @@
         {
             "source": 19,
             "target": 28,
+            "relation": "next"
+        },
+        {
+            "source": 19,
+            "target": 29,
+            "relation": "next"
+        },
+        {
+            "source": 19,
+            "target": 30,
+            "relation": "next"
+        },
+        {
+            "source": 19,
+            "target": 31,
+            "relation": "next"
+        },
+        {
+            "source": 19,
+            "target": 32,
+            "relation": "next"
+        },
+        {
+            "source": 19,
+            "target": 33,
             "relation": "next"
         }
     ]

@@ -300,7 +300,7 @@ class MCPClient:
         if prompt is None:
             prompt = system_prompt_en
         if info is not None:
-            prompt += "\n the current environment info is:\n" + info
+            query += "\n the current environment info is:\n" + info
         if safe_rule is not None:
             prompt += "\n the plan must follow the following safe_rule:\n" + safe_rule
 
