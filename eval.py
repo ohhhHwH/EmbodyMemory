@@ -52,7 +52,7 @@ def csv2xlsx(csv_file, xlsx_file):
     
 def main():
     # 读取 文件夹 下文件
-    folder_name = "./log/log-1221"
+    folder_name = "./log/log-1222"
     
     # 遍历该文件夹下的所有文件
     eval_results = []
@@ -65,6 +65,27 @@ def main():
     # 对eval_results进行排序
     eval_results.sort(key=lambda x: (x["task_level"], x["task_name"], int(x["task_times"]), x["task_type"]))
     
+    # 遍历 eval_results 并统计出 dict {"task_name": success_count, avg_steps: x, avg_token: y}
+    LLM_summary_results = {}
+    MEM_summary_results = {}
+    for res in eval_results:
+        key = res["task_name"]
+        if res["task_type"] == "LLM":
+            summary_results = LLM_summary_results
+        else:
+            summary_results = MEM_summary_results
+        if key not in summary_results:
+            summary_results[key] = {
+                "success_count": 0,
+                "total_steps": 0,
+                "total_token": 0,
+                "total_runs": 0
+            }
+        summary_results[key]["total_runs"] += 1
+        summary_results[key]["total_steps"] += res["steps"]
+        summary_results[key]["total_token"] += res["token_used"]
+        if res["success"]:
+            summary_results[key]["success_count"] += 1
     
     # # 输出汇总结果 制作 xlsx 文件
     # # 将 LLM MEM 分别写入两个表
@@ -84,6 +105,24 @@ def main():
                 llm_writer.writerow(row)
             elif res["task_type"] == "MEM":
                 mem_writer.writerow(row)
+        header = ["task_name", "total_runs", "avg_token", "success_count", "avg_steps"]
+        llm_writer.writerow(header)
+        mem_writer.writerow(header)
+        for key,value in LLM_summary_results.items():
+            total_runs = LLM_summary_results[key]["total_runs"]
+            avg_steps = LLM_summary_results[key]["total_steps"] / total_runs
+            avg_token = LLM_summary_results[key]["total_token"] / total_runs
+            success_count = LLM_summary_results[key]["success_count"]
+            row = [key, total_runs, avg_token, success_count, avg_steps]
+            llm_writer.writerow(row)
+        for key,value in MEM_summary_results.items():
+            total_runs = MEM_summary_results[key]["total_runs"]
+            avg_steps = MEM_summary_results[key]["total_steps"] / total_runs
+            avg_token = MEM_summary_results[key]["total_token"] / total_runs
+            success_count = MEM_summary_results[key]["success_count"]
+            row = [key, total_runs, avg_token, success_count, avg_steps]
+            mem_writer.writerow(row)
+            
     
     xlsx_llm_file = os.path.join(folder_name, "evaluation_LLM.xlsx")
     xlsx_mem_file = os.path.join(folder_name, "evaluation_MEM.xlsx")

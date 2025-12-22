@@ -1,36 +1,36 @@
-Query: craft_planks
+Query: craft_crafting_table
 
-0.3850	Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory
-0.3438	craft crafting table - composed of 3 steps.
-0.3194	Craft [item_name] when enough materials in inventory
-0.2980	craft wooden axe - composed of 3 steps.
-0.2258	find sand in view
-0.1992	Space node for sand_-1_-2_0 at /temp/sand_-1_-2_0
-0.1783	Jump and use item
-0.1689	Combine inventory slots i and j items
-0.1673	mine log - composed of 8 steps.
-0.1554	Space node for grass_1_-2_0 at /temp/grass_1_-2_0
-0.1536	Swap inventory slots i and j items
-0.1531	Smelt [item_name] using nearby furnace when enough materials in inventory
-0.1490	Select hotbar slot [int]
-0.1473	Space node for dirt_1_-3_0 at /temp/dirt_1_-3_0
-0.1337	Space node for leaves_0_2_0 at /temp/leaves_0_2_0
-0.1330	mine leaves from tree probability drop sapling and apple - composed of 3 steps.
-0.1265	yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270
-0.1249	mine down - composed of 3 steps.
-0.1200	Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item
-0.1176	mine directly - composed of 4 steps.
-0.1139	yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90
-0.1128	Space node for log_0_2_1 at /temp/log_0_2_1
-0.1075	Space node for / at /
-0.1028	Move backward
-0.1012	find dirt in view
-0.0999	Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change
-0.0948	Look down, view degree minus 90, max is -180
-0.0928	Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2
-0.0686	Space node for temp at /temp
-0.0659	Space node for entity at /entity
-0.0636	Jump while moving forward, when there is an obstacle in front, can jump over the obstacle
-0.0319	Move forward
-0.0213	find logs in view, but dont attack it
--0.0150	Discard the currently selected item
+0.7433	craft crafting table - composed of 3 steps.
+0.6174	Need to place a crafting table in the surrounding environment first, then craft [item_name] using nearby crafting table when enough materials in inventory
+0.3321	Craft [item_name] when enough materials in inventory
+0.2450	craft wooden axe - composed of 3 steps.
+0.1661	Combine inventory slots i and j items
+0.1539	Smelt [item_name] using nearby furnace when enough materials in inventory
+0.1488	Swap inventory slots i and j items
+0.1338	Space node for leaves_0_2_0 at /temp/leaves_0_2_0
+0.1150	Select hotbar slot [int]
+0.0834	Space node for dirt_1_-3_0 at /temp/dirt_1_-3_0
+0.0832	mine leaves from tree probability drop sapling and apple - composed of 3 steps.
+0.0738	Jump and use item
+0.0724	Space node for grass_1_-2_0 at /temp/grass_1_-2_0
+0.0615	Space node for entity at /entity
+0.0546	Space node for sand_-1_-2_0 at /temp/sand_-1_-2_0
+0.0540	Look down, view degree minus 90, max is -180
+0.0532	mine log - composed of 8 steps.
+0.0493	Look up, view degree add 90, min is 180, when view degree is 180, next look 1 will not change
+0.0354	mine directly - composed of 4 steps.
+0.0326	Discard the currently selected item
+0.0278	Space node for temp at /temp
+0.0261	mine down - composed of 3 steps.
+0.0256	yaw degrees minus 90, when yaw degree is 0, next turn -1 will be 270
+0.0247	Space node for log_0_2_1 at /temp/log_0_2_1
+0.0232	Space node for / at /
+0.0188	find sand in view
+0.0144	yaw degrees add 90, when yaw degree is 0, next turn 1 will be 90
+0.0103	Attack the target in front 1-2 blocks, collect items. When you need to collect items at REL y=0, first use look 1 to adjust the view to level 0, then attack, when collecting REL y=1 items, no need to adjust the view, when collecting REL y=2 items, need to use look -1 to adjust the view to level 2
+0.0075	Use item, use the currently selected hotbar item on the target in front 1-2 blocks, must have a target to use the item
+-0.0126	find dirt in view
+-0.0145	Move backward
+-0.0430	Move forward
+-0.0494	Jump while moving forward, when there is an obstacle in front, can jump over the obstacle
+-0.0516	find logs in view, but dont attack it

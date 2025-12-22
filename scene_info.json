@@ -59,7 +59,7 @@
                 "RElx": 1,
                 "REly": -2,
                 "RElz": 0,
-                "size": 13
+                "size": 12
             },
             "/temp/sand_-1_-2_0": {
                 "name": "sand_-1_-2_0",
@@ -75,7 +75,7 @@
                 "RElx": 1,
                 "REly": -3,
                 "RElz": 0,
-                "size": 13
+                "size": 14
             }
         },
         "skills": {
@@ -441,7 +441,36 @@
             ],
             "output": {
                 "inventory": {
-                    "crafting_table": 3
+                    "crafting_table": 1
+                }
+            }
+        },
+        "craft_plank": {
+            "name": "craft_plank",
+            "description": "craft plank - composed of 3 steps.",
+            "sub_mission": [
+                "find_logs",
+                "mine_logs",
+                "craft planks"
+            ],
+            "output": {
+                "inventory": {
+                    "planks": 4
+                }
+            }
+        },
+        "craft_stick": {
+            "name": "craft_stick",
+            "description": "craft stick - composed of 4 steps.",
+            "sub_mission": [
+                "find_logs",
+                "mine_logs",
+                "craft planks",
+                "craft sticks"
+            ],
+            "output": {
+                "inventory": {
+                    "stick": 1
                 }
             }
         }

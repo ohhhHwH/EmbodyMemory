@@ -1584,18 +1584,18 @@ def judge_sub_mission_completion(jud_info:dict, inventories:dict, obj_list:dict,
     return found
 
 if __name__ == '__main__':
-    debug_MODE = True
+    debug_MODE = False
     
     mission_world = 'defaultworld.xml'
     # mission_world = 'studyworld.xml'
-    default_user_request = 'craft one crafting table from wooden plank'
+    default_user_request = 'mine log'
     LLM_MODE = True
-    MEM_MODE = False
+    MEM_MODE = True
     DETECT_MODE = False
     USERINPUT_MODE = False
     SUBMISSION_MODE = True
     SAVE_MEM = False
-    default_check_obj_name = "crafting_table"
+    default_check_obj_name = "log"
     
     mission = f'simulator/MalmoEnv/missions/{mission_world}'
     parser = argparse.ArgumentParser(description='malmovnv test')
@@ -1778,7 +1778,7 @@ if __name__ == '__main__':
         
         # 获取初始化环境信息
         # TODO re plan 子任务
-        while plan_times != 0 or steps < MAX_STEPS:
+        while (plan_times != 0 or steps < MAX_STEPS):
             plan_times -= 1
         
             env.render()
@@ -1912,10 +1912,10 @@ if __name__ == '__main__':
                     
                     # 遍历 action_sequence
                     # TODO 错误反馈 # TODO 目前没有错误反馈 只保存最后的 cur_act_msg
-                    
+                    cur_act_msg = ""
                     for act in action_sequence:
                         # TODO 目前没有错误反馈 只保存最后的 cur_act_msg
-                        cur_act_msg = ""
+                        
                         # 解析动作字符串
                         act_idx, act_str = parse_action_string(act)
                         if act_idx is None:
@@ -1968,8 +1968,7 @@ if __name__ == '__main__':
                         action_check_msg = action_check(action, entity_bef, entity)
                         if action_check_msg != "":
                             cur_act_msg += f"Action check info : {action_check_msg}\n"
-                        
-                        if "inventory" not in act_str and "hotbar" not in act_str and "craft" not in act_str:
+                        elif "inventory" not in act_str and "hotbar" not in act_str and "craft" not in act_str:
                             
                             save_img(obs, env)
                             
@@ -2009,7 +2008,7 @@ if __name__ == '__main__':
                             
                             # if rel_info != "":
                                 # cur_act_msg += str(rel_info)
-                            
+
                         time.sleep(1)
 
                     # TODO 目前没有错误反馈 只保存最后的 cur_act_msg
@@ -2030,20 +2029,20 @@ if __name__ == '__main__':
                             with open(log_file, 'a') as f:
                                 f.write(f"Sub-mission '{sub_mission}' completed according to judge info.\n")
                             break
-                        
+
                     # 更新 llm messages 并根据当前场景继续完成任务 # 让 LLM 判断该子任务是否完成
                     if LLM_MODE == True:
-                        max_messages_length = 3
+                        max_messages_length = 5
                         cur_act_msg += "if you think the sub-mission is completed, just answer 'Sub-mission completed.' and wait for next sub-mission.\n"
                         if len(messages) == max_messages_length:
-                            # 弹出后两条信息 
-                            context_length += len(messages[-1]['content']) + len(messages[-2]['content'])
-                            messages = messages[:-2]
+                            # 弹出中间两条信息 既 messages[1] 和 messages[2]
+                            context_length += len(messages[1]['content']) + len(messages[2]['content'])
+                            messages = [messages[0]] + messages[3:]
                         messages.append({"role": "user", "content": cur_act_msg})
                         action_sequence, messages = client.query_request(messages=messages)
                         print(f"New action sequence received: {action_sequence}")
                         
-                # TODO 判断该子任务是否完成 - 由 LLM 判断
+                # TODO 判断该子任务是否完成 - 由 LLM 判断 或 jud_info 判断
                 print(f"Sub-mission '{sub_mission}' ended.")
                 # 如果完成则 将 record_actions 转换成 情景记忆 MEM
                 if MEM_MODE == True and SAVE_MEM == True and len(record_actions) > 0:
@@ -2080,14 +2079,14 @@ if __name__ == '__main__':
             # 检查 物品 是否存在
             if check_obj_name != 'default':
                 found = False
-                for obj in obj_list:
-                    if obj['name'] == check_obj_name:
-                        found = True
-                        print(f"Checked object '{check_obj_name}' found in the environment.")
-                        with open(log_file, 'a') as f:
-                            f.write(f"Check : True\n")
-                        break
-                    user_input = 'q'
+                if inventories != []:
+                    for obj in inventories:
+                        if obj['item'] == check_obj_name:
+                            found = True
+                            print(f"Checked object '{check_obj_name}' found in the environment.")
+                            with open(log_file, 'a') as f:
+                                f.write(f"Check : True\n")
+                        user_input = 'q'
                 if not found:
                     print(f"Checked object '{check_obj_name}' NOT found in the environment.")
                     with open(log_file, 'a') as f:

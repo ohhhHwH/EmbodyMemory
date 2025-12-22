@@ -53,8 +53,8 @@ def run_basic_LLM(task_file="tasks.yaml"):
                         --mission simulator/MalmoEnv/missions/world1.xml 
                     '''
             print(f"Running command:\n{run_cmd}")
-            # os.system(run_cmd)
-                
+            os.system(run_cmd)
+
             print(f"Completed run {i+1} for task '{task_name}'.")
             print("=" * 60)
         
@@ -87,7 +87,7 @@ def run_basic_MEM(task_file="tasks.yaml"):
                         --mission simulator/MalmoEnv/missions/world1.xml 
                     '''
             print(f"Running command:\n{run_cmd}")
-            # os.system(run_cmd)
+            os.system(run_cmd)
                 
             print(f"Completed run {i+1} for task '{task_name}'.")
             print("=" * 60)
@@ -124,6 +124,6 @@ python ./simulator/MalmoEnv/run-llm-mem.py
 
 if __name__ == "__main__":
     run_basic_LLM()
-    # run_basic_MEM()
+    run_basic_MEM()
     
     
