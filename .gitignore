@@ -3,5 +3,7 @@ log
 
 *.pyc
 
+data/
+
 __pycache__/
 gte-Qwen2-7B-instruct/

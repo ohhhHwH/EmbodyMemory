@@ -14,12 +14,10 @@
                 "parent": "/",
                 "children": [
                     "/temp/leaves_0_2_0",
-                    "/temp/log_-1_2_2",
-                    "/temp/log_1_0_-2",
-                    "/temp/log_-1_-1_2",
+                    "/temp/log_0_2_1",
                     "/temp/grass_1_-2_0",
-                    "/temp/dirt_1_-3_0",
-                    "/temp/sand_-1_-2_0"
+                    "/temp/sand_-1_-2_0",
+                    "/temp/dirt_1_-3_0"
                 ]
             },
             "/long": {
@@ -45,30 +43,14 @@
                 "RElx": 0,
                 "REly": 2,
                 "RElz": 0,
-                "size": 19
+                "size": 21
             },
-            "/temp/log_-1_2_2": {
-                "name": "log_-1_2_2",
+            "/temp/log_0_2_1": {
+                "name": "log_0_2_1",
                 "parent": "/temp",
-                "RElx": -1,
+                "RElx": 0,
                 "REly": 2,
-                "RElz": 2,
-                "size": 2
-            },
-            "/temp/log_1_0_-2": {
-                "name": "log_1_0_-2",
-                "parent": "/temp",
-                "RElx": 1,
-                "REly": 0,
-                "RElz": -2,
-                "size": 4
-            },
-            "/temp/log_-1_-1_2": {
-                "name": "log_-1_-1_2",
-                "parent": "/temp",
-                "RElx": -1,
-                "REly": -1,
-                "RElz": 2,
+                "RElz": 1,
                 "size": 1
             },
             "/temp/grass_1_-2_0": {
@@ -77,15 +59,7 @@
                 "RElx": 1,
                 "REly": -2,
                 "RElz": 0,
-                "size": 13
-            },
-            "/temp/dirt_1_-3_0": {
-                "name": "dirt_1_-3_0",
-                "parent": "/temp",
-                "RElx": 1,
-                "REly": -3,
-                "RElz": 0,
-                "size": 17
+                "size": 12
             },
             "/temp/sand_-1_-2_0": {
                 "name": "sand_-1_-2_0",
@@ -93,7 +67,15 @@
                 "RElx": -1,
                 "REly": -2,
                 "RElz": 0,
-                "size": 20
+                "size": 24
+            },
+            "/temp/dirt_1_-3_0": {
+                "name": "dirt_1_-3_0",
+                "parent": "/temp",
+                "RElx": 1,
+                "REly": -3,
+                "RElz": 0,
+                "size": 14
             }
         },
         "skills": {
@@ -174,29 +156,21 @@
                             "name": "leaves_0_2_0",
                             "path": "/temp/leaves_0_2_0"
                         },
-                        "log_-1_2_2": {
-                            "name": "log_-1_2_2",
-                            "path": "/temp/log_-1_2_2"
-                        },
-                        "log_1_0_-2": {
-                            "name": "log_1_0_-2",
-                            "path": "/temp/log_1_0_-2"
-                        },
-                        "log_-1_-1_2": {
-                            "name": "log_-1_-1_2",
-                            "path": "/temp/log_-1_-1_2"
+                        "log_0_2_1": {
+                            "name": "log_0_2_1",
+                            "path": "/temp/log_0_2_1"
                         },
                         "grass_1_-2_0": {
                             "name": "grass_1_-2_0",
                             "path": "/temp/grass_1_-2_0"
                         },
-                        "dirt_1_-3_0": {
-                            "name": "dirt_1_-3_0",
-                            "path": "/temp/dirt_1_-3_0"
-                        },
                         "sand_-1_-2_0": {
                             "name": "sand_-1_-2_0",
                             "path": "/temp/sand_-1_-2_0"
+                        },
+                        "dirt_1_-3_0": {
+                            "name": "dirt_1_-3_0",
+                            "path": "/temp/dirt_1_-3_0"
                         }
                     }
                 }

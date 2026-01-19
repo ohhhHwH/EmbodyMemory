@@ -251,6 +251,13 @@ craft_requirements = {
 
             "crafting_table": {"planks": 4},      # 4 木板 → 1 工作台
             "button": {"planks": 1},              # 1 木板 → 1 木按钮
+            "chest": {"planks": 8},              # 8 木板 → 1 木箱
+            "bowl": {"planks": 3}, 
+            "boat": {"planks": 5},
+            "wooden_pressure_plate": {"planks": 2},
+            "wood_slab": {"planks": 3},
+            "ladder": {"stick": 7},
+            "barrel": {"stick": 6, "wooden_slab": 2},
             
             # 基础工具
             "wooden_pickaxe": {"planks": 3, "stick": 2},
@@ -1538,7 +1545,9 @@ def retrieval_memory(cs, question, scene_info, log_file)-> tuple[str,dict]:
             rel_info += f"\nrel info {scene_info.get('skill_specs', {}).get(node_name, {})}\n"
             # {'name': 'craft_wooden_axe', 'description': 'craft wooden axe - composed of 3 steps.', 'sub_mission': ['find_logs', 'mine_three_log_from_tree', 'craft 3 planks', 'craft 2 sticks', 'craft wooden_axe'], 'judge': {'inventory': 'wooden_axe'}}
             rel_mem_node = scene_info.get('skill_specs', {}).get(node_name, {})
-            
+            if 'sub_mission' in rel_mem_node:
+                # TODO 遍历 sub_mission 查找对应的 memory 节点 TODO 暂时不考虑相互依赖的节点
+                pass
             if "output" in rel_mem_node:
                 judge_info = rel_mem_node.get("output", {})
 
@@ -1586,14 +1595,15 @@ def judge_sub_mission_completion(jud_info:dict, inventories:dict, obj_list:dict,
 if __name__ == '__main__':
     debug_MODE = False
     
+    SUBMISSION_MODE = False
+    
     mission_world = 'defaultworld.xml'
     # mission_world = 'studyworld.xml'
-    default_user_request = 'mine log'
+    default_user_request = 'craft_crafting_table'
     LLM_MODE = True
     MEM_MODE = True
     DETECT_MODE = False
     USERINPUT_MODE = False
-    SUBMISSION_MODE = True
     SAVE_MEM = False
     default_check_obj_name = "log"
     
@@ -1625,6 +1635,8 @@ if __name__ == '__main__':
     parser.add_argument('--check', type=str, default=default_check_obj_name, help="obj name")
     parser.add_argument('--subSteps', type=int, default=100, help="max steps")
     parser.add_argument('--replan', type=int, default=1, help="max steps")
+    parser.add_argument('--submission', type=str, default='enable', help="enable or disable submission mode")
+    parser.add_argument('--scenefile', type=str, default='scene_info.json', help="scene info file path")
     args = parser.parse_args()
     if args.server2 is None:
         args.server2 = args.server
@@ -1633,6 +1645,7 @@ if __name__ == '__main__':
     MAX_STEPS = args.episodemaxsteps
     MAX_SUB_STEPS = args.subSteps
     # plan_times = args.replan
+    scenefile = args.scenefile
     plan_times = 3
     if debug_MODE == False:
         if args.LLM.lower() == 'enable':
@@ -1647,7 +1660,11 @@ if __name__ == '__main__':
             DETECT_MODE = True
         else:
             DETECT_MODE = False
-
+        if args.submission.lower() == 'enable':
+            SUBMISSION_MODE = True
+        else:
+            SUBMISSION_MODE = False
+        
 
     
     # 载入 mission xml
@@ -1692,8 +1709,8 @@ if __name__ == '__main__':
     if MEM_MODE == True:
         cs = CurrentState()
         # 如果存在历史记忆那先读取历史记忆 并 删除 历史 temp 记忆
-        if os.path.exists(f'scene_info.json'):
-            scene_info = load_scene_info('scene_info.json')
+        if os.path.exists(scenefile):
+            scene_info = load_scene_info(scenefile)
         else:
             scene_info = mc_cap2scene_info(env.actions, env.actions_type, act_info_en, around_range)
         
@@ -1738,9 +1755,23 @@ if __name__ == '__main__':
     
     # 初始化 MCPClient
     load_dotenv(dotenv_path='.env')
-    api_key = os.getenv("DS_API_KEY")
-    # print("api_key:", api_key)
-    client = MCPClient(api_key=api_key)
+    
+    # OpenRouter
+    # base_url = os.getenv("OPENROUTER_URL")
+    # api_key = os.getenv("OPENROUTER_API_KEY")
+    # client = MCPClient(base_url=base_url, api_key=api_key, model="deepseek/deepseek-v3.2")
+    
+    # Deepseek
+    # base_url = os.getenv("DS_URL")
+    # api_key = os.getenv("DS_API_KEY")
+    # model = os.getenv("DS_MODEL")
+    
+    # qwen
+    base_url = os.getenv("QWEN_BASE_URL")
+    api_key = os.getenv("QWEN_API_KEY")
+    model = os.getenv("QWEN_MODEL")
+    
+    client = MCPClient(api_key=api_key, base_url=base_url, model=model)
     
     # 构建 actions_prompt
     system_prompt = system_prompt_en_mc_v2
@@ -1761,6 +1792,7 @@ if __name__ == '__main__':
 
         # 初始化 steps, done
         steps = 0
+        err_steps = 0
         done = False
         context_length = 0
         jud_info = {}
@@ -1967,6 +1999,7 @@ if __name__ == '__main__':
                         # TODO 如果环境没有改变 则不更新 obs # 保存图像
                         action_check_msg = action_check(action, entity_bef, entity)
                         if action_check_msg != "":
+                            err_steps += 1
                             cur_act_msg += f"Action check info : {action_check_msg}\n"
                         elif "inventory" not in act_str and "hotbar" not in act_str and "craft" not in act_str:
                             
@@ -2091,6 +2124,8 @@ if __name__ == '__main__':
                     print(f"Checked object '{check_obj_name}' NOT found in the environment.")
                     with open(log_file, 'a') as f:
                         f.write(f"Check : False\n")
+            with open(log_file, 'a') as f:
+                f.write(f"err_steps : {err_steps}\n")
             
             # TODO 对 submission 进行总结(用户问题) 生成技能记忆 skill_specs sub mission 需要加check 吗
             submission2MEM()

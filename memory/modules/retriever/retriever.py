@@ -26,6 +26,11 @@ class Retriever:
 
         self.events = events
         self.embeddings = self.model.encode(events, convert_to_tensor=True, device=self.device)
+        
+        self.root_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        root_file = os.path.join(self.root_path, 'data', 'retriever')
+        # 读取 root_file 下文件的数量
+        self.file_count = len(os.listdir(root_file)) + 1
 
     def retrieve(self, query, top_k=3):
         query_embedding = self.model.encode(query, convert_to_tensor=True, device=self.device)
@@ -37,7 +42,7 @@ class Retriever:
         print("Scores:", scores)  # 调试输出相似度分数
         
         # 输出到memory/data/debug_scores.txt文件 以分数为大小进行排序
-        debug_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data', 'debug_scores.txt')
+        debug_path = os.path.join(self.root_path, 'data', 'retriever', f'debug_scores_{self.file_count}.txt')
         with open(debug_path, 'w') as f:
             sorted_scores, sorted_indices = torch.sort(scores, descending=True)
             f.write(f"Query: {query}\n\n")

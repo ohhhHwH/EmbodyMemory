@@ -2,9 +2,14 @@ import csv
 import os
 import pandas as pd
 
+# folder_name = "./log/log-MEM"
+folder_name = "./log/qwen-0114"
+
 def evaluate_log(log_file_path)->dict:
     # 这里假设 log 文件是一个文本文件，包含多行，每行代表一个记录
     # 将文件名分割以提取任务名称等信息
+    if ".log" not in log_file_path:
+        return None
     task_name = os.path.basename(log_file_path).replace(".log", "")
     parts = task_name.split("_")
     # 第一个为 难度
@@ -20,16 +25,34 @@ def evaluate_log(log_file_path)->dict:
     Token_used = 131072 # 最大值
     check = False
     steps = 100
+    err_steps = 0
+    del_flag = True
     with open(log_file_path, 'r') as f:
         lines = f.readlines()
         for line in lines:
             if "Token used:" in line:
                 Token_used = int(line.strip().split(":")[-1].strip())
+                del_flag = False
+            if "err_steps :" in line:
+                err_steps = int(line.strip().split(":")[-1].strip())
+            elif "steps :" in line:
+                steps = int(line.strip().split(":")[-1].strip())
             if "Check :" in line:
                 success_str = line.strip().split(":")[-1].strip()
                 check = success_str.lower() == "true"
-            if "steps :" in line:
-                steps = int(line.strip().split(":")[-1].strip())
+            
+    
+    if del_flag:
+        # 删除错误的日志文件
+        # 移动到 folder_name 的 err_logs 文件夹下
+        err_logs_folder = os.path.join(folder_name, "err_logs")
+        if not os.path.exists(err_logs_folder):
+            os.makedirs(err_logs_folder)
+        new_path = os.path.join(err_logs_folder, os.path.basename(log_file_path))
+        os.rename(log_file_path, new_path)
+        print(f"Moved erroneous log file to: {new_path}")
+        return None
+    
     print(f"Evaluating Task: {task_actual_name}, Level: {task_level}, Type: {task_type}, Run: {task_times}")
     print(f"  Token Used: {Token_used}")
     print(f"  Success: {'Yes' if check else 'No'}")
@@ -43,7 +66,8 @@ def evaluate_log(log_file_path)->dict:
         "task_times": task_times,
         "token_used": Token_used,
         "success": check,
-        "steps": steps
+        "steps": steps,
+        "err_steps": err_steps
     }
     
 def csv2xlsx(csv_file, xlsx_file):
@@ -52,7 +76,6 @@ def csv2xlsx(csv_file, xlsx_file):
     
 def main():
     # 读取 文件夹 下文件
-    folder_name = "./log/log-1222"
     
     # 遍历该文件夹下的所有文件
     eval_results = []
@@ -61,7 +84,8 @@ def main():
             file_path = os.path.join(folder_name, filename)
             print(f"Evaluating log file: {file_path}")
             result = evaluate_log(file_path)
-            eval_results.append(result)
+            if result != None:
+                eval_results.append(result)
     # 对eval_results进行排序
     eval_results.sort(key=lambda x: (x["task_level"], x["task_name"], int(x["task_times"]), x["task_type"]))
     
@@ -79,11 +103,13 @@ def main():
                 "success_count": 0,
                 "total_steps": 0,
                 "total_token": 0,
-                "total_runs": 0
+                "total_runs": 0,
+                "total_err_steps": 0
             }
         summary_results[key]["total_runs"] += 1
         summary_results[key]["total_steps"] += res["steps"]
         summary_results[key]["total_token"] += res["token_used"]
+        summary_results[key]["total_err_steps"] += res["err_steps"]
         if res["success"]:
             summary_results[key]["success_count"] += 1
     
@@ -95,32 +121,36 @@ def main():
         llm_writer = csv.writer(f_llm)
         mem_writer = csv.writer(f_mem)
         # 写入表头
-        header = ["task_name", "task_level", "task_type", "task_times", "token_used", "success", "steps"]
+        header = ["task_name", "task_level", "task_type", "task_times", "token_used", "success", "steps", "err_steps"]
         llm_writer.writerow(header)
         mem_writer.writerow(header)
         
         for res in eval_results:
-            row = [res["task_name"], res["task_level"], res["task_type"], res["task_times"], res["token_used"], res["success"], res["steps"]]
+            row = [res["task_name"], res["task_level"], res["task_type"], res["task_times"], res["token_used"], res["success"], res["steps"], res["err_steps"]]
             if res["task_type"] == "LLM":
                 llm_writer.writerow(row)
             elif res["task_type"] == "MEM":
                 mem_writer.writerow(row)
-        header = ["task_name", "total_runs", "avg_token", "success_count", "avg_steps"]
+        header = ["task_name", "success_rate", "avg_token", "avg_steps", "avg_err", f"times:{len(eval_results)}"]
         llm_writer.writerow(header)
         mem_writer.writerow(header)
         for key,value in LLM_summary_results.items():
             total_runs = LLM_summary_results[key]["total_runs"]
-            avg_steps = LLM_summary_results[key]["total_steps"] / total_runs
-            avg_token = LLM_summary_results[key]["total_token"] / total_runs
-            success_count = LLM_summary_results[key]["success_count"]
-            row = [key, total_runs, avg_token, success_count, avg_steps]
+            # 保留后两位小数
+            avg_steps = round(LLM_summary_results[key]["total_steps"] / total_runs, 2)
+            avg_token = round(LLM_summary_results[key]["total_token"] / total_runs, 2)
+            success_rate = round(LLM_summary_results[key]["success_count"] / total_runs, 4) * 100
+            avg_err = round(LLM_summary_results[key]["total_err_steps"] / total_runs, 2)
+            row = [key, success_rate, avg_token, avg_steps, avg_err, total_runs]
             llm_writer.writerow(row)
         for key,value in MEM_summary_results.items():
             total_runs = MEM_summary_results[key]["total_runs"]
-            avg_steps = MEM_summary_results[key]["total_steps"] / total_runs
-            avg_token = MEM_summary_results[key]["total_token"] / total_runs
-            success_count = MEM_summary_results[key]["success_count"]
-            row = [key, total_runs, avg_token, success_count, avg_steps]
+            # 保留后两位小数
+            avg_steps = round(MEM_summary_results[key]["total_steps"] / total_runs, 2)
+            avg_token = round(MEM_summary_results[key]["total_token"] / total_runs, 2)
+            success_rate = round(MEM_summary_results[key]["success_count"] / total_runs, 4) * 100
+            avg_err = round(MEM_summary_results[key]["total_err_steps"] / total_runs, 2)
+            row = [key, success_rate, avg_token, avg_steps, avg_err, total_runs]
             mem_writer.writerow(row)
             
     

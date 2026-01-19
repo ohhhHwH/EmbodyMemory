@@ -98,31 +98,31 @@
         },
         {
             "id": 24,
-            "event": "craft wooden axe - composed of 3 steps."
-        },
-        {
-            "id": 25,
             "event": "find sand in view"
         },
         {
-            "id": 26,
+            "id": 25,
             "event": "find dirt in view"
         },
         {
-            "id": 27,
-            "event": "craft crafting table - composed of 3 steps."
-        },
-        {
-            "id": 28,
+            "id": 26,
             "event": "find logs in view, but dont attack it"
         },
         {
-            "id": 29,
+            "id": 27,
             "event": "Space node for leaves_0_2_0 at /temp/leaves_0_2_0"
         },
         {
+            "id": 28,
+            "event": "Space node for log_-2_2_2 at /temp/log_-2_2_2"
+        },
+        {
+            "id": 29,
+            "event": "Space node for log_0_0_-2 at /temp/log_0_0_-2"
+        },
+        {
             "id": 30,
-            "event": "Space node for log_0_2_1 at /temp/log_0_2_1"
+            "event": "Space node for log_-2_-1_2 at /temp/log_-2_-1_2"
         },
         {
             "id": 31,
@@ -130,11 +130,11 @@
         },
         {
             "id": 32,
-            "event": "Space node for sand_-1_-2_0 at /temp/sand_-1_-2_0"
+            "event": "Space node for dirt_0_-3_0 at /temp/dirt_0_-3_0"
         },
         {
             "id": 33,
-            "event": "Space node for dirt_1_-3_0 at /temp/dirt_1_-3_0"
+            "event": "Space node for sand_-2_-2_-1 at /temp/sand_-2_-2_-1"
         }
     ],
     "edges": [

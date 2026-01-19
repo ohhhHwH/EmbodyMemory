@@ -133,7 +133,7 @@ class ClinetNodeController(Node):
         return response
 
 class MCPClient:
-    def __init__(self, api_key = None):
+    def __init__(self, base_url="https://api.deepseek.com", api_key=None, model="deepseek-chat"):
         # Initialize session and client objects
         self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
@@ -145,11 +145,12 @@ class MCPClient:
             raise OpenAIError("Missing API key: set DS_API_KEY or OPENAI_API_KEY, or pass api_key explicitly")
 
         self.client = OpenAI(
-            base_url="https://api.deepseek.com",
+            base_url=base_url,
             api_key=key,
         )
         
         self.context_length = 0
+        self.model = model
 
     async def connect_to_server(self):
         """Connect to an MCP server
@@ -211,7 +212,7 @@ class MCPClient:
         # Initial Claude API call - 本demo中替换成deepseek
         start_time = time.time()
         response = self.client.chat.completions.create(
-            model="deepseek-chat",
+            model=self.model,
             messages=messages,
             # tools=available_tools
         )
@@ -258,7 +259,7 @@ class MCPClient:
                 
                 # Get next response from llm
                 response = self.client.chat.completions.create(
-                    model="deepseek-chat",
+                    model=self.model,
                     messages=messages,
                 )
 
@@ -322,7 +323,7 @@ class MCPClient:
         while safe_result != "safe" and llm_counter < 5:
             # 向llm发送请求，获取plan
             response = self.client.chat.completions.create(
-                model="deepseek-chat",
+                model=self.model,
                 messages=messages
             )
 
@@ -429,7 +430,7 @@ class MCPClient:
         ]
 
         response = self.client.chat.completions.create(
-            model="deepseek-chat",
+            model=self.model,
             messages=messages
         )
 

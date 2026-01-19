@@ -24,11 +24,10 @@ def load_tasks(yaml_path: str, diff=None):
         return data.get(diff, [])
     return data
 
-def run_basic_LLM(task_file="tasks.yaml"):
-    tasks = load_tasks(task_file, "basic")
-    task_level = "basic"
-    print("Running basic LLM tasks:")
-    for i in range(3):  # 运行3次
+def run_LLM(task_file="tasks.yaml", task_level="basic", times = 3, arg=""):
+    tasks = load_tasks(task_file, task_level)
+    print(f"Running {task_level} LLM tasks:")
+    for i in range(times):  # 运行3次
         for task in tasks:
             print(f"Task Name: {task['task_name']}")
             print(f"Description: {task['description']}")
@@ -50,19 +49,21 @@ def run_basic_LLM(task_file="tasks.yaml"):
                         --userrequest "{task_description}" \
                         --check "{task_judge}" \
                         --subSteps {task_steps} \
-                        --mission simulator/MalmoEnv/missions/world1.xml 
-                    '''
+                        --mission simulator/MalmoEnv/missions/world1.xml'''
+            if arg != "":
+                run_cmd += f"\
+                    {arg} "
+                    
             print(f"Running command:\n{run_cmd}")
             os.system(run_cmd)
 
             print(f"Completed run {i+1} for task '{task_name}'.")
             print("=" * 60)
         
-def run_basic_MEM(task_file="tasks.yaml"):
-    tasks = load_tasks(task_file, "basic")
-    task_level = "basic"
-    print("Running basic LLM tasks:")
-    for i in range(3):  # 运行3次
+def run_MEM(task_file="tasks.yaml", task_level="basic", times = 3, arg=""):
+    tasks = load_tasks(task_file, task_level)
+    print(f"Running {task_level} MEM tasks:")
+    for i in range(times):  # 运行3次
         for task in tasks:
             print(f"Task Name: {task['task_name']}")
             print(f"Description: {task['description']}")
@@ -84,14 +85,17 @@ def run_basic_MEM(task_file="tasks.yaml"):
                         --userrequest "{task_description}" \
                         --check "{task_judge}" \
                         --subSteps {task_steps} \
-                        --mission simulator/MalmoEnv/missions/world1.xml 
-                    '''
+                        --mission simulator/MalmoEnv/missions/world1.xml'''
+            if arg != "":
+                run_cmd += f"\
+                    {arg} "
+
             print(f"Running command:\n{run_cmd}")
             os.system(run_cmd)
                 
             print(f"Completed run {i+1} for task '{task_name}'.")
             print("=" * 60)
-        
+
         
 '''
 python ./simulator/MalmoEnv/run-llm-mem.py  \
@@ -123,7 +127,27 @@ python ./simulator/MalmoEnv/run-llm-mem.py
 '''
 
 if __name__ == "__main__":
-    run_basic_LLM()
-    run_basic_MEM()
+    # 12.30 00:00 - 15:06 不分解子任务的 消融 + 短期，长期 （混合-最终的）消融 不知道跑到哪个任务了
     
+    # 不分解子任务的 消融
+    # run_LLM(task_level="basic", times = 5)
+    # run_MEM(task_level="basic", times = 5)
+    # run_LLM(task_level="easy", times = 5)
+    # run_MEM(task_level="easy", times = 5)
+    
+    # 短期，长期 （混合-最终的）消融
+    # run_MEM(task_level="basic", times = 5, arg = "--scenefile scene_info-tem.json")
+    # run_MEM(task_level="easy", times = 5, arg = "--scenefile scene_info-long.json")
+    
+    # run_MEM(task_level="easy", times = 5, arg = "--scenefile scene_info-tem.json")
+    # run_MEM(task_level="basic", times = 5, arg = "--scenefile scene_info-long.json")
+    
+    
+    # QWEN llm mem
+    # run_LLM(task_level="basic", times = 5)
+    # run_LLM(task_level="easy", times = 5)
+    # run_MEM(task_level="basic", times = 5)
+    run_MEM(task_level="easy", times = 5)
+
+    pass
     
